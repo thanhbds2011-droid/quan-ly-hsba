@@ -6,11 +6,225 @@
   <meta name="theme-color" content="#0f4c81">
   <meta name="description" content="Quản lý hồ sơ bệnh án Trung tâm">
   <title>Quản lý HSBA Trung tâm</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230f4c81'/%3E%3Cpath d='M42 20h16v22h22v16H58v22H42V58H20V42h22z' fill='white'/%3E%3C/svg%3E">
+<style>
+:root {
+  --primary: #0f4c81;
+  --primary-2: #1769aa;
+  --primary-soft: #eaf3fb;
+  --danger: #b42318;
+  --danger-soft: #fff0ee;
+  --success: #16794b;
+  --warning: #b54708;
+  --text: #172033;
+  --muted: #647085;
+  --line: #dfe5ee;
+  --surface: #ffffff;
+  --bg: #f5f7fb;
+  --shadow: 0 12px 30px rgba(16, 36, 65, .10);
+  --radius: 14px;
+}
 
-  <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="icon" href="./assets/logo-192.png">
-  <link rel="apple-touch-icon" href="./assets/logo-192.png">
-  <link rel="stylesheet" href="./style.css">
+* { box-sizing: border-box; }
+html { font-family: Arial, Helvetica, sans-serif; background: var(--bg); color: var(--text); }
+body { margin: 0; min-height: 100vh; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+.hidden { display: none !important; }
+
+.topbar {
+  height: 68px;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 18px;
+  background: rgba(255,255,255,.96);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(12px);
+}
+
+.brand { display: flex; align-items: center; gap: 10px; flex: 1; }
+.brand h1 { margin: 0; font-size: 17px; letter-spacing: .02em; }
+.brand p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+.brand-mark {
+  width: 36px; height: 36px; border-radius: 11px;
+  display: grid; place-items: center;
+  background: var(--primary); color: white; font-size: 22px; font-weight: 700;
+}
+.brand-mark.large { width: 44px; height: 44px; }
+
+.icon-btn {
+  width: 42px; height: 42px; border: 0; border-radius: 11px;
+  background: transparent; color: var(--text); font-size: 22px;
+}
+.icon-btn:hover { background: var(--primary-soft); }
+
+.sidebar {
+  position: fixed; inset: 0 auto 0 0; z-index: 50;
+  width: min(86vw, 340px);
+  padding: 22px 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transform: translateX(-105%);
+  transition: .22s ease;
+}
+.sidebar.open { transform: translateX(0); }
+.sidebar-head { display: flex; gap: 12px; align-items: center; padding: 10px 8px 22px; border-bottom: 1px solid var(--line); }
+.sidebar-head strong, .sidebar-head small { display: block; }
+.sidebar-head small { color: var(--muted); margin-top: 4px; }
+.nav-list { display: grid; gap: 6px; margin-top: 18px; }
+.nav-item {
+  border: 0; background: transparent; text-align: left; padding: 13px 14px;
+  border-radius: 10px; color: var(--text);
+}
+.nav-item:hover, .nav-item.active { background: var(--primary-soft); color: var(--primary); font-weight: 700; }
+.sidebar-note {
+  margin-top: 30px; padding: 14px; border-radius: 12px;
+  background: #fff8e8; color: #6b4c10; font-size: 13px; line-height: 1.45;
+}
+.sidebar-note span { display: block; margin-top: 4px; }
+.overlay {
+  position: fixed; inset: 0; z-index: 40; background: rgba(16, 27, 44, .4);
+  opacity: 0; pointer-events: none; transition: .2s;
+}
+.overlay.show { opacity: 1; pointer-events: auto; }
+
+.main { width: min(1180px, 100%); margin: 0 auto; padding: 24px 18px 60px; }
+.view { display: none; }
+.view.active { display: block; }
+
+.page-head {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+  margin-bottom: 18px;
+}
+.page-head h2 { margin: 0; font-size: clamp(22px, 3vw, 30px); }
+.page-head p { margin: 6px 0 0; color: var(--muted); }
+
+.setup-notice {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 16px; padding: 12px 14px; border-radius: 10px;
+  background: #fff3cd; color: #725500; border: 1px solid #f0d98a;
+}
+
+.toolbar { display: flex; gap: 10px; margin-bottom: 14px; }
+.search-box {
+  flex: 1; display: flex; align-items: center; gap: 9px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 12px; padding: 0 13px;
+}
+.search-box input { width: 100%; border: 0; outline: 0; padding: 13px 0; background: transparent; }
+
+.btn {
+  border: 1px solid var(--line); border-radius: 10px;
+  background: var(--surface); color: var(--text); padding: 11px 15px; font-weight: 700;
+}
+.btn:hover { filter: brightness(.98); }
+.btn.primary { background: var(--primary); border-color: var(--primary); color: white; }
+.btn.danger { background: var(--danger); border-color: var(--danger); color: white; }
+.btn.small { padding: 8px 11px; font-size: 13px; }
+.btn.ghost { background: transparent; }
+
+.summary-strip {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;
+}
+.summary-chip {
+  padding: 7px 10px; border-radius: 999px; background: var(--primary-soft);
+  color: var(--primary); font-size: 13px; font-weight: 700;
+}
+
+.card-list { display: grid; gap: 10px; }
+.patient-card {
+  display: grid; grid-template-columns: 1fr auto; gap: 12px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 16px; box-shadow: 0 5px 16px rgba(16,36,65,.05);
+}
+.patient-card:hover { border-color: #abc7df; }
+.patient-card h3 { margin: 0 0 5px; font-size: 17px; }
+.patient-card p { margin: 3px 0; color: var(--muted); }
+.patient-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 5px 8px; font-size: 12px; font-weight: 700; background: #eef2f7; }
+.badge.open { background: #e9f7ef; color: var(--success); }
+.badge.death { background: var(--danger-soft); color: var(--danger); }
+.badge.closed { background: #eef3fa; color: var(--primary); }
+
+.empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+.empty-icon { font-size: 44px; }
+
+.detail-header {
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  color: white; border-radius: 18px; padding: 22px; margin: 12px 0 18px;
+}
+.detail-header h2 { margin: 0 0 8px; }
+.detail-header p { margin: 4px 0; opacity: .9; }
+.detail-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+
+.back-btn { border: 0; background: transparent; color: var(--primary); font-weight: 700; padding: 4px 0; }
+
+.table-wrap {
+  overflow: auto; background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); box-shadow: 0 4px 14px rgba(16,36,65,.05);
+}
+table { width: 100%; border-collapse: collapse; min-width: 780px; }
+th, td { padding: 12px 13px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+th { background: #f4f7fb; font-size: 13px; color: #445166; position: sticky; top: 0; }
+td { font-size: 14px; }
+.file-link { color: var(--primary); font-weight: 700; text-decoration: none; }
+.file-link:hover { text-decoration: underline; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.stat-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+.stat-card span { color: var(--muted); font-size: 13px; }
+.stat-card strong { display: block; margin-top: 8px; font-size: 30px; color: var(--primary); }
+
+.modal {
+  width: min(92vw, 520px); border: 0; border-radius: 16px; padding: 0;
+  box-shadow: var(--shadow);
+}
+.modal::backdrop { background: rgba(18, 31, 49, .48); }
+.modal form { padding: 20px; }
+.modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.modal-head h3 { margin: 0; }
+.modal label { display: grid; gap: 7px; margin-bottom: 14px; font-weight: 700; }
+.modal input, .modal select, .modal textarea {
+  width: 100%; border: 1px solid #cfd7e3; border-radius: 10px; padding: 11px 12px;
+  background: white; outline: none;
+}
+.modal input:focus, .modal select:focus, .modal textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(15,76,129,.12); }
+.modal small { color: var(--muted); font-weight: normal; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+
+.toast {
+  position: fixed; right: 18px; bottom: 18px; z-index: 100;
+  max-width: min(430px, calc(100vw - 36px));
+  background: #172033; color: white; padding: 12px 15px; border-radius: 10px;
+  opacity: 0; transform: translateY(15px); pointer-events: none; transition: .2s;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.error { background: var(--danger); }
+
+.loading {
+  position: fixed; inset: 0; z-index: 90; display: grid; place-content: center;
+  gap: 12px; text-align: center; background: rgba(255,255,255,.76); backdrop-filter: blur(3px);
+}
+.spinner {
+  width: 42px; height: 42px; margin: auto; border: 4px solid #d8e4ef;
+  border-top-color: var(--primary); border-radius: 50%; animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 720px) {
+  .main { padding: 18px 12px 80px; }
+  .page-head { align-items: stretch; flex-direction: column; }
+  .toolbar { flex-direction: column; }
+  .patient-card { grid-template-columns: 1fr; }
+  .patient-card .btn { width: 100%; }
+  .detail-header { padding: 18px; }
+}
+
+</style>
 </head>
 <body>
   <div id="appShell" class="app-shell">
@@ -208,9 +422,614 @@
       </div>
     </form>
   </dialog>
+<script>
+window.HSBA_CONFIG = Object.freeze({
+  // Dán URL Web App kết thúc bằng /exec vào đây.
+  // Ví dụ: https://script.google.com/macros/s/AKfycb.../exec
+  API_URL: 'https://script.google.com/macros/s/AKfycbwTuGwnLDDDE7sUi2Isy4W_TwvboLaC-Qo7g5QqueSSS0Z_Mo8UxaTBq8eGaI6ax9Mz/exec',
 
-  <script src="./config.js"></script>
-  <script src="./api.js"></script>
-  <script src="./app.js"></script>
+  APP_NAME: 'Quản lý HSBA Trung tâm',
+  VERSION: '1.0.0',
+
+  STATUS: {
+    DANG_KHAM: 'Đang khám',
+    DA_LUU_KHO: 'Đã lưu kho',
+    TU_VONG: 'Đối tượng tử vong'
+  },
+
+  MAX_UPLOAD_BYTES: 10 * 1024 * 1024
+});
+
+
+class HsbaApi {
+  constructor(baseUrl) {
+    this.baseUrl = String(baseUrl || '').trim();
+  }
+
+  isConfigured() {
+    return /^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/i.test(this.baseUrl);
+  }
+
+  async get(action, params = {}) {
+    this.#assertConfigured();
+
+    const url = new URL(this.baseUrl);
+    url.searchParams.set('action', action);
+    url.searchParams.set('_t', Date.now());
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== '' && value !== undefined && value !== null) {
+        url.searchParams.set(key, String(value));
+      }
+    });
+
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      redirect: 'follow',
+      cache: 'no-store'
+    });
+
+    return this.#parseResponse(response);
+  }
+
+  async post(action, payload = {}) {
+    this.#assertConfigured();
+
+    const response = await fetch(this.baseUrl, {
+      method: 'POST',
+      redirect: 'follow',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({ action, ...payload })
+    });
+
+    return this.#parseResponse(response);
+  }
+
+  async uploadFile({ soHoSo, quyenSo, file }) {
+    if (!file) throw new Error('Chưa chọn file.');
+
+    if (file.size > window.HSBA_CONFIG.MAX_UPLOAD_BYTES) {
+      throw new Error('File vượt quá dung lượng tối đa 10 MB.');
+    }
+
+    const base64Data = await this.#fileToBase64(file);
+
+    return this.post('taiFileLen', {
+      soHoSo,
+      quyenSo,
+      fileName: file.name,
+      mimeType: file.type,
+      base64Data
+    });
+  }
+
+  #assertConfigured() {
+    if (!this.isConfigured()) {
+      throw new Error('Chưa cấu hình URL Apps Script trong config.js.');
+    }
+  }
+
+  async #parseResponse(response) {
+    if (!response.ok) {
+      throw new Error(`Máy chủ phản hồi lỗi HTTP ${response.status}.`);
+    }
+
+    const text = await response.text();
+    let result;
+
+    try {
+      result = JSON.parse(text);
+    } catch {
+      throw new Error(
+        'Không đọc được dữ liệu JSON. Kiểm tra quyền triển khai Apps Script và URL /exec.'
+      );
+    }
+
+    if (!result.success) {
+      throw new Error(result.message || 'Không thực hiện được yêu cầu.');
+    }
+
+    return result;
+  }
+
+  #fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const value = String(reader.result || '');
+        resolve(value.includes(',') ? value.split(',')[1] : value);
+      };
+
+      reader.onerror = () => reject(new Error('Không đọc được file.'));
+      reader.readAsDataURL(file);
+    });
+  }
+}
+
+window.hsbaApi = new HsbaApi(window.HSBA_CONFIG.API_URL);
+
+
+const state = {
+  patients: [],
+  deaths: [],
+  stats: {},
+  currentPatient: null,
+  currentBooks: []
+};
+
+const $ = (selector, root = document) => root.querySelector(selector);
+const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+
+document.addEventListener('DOMContentLoaded', init);
+
+async function init() {
+  bindEvents();
+  setTodayDefaults();
+  checkApiConfig();
+
+  if (!window.hsbaApi.isConfigured()) return;
+
+  await Promise.allSettled([
+    loadPatients(),
+    loadDeaths(),
+    loadStats()
+  ]);
+
+
+}
+
+function bindEvents() {
+  $('#menuBtn').addEventListener('click', openSidebar);
+  $('#overlay').addEventListener('click', closeSidebar);
+  $('#syncBtn').addEventListener('click', syncAll);
+
+  $$('.nav-item').forEach(button => {
+    button.addEventListener('click', () => {
+      switchView(button.dataset.view);
+      closeSidebar();
+    });
+  });
+
+  $('#searchBtn').addEventListener('click', () => loadPatients($('#searchInput').value));
+  $('#searchInput').addEventListener('keydown', event => {
+    if (event.key === 'Enter') loadPatients(event.currentTarget.value);
+  });
+
+  $('#openAddPatientBtn').addEventListener('click', () => $('#patientModal').showModal());
+  $('#backToPatientsBtn').addEventListener('click', () => switchView('patients'));
+
+  $$('.close-modal').forEach(button => {
+    button.addEventListener('click', () => button.closest('dialog').close());
+  });
+
+  $('#patientForm').addEventListener('submit', submitPatient);
+  $('#bookForm').addEventListener('submit', submitNewBook);
+  $('#closeBookForm').addEventListener('submit', submitCloseBook);
+}
+
+function checkApiConfig() {
+  $('#setupNotice').classList.toggle('hidden', window.hsbaApi.isConfigured());
+}
+
+function setTodayDefaults() {
+  const today = new Date().toISOString().slice(0, 10);
+  $('#bookForm [name="ngayBatDau"]').value = today;
+  $('#closeBookForm [name="ngayKetThuc"]').value = today;
+}
+
+async function syncAll() {
+  if (!window.hsbaApi.isConfigured()) {
+    showToast('Chưa cấu hình URL Apps Script.', true);
+    return;
+  }
+
+  await Promise.allSettled([
+    loadPatients($('#searchInput').value),
+    loadDeaths(),
+    loadStats()
+  ]);
+
+  if (state.currentPatient) {
+    await openPatient(state.currentPatient['SỐ HỒ SƠ']);
+  }
+
+  showToast('Đã đồng bộ dữ liệu.');
+}
+
+async function loadPatients(keyword = '') {
+  return withLoading(async () => {
+    const result = await window.hsbaApi.get('layDanhSachDoiTuong', { keyword });
+    state.patients = result.data || [];
+    renderPatients();
+  });
+}
+
+function renderPatients() {
+  const list = $('#patientsList');
+  const empty = $('#patientsEmpty');
+  const summary = $('#patientsSummary');
+
+  summary.innerHTML = `
+    <span class="summary-chip">${state.patients.length} đối tượng</span>
+    <span class="summary-chip">${state.patients.filter(x => x['QUYỂN ĐANG MỞ']).length} hồ sơ đang mở</span>
+  `;
+
+  if (!state.patients.length) {
+    list.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+  }
+
+  empty.classList.add('hidden');
+
+  list.innerHTML = state.patients.map(patient => {
+    const latest = patient['TRẠNG THÁI MỚI NHẤT'] || '';
+    const statusClass = latest === window.HSBA_CONFIG.STATUS.TU_VONG
+      ? 'death'
+      : patient['QUYỂN ĐANG MỞ'] ? 'open' : 'closed';
+
+    const statusLabel = latest || 'Chưa có quyển hồ sơ';
+
+    return `
+      <article class="patient-card">
+        <div>
+          <h3>${escapeHtml(patient['HỌ VÀ TÊN'])}</h3>
+          <p><strong>Số hồ sơ:</strong> ${escapeHtml(patient['SỐ HỒ SƠ'])}</p>
+          <p><strong>Năm sinh:</strong> ${escapeHtml(patient['NĂM SINH'])}</p>
+
+          <div class="patient-meta">
+            <span class="badge">Tổng quyển: ${Number(patient['TỔNG SỐ QUYỂN']) || 0}</span>
+            ${patient['QUYỂN ĐANG MỞ']
+              ? `<span class="badge open">Đang dùng quyển ${escapeHtml(patient['QUYỂN ĐANG MỞ'])}</span>`
+              : ''}
+            <span class="badge ${statusClass}">${escapeHtml(statusLabel)}</span>
+          </div>
+        </div>
+
+        <button class="btn small" onclick="openPatient('${escapeJs(patient['SỐ HỒ SƠ'])}')">
+          Xem hồ sơ
+        </button>
+      </article>
+    `;
+  }).join('');
+}
+
+async function openPatient(soHoSo) {
+  return withLoading(async () => {
+    const patient = state.patients.find(
+      item => String(item['SỐ HỒ SƠ']).toUpperCase() === String(soHoSo).toUpperCase()
+    );
+
+    const result = await window.hsbaApi.get('layChiTietHoSo', { soHoSo });
+
+    state.currentPatient = patient || {
+      'SỐ HỒ SƠ': soHoSo,
+      'HỌ VÀ TÊN': '',
+      'NĂM SINH': ''
+    };
+
+    state.currentBooks = result.data || [];
+
+    renderPatientDetail();
+    switchView('detail');
+  });
+}
+
+function renderPatientDetail() {
+  const patient = state.currentPatient;
+  const books = state.currentBooks;
+  const hasOpenBook = books.some(book => !book['NGÀY KẾT THÚC']);
+  const isDeath = books.some(
+    book => book['TRẠNG THÁI HIỆN TẠI'] === window.HSBA_CONFIG.STATUS.TU_VONG
+  );
+
+  $('#patientDetail').innerHTML = `
+    <section class="detail-header">
+      <h2>${escapeHtml(patient['HỌ VÀ TÊN'])}</h2>
+      <p>Số hồ sơ: <strong>${escapeHtml(patient['SỐ HỒ SƠ'])}</strong></p>
+      <p>Năm sinh: <strong>${escapeHtml(patient['NĂM SINH'])}</strong></p>
+
+      <div class="detail-actions">
+        <button
+          class="btn"
+          ${hasOpenBook || isDeath ? 'disabled' : ''}
+          onclick="openNewBookModal('${escapeJs(patient['SỐ HỒ SƠ'])}')">
+          ＋ Mở quyển mới
+        </button>
+      </div>
+    </section>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Quyển số</th>
+            <th>Ngày bắt đầu</th>
+            <th>Ngày kết thúc</th>
+            <th>Trạng thái</th>
+            <th>Mã lưu trữ</th>
+            <th>File</th>
+            <th>Ghi chú</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${books.length ? books.map(renderBookRow).join('') : `
+            <tr>
+              <td colspan="8">Đối tượng chưa có quyển hồ sơ.</td>
+            </tr>
+          `}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderBookRow(book) {
+  const isOpen = !book['NGÀY KẾT THÚC'];
+  const status = book['TRẠNG THÁI HIỆN TẠI'] || '';
+  const statusClass = status === window.HSBA_CONFIG.STATUS.TU_VONG
+    ? 'death'
+    : isOpen ? 'open' : 'closed';
+
+  return `
+    <tr>
+      <td><strong>${escapeHtml(book['QUYỂN SỐ'])}</strong></td>
+      <td>${escapeHtml(book['NGÀY BẮT ĐẦU'])}</td>
+      <td>${escapeHtml(book['NGÀY KẾT THÚC'] || '—')}</td>
+      <td><span class="badge ${statusClass}">${escapeHtml(status)}</span></td>
+      <td>${escapeHtml(book['MÃ SỐ LƯU TRỮ'] || '—')}</td>
+      <td>${book['FILE ĐÍNH KÈM']
+        ? `<a class="file-link" href="${escapeAttr(book['FILE ĐÍNH KÈM'])}" target="_blank" rel="noopener">Mở file</a>`
+        : '—'}
+      </td>
+      <td>${escapeHtml(book['GHI CHÚ'] || '')}</td>
+      <td>
+        ${isOpen
+          ? `<button class="btn small danger" onclick="openCloseBookModal('${escapeJs(book['SỐ HỒ SƠ'])}', ${Number(book['QUYỂN SỐ'])})">Kết thúc</button>`
+          : ''}
+      </td>
+    </tr>
+  `;
+}
+
+function openNewBookModal(soHoSo) {
+  const form = $('#bookForm');
+  form.reset();
+  form.elements.soHoSo.value = soHoSo;
+  form.elements.ngayBatDau.value = new Date().toISOString().slice(0, 10);
+  $('#bookModal').showModal();
+}
+
+function openCloseBookModal(soHoSo, quyenSo) {
+  const form = $('#closeBookForm');
+  form.reset();
+  form.elements.soHoSo.value = soHoSo;
+  form.elements.quyenSo.value = quyenSo;
+  form.elements.ngayKetThuc.value = new Date().toISOString().slice(0, 10);
+  $('#closeBookModal').showModal();
+}
+
+async function submitPatient(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const data = Object.fromEntries(new FormData(form).entries());
+
+  await withLoading(async () => {
+    const result = await window.hsbaApi.post('themDoiTuong', data);
+    showToast(result.message || 'Đã thêm đối tượng.');
+    form.reset();
+    $('#patientModal').close();
+    await loadPatients();
+  });
+}
+
+async function submitNewBook(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const data = Object.fromEntries(new FormData(form).entries());
+
+  await withLoading(async () => {
+    const result = await window.hsbaApi.post('themQuyenHoSo', data);
+    showToast(result.message || 'Đã mở quyển mới.');
+    $('#bookModal').close();
+    await loadPatients();
+    await openPatient(data.soHoSo);
+    await loadStats();
+  });
+}
+
+async function submitCloseBook(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const formData = new FormData(form);
+  const file = formData.get('file');
+  const data = Object.fromEntries(formData.entries());
+  delete data.file;
+
+  await withLoading(async () => {
+    let uploadedFileUrl = '';
+
+    if (file && file.size) {
+      const uploadResult = await window.hsbaApi.uploadFile({
+        soHoSo: data.soHoSo,
+        quyenSo: Number(data.quyenSo),
+        file
+      });
+
+      uploadedFileUrl = uploadResult.data.fileUrl;
+    }
+
+    const result = await window.hsbaApi.post('ketThucQuyenHoSo', {
+      ...data,
+      quyenSo: Number(data.quyenSo),
+      fileDinhKem: uploadedFileUrl
+    });
+
+    showToast(result.message || 'Đã kết thúc quyển hồ sơ.');
+    $('#closeBookModal').close();
+
+    await Promise.all([
+      loadPatients(),
+      loadDeaths(),
+      loadStats()
+    ]);
+
+    await openPatient(data.soHoSo);
+  });
+}
+
+async function loadDeaths() {
+  return withLoading(async () => {
+    const result = await window.hsbaApi.get('layHoSoTuVong');
+    state.deaths = result.data || [];
+    renderDeaths();
+  }, false);
+}
+
+function renderDeaths() {
+  const container = $('#deathsList');
+
+  container.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Số hồ sơ</th>
+          <th>Họ và tên</th>
+          <th>Năm sinh</th>
+          <th>Quyển số</th>
+          <th>Ngày kết thúc</th>
+          <th>Mã lưu trữ</th>
+          <th>File</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${state.deaths.length ? state.deaths.map(item => `
+          <tr>
+            <td>${escapeHtml(item['SỐ HỒ SƠ'])}</td>
+            <td><strong>${escapeHtml(item['HỌ VÀ TÊN'])}</strong></td>
+            <td>${escapeHtml(item['NĂM SINH'])}</td>
+            <td>${escapeHtml(item['QUYỂN SỐ'])}</td>
+            <td>${escapeHtml(item['NGÀY KẾT THÚC'])}</td>
+            <td>${escapeHtml(item['MÃ SỐ LƯU TRỮ'])}</td>
+            <td>${item['FILE ĐÍNH KÈM']
+              ? `<a class="file-link" href="${escapeAttr(item['FILE ĐÍNH KÈM'])}" target="_blank" rel="noopener">Mở file</a>`
+              : '—'}
+            </td>
+          </tr>
+        `).join('') : `
+          <tr><td colspan="7">Chưa có hồ sơ tử vong.</td></tr>
+        `}
+      </tbody>
+    </table>
+  `;
+}
+
+async function loadStats() {
+  return withLoading(async () => {
+    const result = await window.hsbaApi.get('layThongKe');
+    state.stats = result.data || {};
+    renderStats();
+  }, false);
+}
+
+function renderStats() {
+  const items = [
+    ['Tổng đối tượng', state.stats.tongDoiTuong],
+    ['Tổng quyển hồ sơ', state.stats.tongQuyenHoSo],
+    ['Hồ sơ đang mở', state.stats.hoSoDangMo],
+    ['Đã lưu kho', state.stats.hoSoDaLuuKho],
+    ['Hồ sơ tử vong', state.stats.hoSoTuVong],
+    ['Có file scan', state.stats.hoSoCoFile],
+    ['Chưa có file scan', state.stats.hoSoChuaFile]
+  ];
+
+  $('#statsGrid').innerHTML = items.map(([label, value]) => `
+    <article class="stat-card">
+      <span>${escapeHtml(label)}</span>
+      <strong>${Number(value) || 0}</strong>
+    </article>
+  `).join('');
+}
+
+function switchView(name) {
+  $$('.view').forEach(view => view.classList.remove('active'));
+  $$('.nav-item').forEach(item => item.classList.toggle('active', item.dataset.view === name));
+
+  const map = {
+    patients: '#patientsView',
+    deaths: '#deathsView',
+    dashboard: '#dashboardView',
+    detail: '#detailView'
+  };
+
+  $(map[name] || '#patientsView').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function openSidebar() {
+  $('#sidebar').classList.add('open');
+  $('#sidebar').setAttribute('aria-hidden', 'false');
+  $('#overlay').classList.add('show');
+}
+
+function closeSidebar() {
+  $('#sidebar').classList.remove('open');
+  $('#sidebar').setAttribute('aria-hidden', 'true');
+  $('#overlay').classList.remove('show');
+}
+
+async function withLoading(callback, showOverlay = true) {
+  if (showOverlay) $('#loading').classList.remove('hidden');
+
+  try {
+    return await callback();
+  } catch (error) {
+    console.error(error);
+    showToast(error.message || 'Có lỗi xảy ra.', true);
+    throw error;
+  } finally {
+    if (showOverlay) $('#loading').classList.add('hidden');
+  }
+}
+
+function showToast(message, isError = false) {
+  const toast = $('#toast');
+  toast.textContent = message;
+  toast.classList.toggle('error', isError);
+  toast.classList.add('show');
+
+  clearTimeout(showToast.timer);
+  showToast.timer = setTimeout(() => toast.classList.remove('show'), 3800);
+}
+
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function escapeAttr(value) {
+  return escapeHtml(value);
+}
+
+function escapeJs(value) {
+  return String(value ?? '')
+    .replaceAll('\', '\\')
+    .replaceAll("'", "\'");
+}
+
+window.openPatient = openPatient;
+window.openNewBookModal = openNewBookModal;
+window.openCloseBookModal = openCloseBookModal;
+
+</script>
 </body>
 </html>
