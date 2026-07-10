@@ -807,9 +807,7 @@
           <button id="menuBtn" class="icon-btn menu-btn" aria-label="Mở menu">☰</button>
           <div class="top-title">ỨNG DỤNG QUẢN LÝ HỒ SƠ BỆNH ÁN</div>
         </div>
-
-        <button id="syncBtn" class="icon-btn" aria-label="Đồng bộ">⟳</button>
-      </header>
+</header>
 
       <main class="main">
         <section id="patientsView" class="view active">
@@ -994,24 +992,39 @@
           }
         });
 
-        const response = await fetch(url.toString(), {
-          method: 'GET',
-          cache: 'no-store',
-          redirect: 'follow'
-        });
+        let response;
+        try {
+          response = await fetch(url.toString(), {
+            method: 'GET',
+            cache: 'no-store',
+            redirect: 'follow'
+          });
+        } catch (error) {
+          throw new Error(
+            'Không kết nối được Apps Script. Hãy kiểm tra bản triển khai mới nhất và quyền truy cập phải là “Bất kỳ ai”.'
+          );
+        }
 
         return this.parse(response);
       }
 
       async post(action, payload = {}) {
-        const response = await fetch(this.baseUrl, {
-          method: 'POST',
-          redirect: 'follow',
-          headers: {
-            'Content-Type': 'text/plain;charset=utf-8'
-          },
-          body: JSON.stringify({ action, ...payload })
-        });
+        let response;
+        try {
+          response = await fetch(this.baseUrl, {
+            method: 'POST',
+            redirect: 'follow',
+            cache: 'no-store',
+            headers: {
+              'Content-Type': 'text/plain;charset=utf-8'
+            },
+            body: JSON.stringify({ action, ...payload })
+          });
+        } catch (error) {
+          throw new Error(
+            'Không lưu được dữ liệu vì GitHub không kết nối được Apps Script. Hãy triển khai phiên bản mới và chọn quyền truy cập “Bất kỳ ai”.'
+          );
+        }
 
         return this.parse(response);
       }
@@ -1090,7 +1103,6 @@
     function bindEvents() {
       $('#menuBtn').addEventListener('click', openSidebar);
       $('#overlay').addEventListener('click', closeSidebar);
-      $('#syncBtn').addEventListener('click', refreshAll);
       $('#addPatientBtn').addEventListener('click', () => $('#patientDialog').showModal());
       $('#backBtn').addEventListener('click', () => switchView('patients'));
 
@@ -1639,7 +1651,10 @@
         return await callback();
       } catch (error) {
         console.error(error);
-        showToast(error.message || 'Có lỗi xảy ra.', true);
+        const message = error && error.message === 'Load failed'
+          ? 'Không kết nối được Apps Script. Kiểm tra quyền triển khai “Bất kỳ ai” và triển khai lại phiên bản mới.'
+          : (error.message || 'Có lỗi xảy ra.');
+        showToast(message, true);
       } finally {
         if (show) $('#loading').classList.add('hidden');
       }
