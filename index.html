@@ -1427,6 +1427,452 @@ td {
   }
 }
 
+
+/* ===== DASHBOARD THỐNG KÊ CHUYÊN NGHIỆP ===== */
+.dashboard-stats {
+  display: grid;
+  gap: 22px;
+}
+
+.dashboard-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.dashboard-kpi {
+  position: relative;
+  min-height: 158px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: start;
+  padding: 22px 23px;
+  overflow: hidden;
+  border: 1px solid #d9ebe7;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #ffffff 0%, #f9fdfc 100%);
+  box-shadow: 0 10px 28px rgba(30, 104, 101, .085);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.dashboard-kpi:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 17px 36px rgba(30, 104, 101, .13);
+}
+
+.dashboard-kpi::after {
+  content: "";
+  position: absolute;
+  right: -34px;
+  bottom: -42px;
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  background: var(--kpi-soft, rgba(54, 194, 180, .10));
+}
+
+.dashboard-kpi-icon {
+  position: relative;
+  z-index: 1;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  background: var(--kpi-bg, #e9faf7);
+  color: var(--kpi-color, var(--primary-3));
+  font-size: 23px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.75);
+}
+
+.dashboard-kpi-label {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.dashboard-kpi-value {
+  display: block;
+  margin-top: 9px;
+  color: var(--kpi-color, var(--primary-3));
+  font-size: 42px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -.03em;
+}
+
+.dashboard-kpi-note {
+  position: relative;
+  z-index: 1;
+  margin-top: 12px;
+  color: #6c8189;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.dashboard-panels {
+  display: grid;
+  grid-template-columns: minmax(300px, 1.05fr) minmax(360px, 1.35fr) minmax(300px, 1fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.dashboard-panel {
+  min-height: 286px;
+  padding: 22px;
+  border: 1px solid #d9ebe7;
+  border-radius: 20px;
+  background: rgba(255,255,255,.96);
+  box-shadow: 0 10px 28px rgba(30, 104, 101, .075);
+}
+
+.dashboard-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 21px;
+}
+
+.dashboard-panel-title {
+  margin: 0;
+  color: #29464e;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.dashboard-panel-subtitle {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.dashboard-panel-badge {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary-3);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.scan-overview {
+  display: grid;
+  grid-template-columns: 138px 1fr;
+  gap: 20px;
+  align-items: center;
+}
+
+.scan-ring {
+  --progress: 0;
+  position: relative;
+  width: 132px;
+  height: 132px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle closest-side, #ffffff 76%, transparent 77% 100%),
+    conic-gradient(
+      var(--primary) calc(var(--progress) * 1%),
+      #e5f0ee 0
+    );
+  box-shadow: inset 0 0 0 1px #dcece9;
+}
+
+.scan-ring::after {
+  content: "";
+  position: absolute;
+  inset: 15px;
+  border: 1px solid #e5f0ee;
+  border-radius: 50%;
+}
+
+.scan-ring-value {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.scan-ring-value strong {
+  display: block;
+  color: var(--primary-3);
+  font-size: 29px;
+  line-height: 1;
+}
+
+.scan-ring-value span {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.scan-details {
+  display: grid;
+  gap: 12px;
+}
+
+.scan-detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #556b75;
+  font-size: 13px;
+}
+
+.scan-detail-row strong {
+  color: #29464e;
+}
+
+.progress-track {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e7f1ef;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--primary), var(--primary-2));
+  box-shadow: 0 2px 7px rgba(18,166,166,.22);
+}
+
+.status-bars {
+  display: grid;
+  gap: 18px;
+}
+
+.status-bar-item {
+  display: grid;
+  gap: 8px;
+}
+
+.status-bar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  color: #536a74;
+  font-size: 13px;
+}
+
+.status-bar-head strong {
+  color: #29464e;
+  font-size: 14px;
+}
+
+.status-track {
+  height: 11px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #edf3f2;
+}
+
+.status-fill {
+  height: 100%;
+  min-width: 4px;
+  border-radius: inherit;
+  background: var(--bar-color, var(--primary));
+}
+
+.status-fill.open {
+  --bar-color: linear-gradient(90deg, #2eb67d, #62c99d);
+}
+
+.status-fill.archive {
+  --bar-color: linear-gradient(90deg, #12a6a6, #36c2b4);
+}
+
+.status-fill.death {
+  --bar-color: linear-gradient(90deg, #e05a47, #f18b78);
+}
+
+.management-metrics {
+  display: grid;
+  gap: 12px;
+}
+
+.management-metric {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 13px;
+  border: 1px solid #e2efec;
+  border-radius: 15px;
+  background: linear-gradient(145deg, #fbfefd, #ffffff);
+}
+
+.management-metric-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: var(--metric-bg, #e9faf7);
+  color: var(--metric-color, var(--primary-3));
+  font-size: 19px;
+}
+
+.management-metric-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.management-metric-name {
+  margin-top: 3px;
+  color: #29464e;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.management-metric-value {
+  color: var(--metric-color, var(--primary-3));
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.dashboard-alerts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.dashboard-alert {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 104px;
+  padding: 18px 20px;
+  border: 1px solid var(--alert-line, #d9ebe7);
+  border-radius: 18px;
+  background: var(--alert-bg, linear-gradient(135deg, #f5fffc, #ffffff));
+  box-shadow: 0 8px 24px rgba(30, 104, 101, .065);
+}
+
+.dashboard-alert-icon {
+  width: 51px;
+  height: 51px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: var(--alert-icon-bg, #e7faf6);
+  color: var(--alert-color, var(--primary-3));
+  font-size: 23px;
+}
+
+.dashboard-alert strong {
+  display: block;
+  color: var(--alert-color, #29464e);
+  font-size: 16px;
+}
+
+.dashboard-alert p {
+  margin: 5px 0 0;
+  color: #687d86;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.dashboard-alert.warning {
+  --alert-line: #f1dfb4;
+  --alert-bg: linear-gradient(135deg, #fff9eb, #ffffff);
+  --alert-icon-bg: #fff0ca;
+  --alert-color: #a96c00;
+}
+
+.dashboard-alert.success {
+  --alert-line: #cfe9dc;
+  --alert-bg: linear-gradient(135deg, #f0fbf5, #ffffff);
+  --alert-icon-bg: #ddf5e8;
+  --alert-color: #167d52;
+}
+
+.dashboard-footnote {
+  color: #809098;
+  font-size: 11px;
+  text-align: right;
+}
+
+@media (max-width: 1250px) {
+  .dashboard-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-panels {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-panel:last-child {
+    grid-column: 1 / -1;
+    min-height: auto;
+  }
+
+  .management-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-stats {
+    gap: 14px;
+  }
+
+  .dashboard-kpi-grid,
+  .dashboard-panels,
+  .dashboard-alerts {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .dashboard-kpi {
+    min-height: 132px;
+    padding: 18px;
+  }
+
+  .dashboard-kpi-value {
+    font-size: 36px;
+  }
+
+  .dashboard-panel {
+    min-height: auto;
+    padding: 18px;
+  }
+
+  .dashboard-panel:last-child {
+    grid-column: auto;
+  }
+
+  .scan-overview {
+    grid-template-columns: 112px 1fr;
+    gap: 14px;
+  }
+
+  .scan-ring {
+    width: 108px;
+    height: 108px;
+  }
+
+  .scan-ring-value strong {
+    font-size: 24px;
+  }
+
+  .management-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-footnote {
+    text-align: left;
+  }
+}
+
 </style>
 </head>
 
@@ -1516,7 +1962,7 @@ td {
               <p>Số liệu lấy trực tiếp từ Google Sheet</p>
             </div>
           </div>
-          <div id="statsGrid" class="stats-grid"></div>
+          <div id="statsGrid" class="dashboard-stats"></div>
         </section>
 </main>
     </section>
@@ -2116,22 +2562,320 @@ td {
     }
 
     function renderStats() {
-      const items = [
-        ['Tổng đối tượng', state.stats.tongDoiTuong],
-        ['Tổng quyển hồ sơ', state.stats.tongQuyenHoSo],
-        ['Hồ sơ đang mở', state.stats.hoSoDangMo],
-        ['Đã lưu kho', state.stats.hoSoDaLuuKho],
-        ['Hồ sơ tử vong', state.stats.hoSoTuVong],
-        ['Có file scan', state.stats.hoSoCoFile],
-        ['Chưa có file scan', state.stats.hoSoChuaFile]
-      ];
+      const stats = state.stats || {};
 
-      $('#statsGrid').innerHTML = items.map(([label, value]) => `
-        <article class="stat-card">
-          <span>${escapeHtml(label)}</span>
-          <strong>${Number(value) || 0}</strong>
+      const totalPatients = Number(stats.tongDoiTuong) || 0;
+      const totalBooks = Number(stats.tongQuyenHoSo) || 0;
+      const openBooks = Number(stats.hoSoDangMo) || 0;
+      const archivedBooks = Number(stats.hoSoDaLuuKho) || 0;
+      const deathBooks = Number(stats.hoSoTuVong) || 0;
+      const scannedBooks = Number(stats.hoSoCoFile) || 0;
+      const unscannedBooks = Number(stats.hoSoChuaFile) || 0;
+
+      const scanRate = totalBooks
+        ? Math.round((scannedBooks / totalBooks) * 100)
+        : 0;
+
+      const archiveRate = totalBooks
+        ? Math.round((archivedBooks / totalBooks) * 100)
+        : 0;
+
+      const openRate = totalBooks
+        ? Math.round((openBooks / totalBooks) * 100)
+        : 0;
+
+      const deathRate = totalBooks
+        ? Math.round((deathBooks / totalBooks) * 100)
+        : 0;
+
+      const averageBooks = totalPatients
+        ? (totalBooks / totalPatients).toFixed(1)
+        : '0';
+
+      const closedBooks = archivedBooks + deathBooks;
+      const closedRate = totalBooks
+        ? Math.round((closedBooks / totalBooks) * 100)
+        : 0;
+
+      $('#statsGrid').innerHTML = `
+        <div class="dashboard-kpi-grid">
+          ${dashboardKpiHtml({
+            icon: '👥',
+            label: 'Tổng đối tượng',
+            value: totalPatients,
+            note: 'Số đối tượng đang được quản lý trên hệ thống',
+            color: '#0d7f86',
+            bg: '#e5f8f4',
+            soft: 'rgba(54,194,180,.13)'
+          })}
+
+          ${dashboardKpiHtml({
+            icon: '📚',
+            label: 'Tổng quyển hồ sơ',
+            value: totalBooks,
+            note: `Bình quân ${averageBooks} quyển trên mỗi đối tượng`,
+            color: '#5b63b7',
+            bg: '#eeeffd',
+            soft: 'rgba(91,99,183,.11)'
+          })}
+
+          ${dashboardKpiHtml({
+            icon: '📖',
+            label: 'Hồ sơ đang mở',
+            value: openBooks,
+            note: `${openRate}% tổng số quyển đang được sử dụng`,
+            color: '#1c9664',
+            bg: '#e6f7ee',
+            soft: 'rgba(46,182,125,.12)'
+          })}
+
+          ${dashboardKpiHtml({
+            icon: '🗄️',
+            label: 'Đã lưu kho',
+            value: archivedBooks,
+            note: `${archiveRate}% tổng số quyển đã đóng và lưu trữ`,
+            color: '#c47b13',
+            bg: '#fff3db',
+            soft: 'rgba(249,176,65,.13)'
+          })}
+        </div>
+
+        <div class="dashboard-panels">
+          <article class="dashboard-panel">
+            <div class="dashboard-panel-head">
+              <div>
+                <h3 class="dashboard-panel-title">Tiến độ số hóa hồ sơ</h3>
+                <p class="dashboard-panel-subtitle">
+                  Tỷ lệ quyển hồ sơ đã có file scan điện tử
+                </p>
+              </div>
+              <span class="dashboard-panel-badge">${scanRate}%</span>
+            </div>
+
+            <div class="scan-overview">
+              <div class="scan-ring" style="--progress:${scanRate}">
+                <div class="scan-ring-value">
+                  <strong>${scanRate}%</strong>
+                  <span>Đã số hóa</span>
+                </div>
+              </div>
+
+              <div class="scan-details">
+                <div class="scan-detail-row">
+                  <span>Có file scan</span>
+                  <strong>${scannedBooks} quyển</strong>
+                </div>
+
+                <div class="progress-track">
+                  <div class="progress-fill" style="width:${scanRate}%"></div>
+                </div>
+
+                <div class="scan-detail-row">
+                  <span>Chưa có file scan</span>
+                  <strong>${unscannedBooks} quyển</strong>
+                </div>
+
+                <div class="scan-detail-row">
+                  <span>Tổng cần quản lý</span>
+                  <strong>${totalBooks} quyển</strong>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="dashboard-panel">
+            <div class="dashboard-panel-head">
+              <div>
+                <h3 class="dashboard-panel-title">Cơ cấu trạng thái hồ sơ</h3>
+                <p class="dashboard-panel-subtitle">
+                  Phân bố quyển đang sử dụng, đã lưu kho và hồ sơ tử vong
+                </p>
+              </div>
+              <span class="dashboard-panel-badge">${totalBooks} quyển</span>
+            </div>
+
+            <div class="status-bars">
+              ${statusBarHtml(
+                'Hồ sơ đang mở',
+                openBooks,
+                openRate,
+                'open'
+              )}
+
+              ${statusBarHtml(
+                'Đã lưu kho',
+                archivedBooks,
+                archiveRate,
+                'archive'
+              )}
+
+              ${statusBarHtml(
+                'Hồ sơ tử vong',
+                deathBooks,
+                deathRate,
+                'death'
+              )}
+            </div>
+          </article>
+
+          <article class="dashboard-panel">
+            <div class="dashboard-panel-head">
+              <div>
+                <h3 class="dashboard-panel-title">Chỉ số quản lý</h3>
+                <p class="dashboard-panel-subtitle">
+                  Các chỉ số phục vụ kiểm tra và theo dõi hồ sơ
+                </p>
+              </div>
+            </div>
+
+            <div class="management-metrics">
+              ${managementMetricHtml(
+                '📘',
+                'Bình quân quyển',
+                `${averageBooks}`,
+                'Mỗi đối tượng',
+                '#5b63b7',
+                '#eeeffd'
+              )}
+
+              ${managementMetricHtml(
+                '✅',
+                'Tỷ lệ đã đóng',
+                `${closedRate}%`,
+                `${closedBooks}/${totalBooks} quyển`,
+                '#1c9664',
+                '#e6f7ee'
+              )}
+
+              ${managementMetricHtml(
+                '📎',
+                'File còn thiếu',
+                `${unscannedBooks}`,
+                'Quyển cần bổ sung',
+                '#d36a3d',
+                '#fff0e8'
+              )}
+            </div>
+          </article>
+        </div>
+
+        <div class="dashboard-alerts">
+          <article class="dashboard-alert ${unscannedBooks ? 'warning' : 'success'}">
+            <div class="dashboard-alert-icon">
+              ${unscannedBooks ? '⚠️' : '✓'}
+            </div>
+            <div>
+              <strong>
+                ${unscannedBooks
+                  ? `${unscannedBooks} quyển chưa có file scan`
+                  : 'Đã hoàn tất file scan'}
+              </strong>
+              <p>
+                ${unscannedBooks
+                  ? 'Cần tiếp tục bổ sung file điện tử để hoàn thiện dữ liệu số hóa hồ sơ.'
+                  : 'Tất cả quyển hồ sơ hiện có đều đã được đính kèm file điện tử.'}
+              </p>
+            </div>
+          </article>
+
+          <article class="dashboard-alert ${openBooks ? '' : 'success'}">
+            <div class="dashboard-alert-icon">
+              ${openBooks ? '📖' : '✓'}
+            </div>
+            <div>
+              <strong>
+                ${openBooks
+                  ? `${openBooks} quyển đang được sử dụng`
+                  : 'Không có quyển đang mở'}
+              </strong>
+              <p>
+                ${openBooks
+                  ? 'Các quyển này phải có ngày kết thúc trước khi mở quyển tiếp theo.'
+                  : 'Toàn bộ quyển hiện tại đã được đóng và xác định vị trí lưu trữ.'}
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <div class="dashboard-footnote">
+          Số liệu cập nhật trực tiếp từ Google Sheet tại thời điểm mở ứng dụng.
+        </div>
+      `;
+    }
+
+    function dashboardKpiHtml({
+      icon,
+      label,
+      value,
+      note,
+      color,
+      bg,
+      soft
+    }) {
+      return `
+        <article
+          class="dashboard-kpi"
+          style="
+            --kpi-color:${color};
+            --kpi-bg:${bg};
+            --kpi-soft:${soft};
+          ">
+          <div>
+            <span class="dashboard-kpi-label">${escapeHtml(label)}</span>
+            <strong class="dashboard-kpi-value">${Number(value) || 0}</strong>
+            <p class="dashboard-kpi-note">${escapeHtml(note)}</p>
+          </div>
+          <div class="dashboard-kpi-icon">${icon}</div>
         </article>
-      `).join('');
+      `;
+    }
+
+    function statusBarHtml(label, value, percent, className) {
+      return `
+        <div class="status-bar-item">
+          <div class="status-bar-head">
+            <span>${escapeHtml(label)}</span>
+            <strong>${Number(value) || 0} quyển · ${Number(percent) || 0}%</strong>
+          </div>
+          <div class="status-track">
+            <div
+              class="status-fill ${className}"
+              style="width:${Math.max(0, Math.min(100, Number(percent) || 0))}%">
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function managementMetricHtml(
+      icon,
+      name,
+      value,
+      label,
+      color,
+      background
+    ) {
+      return `
+        <div class="management-metric">
+          <div
+            class="management-metric-icon"
+            style="
+              --metric-color:${color};
+              --metric-bg:${background};
+            ">
+            ${icon}
+          </div>
+          <div>
+            <div class="management-metric-label">${escapeHtml(label)}</div>
+            <div class="management-metric-name">${escapeHtml(name)}</div>
+          </div>
+          <div
+            class="management-metric-value"
+            style="--metric-color:${color}">
+            ${escapeHtml(value)}
+          </div>
+        </div>
+      `;
     }
 
 
