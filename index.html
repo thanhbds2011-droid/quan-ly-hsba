@@ -1599,6 +1599,16 @@ td {
         </select>
       </label>
 
+      <label>Mã/Vị trí lưu trữ
+        <input
+          name="maLuuTru"
+          type="text"
+          required
+          maxlength="150"
+          placeholder="Ví dụ: Thùng số 5; Kệ A - Ngăn 2; Kho 1 - Thùng 07">
+        <small>Bắt buộc nhập nơi lưu hồ sơ giấy sau khi đóng quyển.</small>
+      </label>
+
       <label>File scan
         <input name="file" type="file" accept=".pdf,image/jpeg,image/png,image/webp">
         <small>Hồ sơ tử vong bắt buộc phải có file scan.</small>
@@ -1996,7 +2006,7 @@ td {
                 <th>Ngày bắt đầu</th>
                 <th>Ngày kết thúc</th>
                 <th>Trạng thái</th>
-                <th>Mã lưu trữ</th>
+                <th>Mã/Vị trí lưu trữ</th>
                 <th>File</th>
                 <th>Ghi chú</th>
                 <th>Thao tác</th>
@@ -2077,7 +2087,7 @@ td {
                 <th>Năm sinh</th>
                 <th>Quyển số</th>
                 <th>Ngày kết thúc</th>
-                <th>Mã lưu trữ</th>
+                <th>Mã/Vị trí lưu trữ</th>
                 <th>File</th>
               </tr>
             </thead>
@@ -2243,6 +2253,15 @@ td {
       const file = formData.get('file');
       const data = Object.fromEntries(formData.entries());
       delete data.file;
+
+      data.maLuuTru = String(data.maLuuTru || '').trim();
+      if (!data.maLuuTru) {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Kết thúc quyển';
+        showToast('Vui lòng nhập mã hoặc vị trí lưu trữ hồ sơ.', true);
+        form.elements.maLuuTru.focus();
+        return;
+      }
 
       await withLoading(async () => {
         let fileUrl = '';
