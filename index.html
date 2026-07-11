@@ -42,7 +42,7 @@
     * { box-sizing: border-box; }
 
     html {
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: Inter, 'Segoe UI', Roboto, Arial, Helvetica, sans-serif;
       background: var(--bg);
       color: var(--text);
     }
@@ -1103,6 +1103,205 @@
       opacity: 0;
       pointer-events: none;
     }
+
+/* ===== BẢN LAPTOP CHỮ LỚN, DỄ ĐỌC ===== */
+body {
+  font-size: 16px;
+  letter-spacing: .005em;
+}
+
+.brand strong { font-size: 18px; letter-spacing: .025em; }
+.brand small { font-size: 13px; }
+
+.nav-btn {
+  min-height: 54px;
+  padding: 14px 16px;
+  font-size: 16px;
+  border-radius: 14px;
+}
+
+.rule {
+  font-size: 14px;
+  line-height: 1.65;
+  padding: 17px;
+}
+
+.rule strong { font-size: 15px; }
+
+.top-title {
+  font-size: 18px;
+  letter-spacing: .025em;
+}
+
+.top-subtitle { font-size: 13px; }
+
+.page-head h1 {
+  font-size: clamp(38px, 3vw, 50px);
+  line-height: 1.08;
+}
+
+.page-head p {
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.btn {
+  min-height: 46px;
+  padding: 12px 18px;
+  font-size: 15px;
+  border-radius: 12px;
+}
+
+.search-box input { font-size: 16px; }
+
+.chip {
+  font-size: 14px;
+  padding: 9px 13px;
+}
+
+.patient-card {
+  min-height: 178px;
+  padding: 24px 24px 24px 28px;
+  grid-template-columns: 62px minmax(0, 1fr) auto;
+  gap: 18px;
+  border-radius: 20px;
+}
+
+.avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  font-size: 20px;
+}
+
+.patient-card h3 {
+  font-size: 21px;
+  line-height: 1.25;
+  margin-bottom: 9px;
+}
+
+.patient-line {
+  gap: 16px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.badges {
+  margin-top: 13px;
+  gap: 8px;
+}
+
+.badge {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.patient-card .btn {
+  min-width: 132px;
+  font-size: 14px;
+  padding: 11px 14px;
+}
+
+.detail-card {
+  padding: 28px 30px;
+  border-radius: 22px;
+}
+
+.detail-card h2 { font-size: 31px; }
+.detail-card p { font-size: 15px; }
+
+th {
+  font-size: 12px;
+  padding: 16px 17px;
+}
+
+td {
+  font-size: 15px;
+  padding: 16px 17px;
+}
+
+.stat-card span { font-size: 15px; }
+.stat-card strong { font-size: 40px; }
+
+.sidebar-footer span { font-size: 13px; }
+.sidebar-footer small { font-size: 12px; }
+
+@media (min-width: 901px) {
+  :root { --sidebar-width: 320px; }
+
+  .sidebar {
+    width: var(--sidebar-width);
+    padding: 26px 18px 20px;
+  }
+
+  .brand {
+    gap: 14px;
+    padding: 10px 10px 26px;
+  }
+
+  .brand-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    font-size: 34px;
+  }
+
+  .topbar {
+    height: 88px;
+    padding: 0 44px;
+  }
+
+  .main {
+    padding: 44px clamp(44px, 4.5vw, 84px) 90px;
+  }
+
+  .page-head { margin-bottom: 24px; }
+
+  .search-panel {
+    min-height: 62px;
+    padding: 9px 12px;
+    border-radius: 18px;
+  }
+
+  .cards {
+    grid-template-columns: repeat(2, minmax(420px, 1fr));
+    gap: 22px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(4, minmax(210px, 1fr));
+    gap: 20px;
+  }
+
+  .stat-card {
+    min-height: 165px;
+    padding: 24px;
+  }
+}
+
+@media (min-width: 1550px) {
+  .cards {
+    grid-template-columns: repeat(3, minmax(360px, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  body { font-size: 15px; }
+  .top-title { font-size: 15px; }
+  .brand strong { font-size: 17px; }
+  .nav-btn { font-size: 16px; }
+}
+
+@media (max-width: 720px) {
+  .page-head h1 {
+    font-size: clamp(30px, 9vw, 40px);
+  }
+
+  .page-head p { font-size: 16px; }
+  .patient-card h3 { font-size: 18px; }
+  .patient-line { font-size: 14px; }
+}
+
 </style>
 </head>
 
