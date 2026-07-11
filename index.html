@@ -1281,7 +1281,7 @@ td {
 
 @media (min-width: 1550px) {
   .cards {
-    grid-template-columns: repeat(3, minmax(360px, 1fr));
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1300,6 +1300,131 @@ td {
   .page-head p { font-size: 16px; }
   .patient-card h3 { font-size: 18px; }
   .patient-line { font-size: 14px; }
+}
+
+
+/* ===== THẺ ĐỐI TƯỢNG DẠNG NGANG ===== */
+.cards {
+  display: grid;
+  grid-template-columns: 1fr !important;
+  gap: 16px;
+}
+
+.patient-card {
+  min-height: 128px;
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px 20px 28px;
+}
+
+.patient-card h3 {
+  margin: 0 0 10px;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.patient-info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, auto));
+  gap: 10px 28px;
+  align-items: center;
+}
+
+.patient-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.patient-info-label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .045em;
+}
+
+.patient-info-value {
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.patient-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.patient-action {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.patient-action .btn {
+  min-width: 138px;
+  min-height: 46px;
+  white-space: nowrap;
+}
+
+@media (min-width: 901px) {
+  .patient-card {
+    min-height: 136px;
+  }
+}
+
+@media (max-width: 900px) {
+  .patient-card {
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .patient-action {
+    grid-column: 1 / -1;
+  }
+
+  .patient-action .btn {
+    width: 100%;
+  }
+
+  .patient-info-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 16px;
+  }
+}
+
+@media (max-width: 520px) {
+  .patient-card {
+    grid-template-columns: 48px minmax(0, 1fr);
+    padding: 17px;
+  }
+
+  .patient-info-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .patient-info-item {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .patient-info-label::after {
+    content: ":";
+  }
+
+  .patient-info-label {
+    min-width: 82px;
+    font-size: 12px;
+  }
+
+  .patient-info-value {
+    font-size: 14px;
+  }
 }
 
 </style>
@@ -1730,7 +1855,7 @@ td {
       $('#summary').innerHTML = `
         <span class="chip">👥 ${state.patients.length} đối tượng</span>
         <span class="chip">📖 ${openCount} hồ sơ đang mở</span>
-        <span class="chip">⚫ ${deathCount} hồ sơ tử vong</span>
+        <span class="chip">🗂️ ${deathCount} hồ sơ tử vong</span>
       `;
 
       if (!state.patients.length) {
@@ -1754,28 +1879,47 @@ td {
             <div>
               <h3>${escapeHtml(patient['HỌ VÀ TÊN'])}</h3>
 
-              <div class="patient-line">
-                <span><strong>Số hồ sơ:</strong> ${escapeHtml(patient['SỐ HỒ SƠ'])}</span>
-                <span><strong>Năm sinh:</strong> ${escapeHtml(patient['NĂM SINH'])}</span>
+              <div class="patient-info-grid">
+                <div class="patient-info-item">
+                  <span class="patient-info-label">Năm sinh</span>
+                  <span class="patient-info-value">${escapeHtml(patient['NĂM SINH'])}</span>
+                </div>
+
+                <div class="patient-info-item">
+                  <span class="patient-info-label">Số hồ sơ</span>
+                  <span class="patient-info-value">${escapeHtml(patient['SỐ HỒ SƠ'])}</span>
+                </div>
+
+                <div class="patient-info-item">
+                  <span class="patient-info-label">Số quyển</span>
+                  <span class="patient-info-value">${Number(patient['TỔNG SỐ QUYỂN']) || 0}</span>
+                </div>
+
+                <div class="patient-info-item">
+                  <span class="patient-info-label">Quyển đang dùng</span>
+                  <span class="patient-info-value">
+                    ${patient['QUYỂN ĐANG MỞ']
+                      ? `Quyển ${escapeHtml(patient['QUYỂN ĐANG MỞ'])}`
+                      : '—'}
+                  </span>
+                </div>
               </div>
 
-              <div class="badges">
-                <span class="badge">📚 ${Number(patient['TỔNG SỐ QUYỂN']) || 0} quyển</span>
-                ${patient['QUYỂN ĐANG MỞ']
-                  ? `<span class="badge open">Đang dùng quyển ${escapeHtml(patient['QUYỂN ĐANG MỞ'])}</span>`
-                  : ''}
+              <div class="patient-status-row">
                 ${latest
                   ? `<span class="badge ${statusClass}">${escapeHtml(latest)}</span>`
-                  : ''}
+                  : `<span class="badge closed">Chưa có quyển hồ sơ</span>`}
               </div>
             </div>
 
-            <button
-              class="btn small"
-              data-action="open-patient"
-              data-so-ho-so="${escapeAttr(patient['SỐ HỒ SƠ'])}">
-              Xem chi tiết →
-            </button>
+            <div class="patient-action">
+              <button
+                class="btn small"
+                data-action="open-patient"
+                data-so-ho-so="${escapeAttr(patient['SỐ HỒ SƠ'])}">
+                Xem chi tiết →
+              </button>
+            </div>
           </article>
         `;
       }).join('');
