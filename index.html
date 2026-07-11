@@ -1873,6 +1873,283 @@ td {
   }
 }
 
+
+/* ===== BỘ TÌM KIẾM VÀ LỌC TRẠNG THÁI HỒ SƠ ===== */
+.search-filter-panel {
+  display: grid;
+  gap: 0;
+  margin-top: 30px;
+  margin-bottom: 18px;
+  overflow: hidden;
+  border: 1px solid #d8eae6;
+  border-radius: 20px;
+  background: rgba(255,255,255,.96);
+  box-shadow: 0 11px 30px rgba(30,104,101,.085);
+}
+
+.search-filter-panel .search-panel {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.search-main-row {
+  min-height: 70px;
+  padding: 10px 12px;
+}
+
+.search-leading-icon {
+  width: 29px;
+  height: 29px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 9px;
+  background: var(--primary-soft);
+  color: var(--primary-3);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.search-submit-btn {
+  min-width: 118px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 8px 18px rgba(18,166,166,.17);
+}
+
+.filter-toolbar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  padding: 15px 17px 17px;
+  border-top: 1px solid #e2efec;
+  background:
+    linear-gradient(135deg, rgba(239,251,248,.75), rgba(255,255,255,.96));
+}
+
+.filter-toolbar-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 196px;
+}
+
+.filter-toolbar-icon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #e5f8f4, #f5fffd);
+  color: var(--primary-3);
+  font-size: 18px;
+  box-shadow: inset 0 0 0 1px #d4eeea;
+}
+
+.filter-toolbar-title strong,
+.filter-toolbar-title small {
+  display: block;
+}
+
+.filter-toolbar-title strong {
+  color: #29474f;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.filter-toolbar-title small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.status-filter-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  min-width: 0;
+}
+
+.status-filter-btn {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 11px;
+  border: 1px solid #d9e8e5;
+  border-radius: 13px;
+  background: rgba(255,255,255,.92);
+  color: #536b74;
+  font-size: 13px;
+  font-weight: 700;
+  transition:
+    transform .16s ease,
+    border-color .16s ease,
+    background .16s ease,
+    color .16s ease,
+    box-shadow .16s ease;
+}
+
+.status-filter-btn:hover {
+  transform: translateY(-1px);
+  border-color: #b9ddd7;
+  background: #f7fdfb;
+  color: var(--primary-3);
+}
+
+.status-filter-btn.active {
+  border-color: #87d2c7;
+  background: linear-gradient(135deg, #e5faf6, #f6fffd);
+  color: var(--primary-3);
+  box-shadow: 0 7px 17px rgba(18,166,166,.11);
+}
+
+.status-filter-icon {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.status-filter-icon.all {
+  background: #e8f8f5;
+  color: var(--primary-3);
+}
+
+.status-filter-icon.open {
+  background: #e6f7ee;
+  color: #19815a;
+}
+
+.status-filter-icon.archive {
+  background: #fff2d7;
+  color: #ae7111;
+}
+
+.status-filter-icon.death {
+  background: #fff0ed;
+  color: #d65140;
+}
+
+.status-filter-icon.empty {
+  background: #eef2f6;
+  color: #677b8b;
+}
+
+.status-filter-btn b {
+  min-width: 24px;
+  height: 24px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #edf3f2;
+  color: #536a72;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.status-filter-btn.active b {
+  background: var(--primary);
+  color: white;
+}
+
+.clear-filters-btn {
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid #dbe7e4;
+  border-radius: 12px;
+  background: white;
+  color: #6d7f87;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: .16s ease;
+}
+
+.clear-filters-btn:hover {
+  border-color: #edb8aa;
+  background: #fff6f3;
+  color: var(--danger);
+}
+
+.filter-result-text {
+  display: none;
+  padding: 10px 17px 12px;
+  border-top: 1px dashed #dce9e6;
+  color: #637780;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.filter-result-text.visible {
+  display: block;
+}
+
+.filter-result-text strong {
+  color: var(--primary-3);
+}
+
+@media (max-width: 1180px) {
+  .filter-toolbar {
+    grid-template-columns: 1fr auto;
+  }
+
+  .filter-toolbar-title {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .search-filter-panel {
+    margin-top: 24px;
+    border-radius: 18px;
+  }
+
+  .search-main-row {
+    min-height: 0;
+    padding: 9px;
+  }
+
+  .filter-toolbar {
+    grid-template-columns: 1fr;
+    gap: 13px;
+    padding: 14px;
+  }
+
+  .filter-toolbar-title {
+    grid-column: auto;
+    min-width: 0;
+  }
+
+  .status-filter-list {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin: 0 -2px;
+    padding: 2px 2px 7px;
+    scrollbar-width: thin;
+    scroll-snap-type: x proximity;
+  }
+
+  .status-filter-btn {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  .clear-filters-btn {
+    width: 100%;
+  }
+}
+
 </style>
 </head>
 
@@ -1927,13 +2204,89 @@ td {
             <button id="addPatientBtn" class="btn primary">＋ Thêm đối tượng</button>
           </div>
 
-          <div class="search-panel">
-            <label class="search-box">
-              <span>⌕</span>
-              <input id="searchInput" type="search" placeholder="Nhập số hồ sơ, họ tên, năm sinh...">
-            </label>
-            <button id="searchBtn" class="btn">Tìm kiếm</button>
-          </div>
+          <section class="search-filter-panel">
+            <div class="search-panel search-main-row">
+              <label class="search-box">
+                <span class="search-leading-icon">⌕</span>
+                <input
+                  id="searchInput"
+                  type="search"
+                  autocomplete="off"
+                  placeholder="Nhập số hồ sơ, họ tên hoặc năm sinh...">
+              </label>
+
+              <button id="searchBtn" class="btn search-submit-btn">
+                Tìm kiếm
+              </button>
+            </div>
+
+            <div class="filter-toolbar">
+              <div class="filter-toolbar-title">
+                <span class="filter-toolbar-icon">⚙</span>
+                <div>
+                  <strong>Lọc theo trạng thái hồ sơ</strong>
+                  <small>Chọn nhanh nhóm hồ sơ cần tra cứu</small>
+                </div>
+              </div>
+
+              <div class="status-filter-list" role="group" aria-label="Bộ lọc trạng thái hồ sơ">
+                <button
+                  type="button"
+                  class="status-filter-btn active"
+                  data-status-filter="all">
+                  <span class="status-filter-icon all">◉</span>
+                  <span>Tất cả</span>
+                  <b data-filter-count="all">0</b>
+                </button>
+
+                <button
+                  type="button"
+                  class="status-filter-btn"
+                  data-status-filter="open">
+                  <span class="status-filter-icon open">📖</span>
+                  <span>Đang sử dụng</span>
+                  <b data-filter-count="open">0</b>
+                </button>
+
+                <button
+                  type="button"
+                  class="status-filter-btn"
+                  data-status-filter="archive">
+                  <span class="status-filter-icon archive">🗄️</span>
+                  <span>Đã lưu kho</span>
+                  <b data-filter-count="archive">0</b>
+                </button>
+
+                <button
+                  type="button"
+                  class="status-filter-btn"
+                  data-status-filter="death">
+                  <span class="status-filter-icon death">●</span>
+                  <span>Tử vong</span>
+                  <b data-filter-count="death">0</b>
+                </button>
+
+                <button
+                  type="button"
+                  class="status-filter-btn"
+                  data-status-filter="empty">
+                  <span class="status-filter-icon empty">○</span>
+                  <span>Chưa có quyển</span>
+                  <b data-filter-count="empty">0</b>
+                </button>
+              </div>
+
+              <button
+                id="clearFiltersBtn"
+                type="button"
+                class="clear-filters-btn"
+                title="Xóa từ khóa và bộ lọc">
+                ↺ Đặt lại
+              </button>
+            </div>
+
+            <div id="filterResultText" class="filter-result-text"></div>
+          </section>
 
           <div id="summary" class="summary"></div>
           <div id="patientsList" class="cards"></div>
@@ -2218,7 +2571,8 @@ td {
       stats: {},
       currentPatient: null,
       currentBooks: [],
-      allPatients: []
+      allPatients: [],
+      activeStatusFilter: 'all'
     };
 
     const $ = (selector, root = document) => root.querySelector(selector);
@@ -2258,8 +2612,24 @@ td {
       $('#backBtn').addEventListener('click', () => switchView('patients'));
 
       $('#searchBtn').addEventListener('click', searchPatients);
+
+      $('#searchInput').addEventListener('input', debounce(searchPatients, 160));
       $('#searchInput').addEventListener('keydown', event => {
         if (event.key === 'Enter') searchPatients();
+      });
+
+      $$('[data-status-filter]').forEach(button => {
+        button.addEventListener('click', () => {
+          state.activeStatusFilter = button.dataset.statusFilter || 'all';
+          searchPatients();
+        });
+      });
+
+      $('#clearFiltersBtn').addEventListener('click', () => {
+        $('#searchInput').value = '';
+        state.activeStatusFilter = 'all';
+        searchPatients();
+        $('#searchInput').focus();
       });
 
       $$('.nav-btn').forEach(button => {
@@ -2289,17 +2659,97 @@ td {
 
     function searchPatients() {
       const keyword = normalize($('#searchInput').value);
+      const statusFilter = state.activeStatusFilter || 'all';
 
-      state.patients = keyword
-        ? state.allPatients.filter(patient => {
-            const text = normalize(
-              `${patient['SỐ HỒ SƠ']} ${patient['HỌ VÀ TÊN']} ${patient['NĂM SINH']}`
-            );
-            return text.includes(keyword);
-          })
-        : [...state.allPatients];
+      state.patients = state.allPatients.filter(patient => {
+        const searchableText = normalize(
+          `${patient['SỐ HỒ SƠ']} ${patient['HỌ VÀ TÊN']} ${patient['NĂM SINH']}`
+        );
+
+        const matchesKeyword = !keyword || searchableText.includes(keyword);
+        const matchesStatus =
+          statusFilter === 'all' ||
+          getPatientStatusGroup(patient) === statusFilter;
+
+        return matchesKeyword && matchesStatus;
+      });
 
       renderPatients();
+      renderFilterControls();
+    }
+
+    function getPatientStatusGroup(patient) {
+      const latestStatus = patient['TRẠNG THÁI MỚI NHẤT'] || '';
+      const totalBooks = Number(patient['TỔNG SỐ QUYỂN']) || 0;
+
+      if (latestStatus === CONFIG.STATUS.TU_VONG) return 'death';
+      if (patient['QUYỂN ĐANG MỞ']) return 'open';
+      if (totalBooks > 0) return 'archive';
+
+      return 'empty';
+    }
+
+    function renderFilterControls() {
+      const counts = {
+        all: state.allPatients.length,
+        open: 0,
+        archive: 0,
+        death: 0,
+        empty: 0
+      };
+
+      state.allPatients.forEach(patient => {
+        const group = getPatientStatusGroup(patient);
+        counts[group] = (counts[group] || 0) + 1;
+      });
+
+      $$('[data-filter-count]').forEach(element => {
+        const key = element.dataset.filterCount;
+        element.textContent = counts[key] || 0;
+      });
+
+      $$('[data-status-filter]').forEach(button => {
+        button.classList.toggle(
+          'active',
+          button.dataset.statusFilter === state.activeStatusFilter
+        );
+      });
+
+      const keyword = String($('#searchInput').value || '').trim();
+      const filterNames = {
+        all: 'Tất cả hồ sơ',
+        open: 'Hồ sơ đang sử dụng',
+        archive: 'Hồ sơ đã lưu kho',
+        death: 'Hồ sơ tử vong',
+        empty: 'Đối tượng chưa có quyển'
+      };
+
+      const resultText = $('#filterResultText');
+      const hasFilter = keyword || state.activeStatusFilter !== 'all';
+
+      if (!hasFilter) {
+        resultText.classList.remove('visible');
+        resultText.innerHTML = '';
+        return;
+      }
+
+      resultText.innerHTML = `
+        Đang hiển thị <strong>${state.patients.length}</strong> trong tổng số
+        <strong>${state.allPatients.length}</strong> đối tượng
+        · Nhóm: <strong>${escapeHtml(filterNames[state.activeStatusFilter] || 'Tất cả hồ sơ')}</strong>
+        ${keyword ? `· Từ khóa: <strong>${escapeHtml(keyword)}</strong>` : ''}
+      `;
+
+      resultText.classList.add('visible');
+    }
+
+    function debounce(callback, wait = 160) {
+      let timer;
+
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => callback(...args), wait);
+      };
     }
 
     function renderPatients() {
@@ -2383,6 +2833,8 @@ td {
       $$('[data-action="open-patient"]').forEach(button => {
         button.addEventListener('click', () => openPatient(button.dataset.soHoSo));
       });
+
+      renderFilterControls();
     }
 
     async function openPatient(soHoSo, showLoader = false) {
