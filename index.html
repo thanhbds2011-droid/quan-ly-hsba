@@ -655,24 +655,31 @@
 
     .loading {
       position: fixed;
-      inset: 0;
-      z-index: 90;
-      display: grid;
-      place-content: center;
-      gap: 12px;
-      background: rgba(255,255,255,.72);
-      text-align: center;
-      backdrop-filter: blur(3px);
+      right: 16px;
+      bottom: max(18px, env(safe-area-inset-bottom));
+      z-index: 110;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 156px;
+      padding: 12px 15px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 15px;
+      background: rgba(23, 50, 71, .94);
+      color: white;
+      text-align: left;
+      box-shadow: 0 14px 34px rgba(17, 38, 55, .22);
+      backdrop-filter: blur(12px);
     }
 
     .spinner {
-      width: 42px;
-      height: 42px;
-      margin: auto;
-      border: 4px solid #d9e6ef;
-      border-top-color: var(--primary);
+      width: 22px;
+      height: 22px;
+      flex: 0 0 auto;
+      border: 3px solid rgba(255,255,255,.28);
+      border-top-color: #fff;
       border-radius: 50%;
-      animation: spin .8s linear infinite;
+      animation: spin .75s linear infinite;
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -981,6 +988,32 @@
         this.baseUrl = baseUrl;
       }
 
+      async fetchWithTimeout(url, options = {}, timeoutMs = 18000) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+        try {
+          return await fetch(url, {
+            ...options,
+            signal: controller.signal
+          });
+        } catch (error) {
+          if (error.name === 'AbortError') {
+            throw new Error('Hệ thống phản hồi chậm. Vui lòng thử lại.');
+          }
+
+          if (error.message === 'Load failed' || error instanceof TypeError) {
+            throw new Error(
+              'Không kết nối được Apps Script. Kiểm tra quyền Web App phải là “Bất kỳ ai”.'
+            );
+          }
+
+          throw error;
+        } finally {
+          clearTimeout(timer);
+        }
+      }
+
       async get(action, params = {}) {
         const url = new URL(this.baseUrl);
         url.searchParams.set('action', action);
@@ -992,39 +1025,25 @@
           }
         });
 
-        let response;
-        try {
-          response = await fetch(url.toString(), {
-            method: 'GET',
-            cache: 'no-store',
-            redirect: 'follow'
-          });
-        } catch (error) {
-          throw new Error(
-            'Không kết nối được Apps Script. Hãy kiểm tra bản triển khai mới nhất và quyền truy cập phải là “Bất kỳ ai”.'
-          );
-        }
+        const response = await this.fetchWithTimeout(url.toString(), {
+          method: 'GET',
+          cache: 'no-store',
+          redirect: 'follow'
+        });
 
         return this.parse(response);
       }
 
       async post(action, payload = {}) {
-        let response;
-        try {
-          response = await fetch(this.baseUrl, {
-            method: 'POST',
-            redirect: 'follow',
-            cache: 'no-store',
-            headers: {
-              'Content-Type': 'text/plain;charset=utf-8'
-            },
-            body: JSON.stringify({ action, ...payload })
-          });
-        } catch (error) {
-          throw new Error(
-            'Không lưu được dữ liệu vì GitHub không kết nối được Apps Script. Hãy triển khai phiên bản mới và chọn quyền truy cập “Bất kỳ ai”.'
-          );
-        }
+        const response = await this.fetchWithTimeout(this.baseUrl, {
+          method: 'POST',
+          cache: 'no-store',
+          redirect: 'follow',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify({ action, ...payload })
+        }, 30000);
 
         return this.parse(response);
       }
@@ -1076,7 +1095,8 @@
       stats: {},
       logs: [],
       currentPatient: null,
-      currentBooks: []
+      currentBooks: [],
+      allPatients: []
     };
 
     const $ = (selector, root = document) => root.querySelector(selector);
@@ -1091,6 +1111,7 @@
       await withLoading(async () => {
         const result = await api.get('bootstrap');
         state.patients = result.data.patients || [];
+        state.allPatients = [...state.patients];
         state.deaths = result.data.deaths || [];
         state.stats = result.data.stats || {};
 
@@ -1139,37 +1160,19 @@
       $('#closeBookForm [name="ngayKetThuc"]').value = today;
     }
 
-    async function refreshAll() {
-      await withLoading(async () => {
-        const result = await api.get('bootstrap', {
-          keyword: $('#searchInput').value
-        });
+    function searchPatients() {
+      const keyword = normalize($('#searchInput').value);
 
-        state.patients = result.data.patients || [];
-        state.deaths = result.data.deaths || [];
-        state.stats = result.data.stats || {};
+      state.patients = keyword
+        ? state.allPatients.filter(patient => {
+            const text = normalize(
+              `${patient['SỐ HỒ SƠ']} ${patient['HỌ VÀ TÊN']} ${patient['NĂM SINH']}`
+            );
+            return text.includes(keyword);
+          })
+        : [...state.allPatients];
 
-        renderPatients();
-        renderDeaths();
-        renderStats();
-
-        if (state.currentPatient) {
-          await openPatient(state.currentPatient['SỐ HỒ SƠ'], false);
-        }
-
-        showToast('Đã đồng bộ dữ liệu.');
-      });
-    }
-
-    async function searchPatients() {
-      await withLoading(async () => {
-        const result = await api.get('layDanhSachDoiTuong', {
-          keyword: $('#searchInput').value
-        });
-
-        state.patients = result.data || [];
-        renderPatients();
-      });
+      renderPatients();
     }
 
     function renderPatients() {
@@ -1236,7 +1239,7 @@
       });
     }
 
-    async function openPatient(soHoSo, showLoader = true) {
+    async function openPatient(soHoSo, showLoader = false) {
       await withLoading(async () => {
         const patient = state.patients.find(
           item => normalize(item['SỐ HỒ SƠ']) === normalize(soHoSo)
@@ -1493,24 +1496,34 @@
       event.preventDefault();
 
       const form = event.currentTarget;
+      const submitButton = form.querySelector('[type="submit"]');
+      submitButton.disabled = true;
+      submitButton.textContent = 'Đang lưu...';
       const data = Object.fromEntries(new FormData(form).entries());
 
       await withLoading(async () => {
         const result = await api.post('themDoiTuong', data);
 
-        state.patients.unshift(result.data);
+        state.allPatients.unshift(result.data);
+        state.patients = [...state.allPatients];
         renderPatients();
 
         form.reset();
         $('#patientDialog').close();
         showToast(result.message);
       });
+
+      submitButton.disabled = false;
+      submitButton.textContent = 'Lưu đối tượng';
     }
 
     async function submitBook(event) {
       event.preventDefault();
 
       const form = event.currentTarget;
+      const submitButton = form.querySelector('[type="submit"]');
+      submitButton.disabled = true;
+      submitButton.textContent = 'Đang mở...';
       const data = Object.fromEntries(new FormData(form).entries());
 
       await withLoading(async () => {
@@ -1518,7 +1531,7 @@
 
         state.currentBooks.push(result.data);
 
-        const patient = state.patients.find(
+        const patient = state.allPatients.find(
           item => normalize(item['SỐ HỒ SƠ']) === normalize(data.soHoSo)
         );
 
@@ -1537,12 +1550,18 @@
 
         refreshStatsSilently();
       });
+
+      submitButton.disabled = false;
+      submitButton.textContent = 'Mở quyển';
     }
 
     async function submitCloseBook(event) {
       event.preventDefault();
 
       const form = event.currentTarget;
+      const submitButton = form.querySelector('[type="submit"]');
+      submitButton.disabled = true;
+      submitButton.textContent = 'Đang xử lý...';
       const formData = new FormData(form);
       const file = formData.get('file');
       const data = Object.fromEntries(formData.entries());
@@ -1573,7 +1592,7 @@
 
         if (index >= 0) state.currentBooks[index] = result.data;
 
-        const patient = state.patients.find(
+        const patient = state.allPatients.find(
           item => normalize(item['SỐ HỒ SƠ']) === normalize(data.soHoSo)
         );
 
@@ -1594,6 +1613,9 @@
           refreshStatsSilently()
         ]);
       });
+
+      submitButton.disabled = false;
+      submitButton.textContent = 'Kết thúc quyển';
     }
 
     async function refreshDeathsSilently() {
@@ -1651,10 +1673,7 @@
         return await callback();
       } catch (error) {
         console.error(error);
-        const message = error && error.message === 'Load failed'
-          ? 'Không kết nối được Apps Script. Kiểm tra quyền triển khai “Bất kỳ ai” và triển khai lại phiên bản mới.'
-          : (error.message || 'Có lỗi xảy ra.');
-        showToast(message, true);
+        showToast(error.message || 'Có lỗi xảy ra.', true);
       } finally {
         if (show) $('#loading').classList.add('hidden');
       }
