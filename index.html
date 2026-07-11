@@ -5,7 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#12a6a6">
   <meta name="description" content="Ứng dụng quản lý hồ sơ bệnh án">
-  <title>Quản lý HSBA</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="application-name" content="HSBA Trung tâm">
+  <meta name="version" content="2026.07.11.3">
+  <title>Quản lý HSBA Trung tâm</title>
 
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%2312a6a6'/%3E%3Cpath d='M42 18h16v24h24v16H58v24H42V58H18V42h24z' fill='white'/%3E%3C/svg%3E">
 
@@ -835,6 +840,269 @@
       cursor: not-allowed;
     }
 
+
+    /* ===== BỐ CỤC CHUYÊN NGHIỆP RIÊNG CHO LAPTOP VÀ ĐIỆN THOẠI ===== */
+    .top-heading { min-width: 0; }
+    .top-subtitle {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px 12px 6px;
+      border-top: 1px solid var(--line);
+      color: #527078;
+    }
+
+    .sidebar-footer span,
+    .sidebar-footer small {
+      display: block;
+    }
+
+    .sidebar-footer span {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .03em;
+    }
+
+    .sidebar-footer small {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .page-head {
+      position: relative;
+      padding: 6px 0 2px;
+    }
+
+    .page-head::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -10px;
+      width: 62px;
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    .search-panel {
+      margin-top: 30px;
+    }
+
+    .patient-card .btn {
+      min-width: 118px;
+      color: var(--primary-3);
+      border-color: #cfe7e2;
+      background: #fbfffe;
+    }
+
+    .patient-card .btn:hover {
+      background: var(--primary-soft);
+      border-color: #a9dcd3;
+    }
+
+    .table-wrap {
+      scrollbar-color: #b7dcd6 #f1f8f7;
+      scrollbar-width: thin;
+    }
+
+    /* Laptop/desktop */
+    @media (min-width: 901px) {
+      :root { --sidebar-width: 286px; }
+
+      .layout {
+        grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+      }
+
+      .sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        width: var(--sidebar-width);
+        height: 100vh;
+        padding: 22px 16px 18px;
+        box-shadow: 8px 0 28px rgba(35, 89, 85, .055);
+      }
+
+      .main-area {
+        grid-column: 2;
+        width: 100%;
+      }
+
+      .topbar {
+        height: 78px;
+        padding: 0 34px;
+      }
+
+      .menu-btn {
+        display: none !important;
+      }
+
+      .main {
+        width: 100%;
+        max-width: none;
+        padding: 38px clamp(34px, 4vw, 72px) 80px;
+      }
+
+      .page-head h1 {
+        font-size: clamp(30px, 2.6vw, 42px);
+      }
+
+      .page-head p {
+        font-size: 15px;
+      }
+
+      .search-panel {
+        display: grid;
+        grid-template-columns: minmax(320px, 1fr) auto;
+        max-width: none;
+      }
+
+      .summary {
+        margin: 18px 0;
+      }
+
+      .cards {
+        grid-template-columns: repeat(2, minmax(360px, 1fr));
+        gap: 18px;
+      }
+
+      .patient-card {
+        min-height: 156px;
+        padding: 21px 21px 21px 24px;
+      }
+
+      .patient-card h3 {
+        font-size: 18px;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(4, minmax(180px, 1fr));
+        gap: 18px;
+      }
+
+      .stat-card {
+        min-height: 150px;
+      }
+
+      .detail-card {
+        grid-template-columns: 78px minmax(0, 1fr) auto;
+        padding: 26px 28px;
+      }
+
+      .detail-avatar {
+        width: 74px;
+        height: 74px;
+      }
+
+      .table-wrap {
+        max-width: 100%;
+      }
+
+      .death-overview {
+        padding: 24px 28px;
+      }
+    }
+
+    @media (min-width: 1500px) {
+      .cards {
+        grid-template-columns: repeat(3, minmax(320px, 1fr));
+      }
+
+      .main {
+        padding-left: 58px;
+        padding-right: 58px;
+      }
+    }
+
+    /* Điện thoại */
+    @media (max-width: 900px) {
+      .top-subtitle { display: none; }
+
+      .topbar {
+        height: 72px;
+      }
+
+      .top-title {
+        font-size: 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .sidebar {
+        padding-top: max(22px, env(safe-area-inset-top));
+      }
+
+      .sidebar-footer {
+        padding-bottom: max(8px, env(safe-area-inset-bottom));
+      }
+
+      .main {
+        padding-top: 24px;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page-head::after {
+        bottom: -6px;
+      }
+
+      .page-head h1 {
+        font-size: clamp(28px, 8vw, 38px);
+      }
+
+      .page-head p {
+        font-size: 15px;
+        line-height: 1.45;
+      }
+
+      .search-panel {
+        margin-top: 24px;
+        padding: 10px;
+      }
+
+      .cards {
+        gap: 13px;
+      }
+
+      .patient-card {
+        min-height: 0;
+        padding: 17px;
+        border-radius: 17px;
+      }
+
+      .patient-card > .btn {
+        min-height: 46px;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .stat-card {
+        min-height: 124px;
+      }
+    }
+
+.build-version {
+      position: fixed;
+      right: 8px;
+      bottom: 5px;
+      z-index: -1;
+      opacity: 0;
+      pointer-events: none;
+    }
 </style>
 </head>
 
@@ -850,14 +1118,19 @@
       </div>
 
       <nav class="nav">
-        <button class="nav-btn active" data-view="patients">📋 Danh sách đối tượng</button>
-        <button class="nav-btn" data-view="deaths">⚫ Hồ sơ tử vong</button>
-        <button class="nav-btn" data-view="dashboard">📊 Thống kê</button>
+        <button class="nav-btn active" data-view="patients">👥 Danh sách đối tượng</button>
+        <button class="nav-btn" data-view="deaths">🗂️ Hồ sơ tử vong</button>
+        <button class="nav-btn" data-view="dashboard">📈 Thống kê tổng quan</button>
 </nav>
 
       <div class="rule">
         <strong>Nguyên tắc quản lý</strong>
         Không mở quyển mới khi quyển hiện tại chưa có ngày kết thúc.
+      </div>
+
+      <div class="sidebar-footer">
+        <span>HSBA Trung tâm</span>
+        <small>Phiên bản 2026.07</small>
       </div>
     </aside>
 
@@ -867,7 +1140,10 @@
       <header class="topbar">
         <div class="topbar-left">
           <button id="menuBtn" class="icon-btn menu-btn" aria-label="Mở menu">☰</button>
-          <div class="top-title">QUẢN LÝ HỒ SƠ BỆNH ÁN</div>
+          <div class="top-heading">
+            <div class="top-title">QUẢN LÝ HỒ SƠ BỆNH ÁN</div>
+            <div class="top-subtitle">Số hóa, tra cứu và quản lý hồ sơ tập trung</div>
+          </div>
         </div>
 </header>
 
@@ -1033,6 +1309,15 @@
       }
     });
 
+
+    const NETWORK_HOSTS = new Set([
+      'thanhbds2011-droid.github.io',
+      'localhost',
+      '127.0.0.1'
+    ]);
+
+    const NETWORK_ALLOWED = NETWORK_HOSTS.has(window.location.hostname);
+
     class ApiClient {
       constructor(baseUrl) {
         this.baseUrl = baseUrl;
@@ -1065,6 +1350,10 @@
       }
 
       async get(action, params = {}) {
+        if (!NETWORK_ALLOWED) {
+          throw new Error('Kết nối dữ liệu chỉ hoạt động trên trang GitHub chính thức.');
+        }
+
         const url = new URL(this.baseUrl);
         url.searchParams.set('action', action);
         url.searchParams.set('_t', Date.now());
@@ -1085,6 +1374,10 @@
       }
 
       async post(action, payload = {}) {
+        if (!NETWORK_ALLOWED) {
+          throw new Error('Kết nối dữ liệu chỉ hoạt động trên trang GitHub chính thức.');
+        }
+
         const response = await this.fetchWithTimeout(this.baseUrl, {
           method: 'POST',
           cache: 'no-store',
@@ -1156,6 +1449,14 @@
     async function init() {
       bindEvents();
       setToday();
+
+      if (!NETWORK_ALLOWED) {
+        $('#patientsEmpty').classList.remove('hidden');
+        $('#patientsEmpty').textContent = 'Chế độ xem trước: kết nối dữ liệu đã được tắt.';
+        renderDeaths();
+        renderStats();
+        return;
+      }
 
       await withLoading(async () => {
         const result = await api.get('bootstrap');
@@ -1766,5 +2067,6 @@
       return escapeHtml(value);
     }
   </script>
+  <div class="build-version" aria-hidden="true">2026.07.11.3</div>
 </body>
 </html>
