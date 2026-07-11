@@ -816,6 +816,25 @@
     .loading { background:linear-gradient(135deg,rgba(32,49,60,.95),rgba(13,127,134,.94)); }
     @media(max-width:720px){ .page-head{gap:12px}.page-head h1{line-height:1.08}.btn.primary{min-height:52px;font-size:16px}.search-panel{border-radius:18px}.stats-grid{gap:12px}.stat-card{min-height:120px;padding:18px}.stat-card strong{font-size:31px} }
 
+
+    .form-note {
+      margin: -2px 0 15px;
+      padding: 11px 12px;
+      border: 1px solid #cfeae5;
+      border-radius: 11px;
+      background: linear-gradient(135deg, #eefbf8, #f9fffd);
+      color: #42636a;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    dialog input[readonly] {
+      background: #f3f8f7;
+      color: #34515a;
+      font-weight: 700;
+      cursor: not-allowed;
+    }
+
 </style>
 </head>
 
@@ -937,6 +956,11 @@
       </div>
 
       <input type="hidden" name="soHoSo">
+
+      <label id="bookNumberLabel">Quyển số
+        <input name="quyenSo" type="number" min="1" step="1" inputmode="numeric" required>
+        <small id="bookNumberHelp">Lần đầu số hóa, nhập đúng quyển đang sử dụng hoặc quyển tiếp theo của hồ sơ giấy.</small>
+      </label>
 
       <label>Ngày bắt đầu
         <input name="ngayBatDau" type="date" required>
@@ -1336,7 +1360,7 @@
             </thead>
             <tbody>
               ${books.length ? books.map(bookRowHtml).join('') : `
-                <tr><td colspan="8">Đối tượng chưa có quyển hồ sơ.</td></tr>
+                <tr><td colspan="8">Chưa nhập quyển hồ sơ. Khi mở lần đầu, vui lòng nhập đúng quyển thực tế của hồ sơ giấy.</td></tr>
               `}
             </tbody>
           </table>
@@ -1462,6 +1486,33 @@
       form.reset();
       form.elements.soHoSo.value = soHoSo;
       form.elements.ngayBatDau.value = new Date().toISOString().slice(0, 10);
+
+      const books = state.currentBooks || [];
+      const bookInput = form.elements.quyenSo;
+      const help = $('#bookNumberHelp');
+      const submitButton = form.querySelector('[type="submit"]');
+
+      if (!books.length) {
+        // Hồ sơ lần đầu được đưa lên phần mềm: phải nhập quyển thực tế.
+        bookInput.value = '';
+        bookInput.readOnly = false;
+        bookInput.focus();
+        help.textContent =
+          'Nhập đúng quyển hiện tại hoặc quyển tiếp theo của hồ sơ giấy, ví dụ 5 hoặc 6.';
+        submitButton.textContent = 'Mở quyển';
+      } else {
+        // Các lần sau hệ thống tự tăng số quyển.
+        const nextBook = Math.max(
+          ...books.map(book => Number(book['QUYỂN SỐ']) || 0)
+        ) + 1;
+
+        bookInput.value = nextBook;
+        bookInput.readOnly = true;
+        help.textContent =
+          `Hệ thống tự xác định quyển tiếp theo là quyển ${nextBook}.`;
+        submitButton.textContent = `Mở quyển ${nextBook}`;
+      }
+
       $('#bookDialog').showModal();
     }
 
