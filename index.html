@@ -2150,6 +2150,399 @@ td {
   }
 }
 
+
+/* ===== GIAO DIỆN ỨNG DỤNG ĐIỆN THOẠI GỌN NHẸ ===== */
+.detail-label-mobile {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  body {
+    font-size: 14px;
+  }
+
+  .topbar {
+    height: 64px;
+    padding: 0 11px;
+  }
+
+  .top-title {
+    font-size: 14px;
+    letter-spacing: .015em;
+  }
+
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+  }
+
+  .main {
+    padding: 16px 11px 78px;
+  }
+
+  .page-head {
+    gap: 9px;
+    margin-bottom: 14px;
+    padding-top: 2px;
+  }
+
+  .page-head h1 {
+    font-size: 27px;
+    line-height: 1.08;
+  }
+
+  .page-head p {
+    margin-top: 5px;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .page-head .btn.primary {
+    min-height: 44px;
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  /* Tìm kiếm gọn như ứng dụng di động */
+  .search-filter-panel {
+    margin-top: 19px;
+    margin-bottom: 13px;
+    border-radius: 16px;
+  }
+
+  .search-filter-panel .search-main-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 7px;
+    min-height: 0;
+    padding: 8px;
+  }
+
+  .search-box {
+    min-height: 43px;
+    padding: 0 9px;
+  }
+
+  .search-leading-icon {
+    width: 25px;
+    height: 25px;
+    border-radius: 8px;
+    font-size: 15px;
+  }
+
+  .search-box input {
+    min-width: 0;
+    padding: 10px 0;
+    font-size: 13px;
+  }
+
+  .search-submit-btn {
+    min-width: 82px;
+    min-height: 43px;
+    padding: 9px 11px;
+    font-size: 13px;
+  }
+
+  .filter-toolbar {
+    display: flex;
+    grid-template-columns: none;
+    gap: 8px;
+    align-items: center;
+    padding: 9px 8px 8px;
+  }
+
+  .filter-toolbar-title {
+    display: none;
+  }
+
+  .status-filter-list {
+    flex: 1 1 auto;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    min-width: 0;
+    margin: 0;
+    padding: 1px 1px 5px;
+    scrollbar-width: none;
+  }
+
+  .status-filter-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .status-filter-btn {
+    min-height: 34px;
+    gap: 5px;
+    padding: 5px 8px;
+    border-radius: 11px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .status-filter-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 7px;
+    font-size: 11px;
+  }
+
+  .status-filter-btn b {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    font-size: 10px;
+  }
+
+  .clear-filters-btn {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    min-height: 36px;
+    flex: 0 0 36px;
+    padding: 0;
+    font-size: 0;
+    border-radius: 11px;
+  }
+
+  .clear-filters-btn::before {
+    content: "↺";
+    font-size: 18px;
+  }
+
+  .filter-result-text {
+    padding: 8px 11px 10px;
+    font-size: 11px;
+  }
+
+  /* Các thẻ đếm chuyển thành một hàng cuộn ngang nhỏ */
+  .summary {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 7px;
+    overflow-x: auto;
+    margin: 10px -1px 13px;
+    padding: 1px 1px 5px;
+    scrollbar-width: none;
+  }
+
+  .summary::-webkit-scrollbar {
+    display: none;
+  }
+
+  .chip {
+    flex: 0 0 auto;
+    padding: 7px 9px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .cards {
+    gap: 10px;
+  }
+
+  /* Thẻ hồ sơ nhỏ, ngang và dễ thao tác */
+  .patient-card {
+    min-height: 0;
+    grid-template-columns: 43px minmax(0, 1fr) 40px;
+    gap: 10px;
+    padding: 13px 11px 13px 15px;
+    border-radius: 16px;
+  }
+
+  .patient-card::before {
+    width: 3px;
+  }
+
+  .avatar {
+    width: 43px;
+    height: 43px;
+    border-radius: 13px;
+    font-size: 15px;
+  }
+
+  .patient-card h3 {
+    margin: 0 0 7px;
+    font-size: 17px;
+    line-height: 1.18;
+  }
+
+  .patient-info-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px 12px;
+  }
+
+  .patient-info-item {
+    gap: 2px;
+  }
+
+  .patient-info-label {
+    min-width: 0;
+    font-size: 9px;
+    letter-spacing: .035em;
+  }
+
+  .patient-info-label::after {
+    content: none;
+  }
+
+  .patient-info-value {
+    font-size: 13px;
+    line-height: 1.25;
+  }
+
+  .patient-status-row {
+    gap: 5px;
+    margin-top: 8px;
+  }
+
+  .badge {
+    padding: 5px 8px;
+    font-size: 10.5px;
+  }
+
+  .patient-action {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: center;
+    justify-self: end;
+  }
+
+  .patient-action .btn {
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px;
+    min-height: 40px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border-radius: 12px;
+  }
+
+  .detail-label-desktop {
+    display: none;
+  }
+
+  .detail-label-mobile {
+    display: block;
+    color: var(--primary-3);
+    font-size: 27px;
+    font-weight: 500;
+    line-height: 1;
+    transform: translateY(-1px);
+  }
+
+  /* Chi tiết và thống kê không bị phóng quá lớn trên điện thoại */
+  .detail-card {
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 12px;
+    padding: 16px;
+    border-radius: 17px;
+  }
+
+  .detail-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    font-size: 17px;
+  }
+
+  .detail-card h2 {
+    font-size: 21px;
+  }
+
+  .detail-card p {
+    display: block;
+    margin: 3px 0;
+    font-size: 13px;
+  }
+
+  .detail-card .detail-action {
+    grid-column: 1 / -1;
+  }
+
+  .dashboard-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .dashboard-kpi {
+    min-height: 116px;
+    padding: 15px;
+    border-radius: 16px;
+  }
+
+  .dashboard-kpi-icon {
+    width: 37px;
+    height: 37px;
+    border-radius: 12px;
+    font-size: 18px;
+  }
+
+  .dashboard-kpi-label {
+    font-size: 11px;
+  }
+
+  .dashboard-kpi-value {
+    margin-top: 6px;
+    font-size: 30px;
+  }
+
+  .dashboard-kpi-note {
+    display: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .main {
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+
+  .page-head h1 {
+    font-size: 25px;
+  }
+
+  .patient-card {
+    grid-template-columns: 39px minmax(0, 1fr) 37px;
+    gap: 8px;
+    padding: 12px 9px 12px 13px;
+  }
+
+  .avatar {
+    width: 39px;
+    height: 39px;
+    border-radius: 12px;
+    font-size: 14px;
+  }
+
+  .patient-card h3 {
+    font-size: 16px;
+  }
+
+  .patient-info-grid {
+    gap: 6px 9px;
+  }
+
+  .patient-info-label {
+    font-size: 8.5px;
+  }
+
+  .patient-info-value {
+    font-size: 12px;
+  }
+
+  .patient-action .btn {
+    width: 37px !important;
+    min-width: 37px !important;
+    height: 37px;
+    min-height: 37px;
+  }
+
+  .detail-label-mobile {
+    font-size: 24px;
+  }
+}
+
 </style>
 </head>
 
@@ -2823,7 +3216,8 @@ td {
                 class="btn small"
                 data-action="open-patient"
                 data-so-ho-so="${escapeAttr(patient['SỐ HỒ SƠ'])}">
-                Xem chi tiết →
+                <span class="detail-label-desktop">Xem chi tiết →</span>
+                <span class="detail-label-mobile" aria-hidden="true">›</span>
               </button>
             </div>
           </article>
