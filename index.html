@@ -9,12 +9,20 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.07.12.2">
+  <meta name="version" content="2026.07.12.4">
   <title>Quản lý HSBA Trung tâm</title>
 
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%2312a6a6'/%3E%3Cpath d='M42 18h16v24h24v16H58v24H42V58H18V42h24z' fill='white'/%3E%3C/svg%3E">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="HSBA Trung tâm">
+  <meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" href="./assets/logo-512.png?v=2026.07.12.4">
+  <link rel="apple-touch-icon-precomposed" href="./assets/logo-512.png?v=2026.07.12.4">
+  <link rel="icon" type="image/png" sizes="192x192" href="./assets/logo-192.png?v=2026.07.12.4">
+  <link rel="icon" type="image/png" sizes="512x512" href="./assets/logo-512.png?v=2026.07.12.4">
 
-  <style>
+<style>
     :root {
       --primary: #12a6a6;
       --primary-2: #36c2b4;
@@ -2040,7 +2048,7 @@ td {
   color: #d65140;
 }
 
-.status-filter-icon.empty {
+.status-filter-icon.no-book {
   background: #eef2f6;
   color: #677b8b;
 }
@@ -2643,20 +2651,10 @@ td {
 .advanced-filter-choice-icon {
   width: 34px;
   height: 34px;
-  min-width: 34px;
-  min-height: 34px;
-  max-width: 34px;
-  max-height: 34px;
-  aspect-ratio: 1 / 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 34px;
+  display: grid;
+  place-items: center;
   border-radius: 11px;
   font-size: 15px;
-  line-height: 1;
-  overflow: hidden;
-  box-sizing: border-box;
 }
 
 .advanced-filter-choice-icon.all {
@@ -2679,11 +2677,9 @@ td {
   color: #d65140;
 }
 
-.advanced-filter-choice-icon.empty {
+.advanced-filter-choice-icon.no-book {
   background: #eef2f6;
   color: #677b8b;
-  font-size: 18px;
-  font-weight: 700;
 }
 
 .advanced-filter-main strong,
@@ -3012,24 +3008,12 @@ td {
     gap: 9px;
   }
 
- .advanced-filter-choice-icon {
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  min-height: 32px;
-  max-width: 32px;
-  max-height: 32px;
-  aspect-ratio: 1 / 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 32px;
-  border-radius: 10px;
-  font-size: 14px;
-  line-height: 1;
-  overflow: hidden;
-  box-sizing: border-box;
-}
+  .advanced-filter-choice-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    font-size: 14px;
+  }
 
   .advanced-filter-main strong {
     font-size: 13px;
@@ -3084,6 +3068,181 @@ td {
     min-width: 39px !important;
     height: 39px;
     min-height: 39px;
+  }
+}
+
+
+/* ============================================================
+   PWA + ICON BỘ LỌC + GIAO DIỆN STANDALONE
+   ============================================================ */
+
+/* Tạo vùng an toàn khi chạy từ màn hình chính iPhone */
+body {
+  padding-top: env(safe-area-inset-top);
+}
+
+@media (display-mode: standalone) {
+  html {
+    background: var(--primary);
+  }
+
+  body {
+    min-height: 100dvh;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+  }
+}
+
+/* Icon Chưa có quyển: khóa tuyệt đối kích thước, không bị class .empty kéo dài */
+.status-filter-icon.no-book,
+.advanced-filter-choice-icon.no-book {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  max-width: 34px !important;
+  max-height: 34px !important;
+  flex: 0 0 34px !important;
+  align-self: center !important;
+  justify-self: center !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  border-radius: 11px !important;
+  background: #eef2f6 !important;
+  color: #677b8b !important;
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  text-align: center !important;
+  box-sizing: border-box !important;
+}
+
+/* Mọi lựa chọn bộ lọc có cùng chiều cao */
+.advanced-filter-item {
+  min-height: 78px;
+}
+
+.advanced-filter-main {
+  align-items: center;
+}
+
+/* Khi không còn dòng mô tả thống kê, tiêu đề vẫn cân đối */
+#dashboardView .page-head {
+  margin-bottom: 20px;
+}
+
+@media (max-width: 760px) {
+  .status-filter-icon.no-book,
+  .advanced-filter-choice-icon.no-book {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    max-width: 32px !important;
+    max-height: 32px !important;
+    flex-basis: 32px !important;
+    border-radius: 10px !important;
+    font-size: 17px !important;
+  }
+
+  .advanced-filter-item {
+    min-height: 72px;
+  }
+
+  /* Đủ khoảng trống dưới cùng khi chạy dạng ứng dụng */
+  @media (display-mode: standalone) {
+    .main {
+      padding-bottom: max(82px, calc(62px + env(safe-area-inset-bottom)));
+    }
+
+    .filter-dialog form {
+      padding-bottom: max(18px, env(safe-area-inset-bottom));
+    }
+  }
+}
+
+
+/* ============================================================
+   CHỈ DÙNG INDEX.HTML + ASSETS/LOGO-192.PNG + LOGO-512.PNG
+   ============================================================ */
+
+@supports (padding: max(0px)) {
+  body {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+@media (display-mode: standalone) {
+  html,
+  body {
+    min-height: 100%;
+    min-height: 100dvh;
+    overscroll-behavior-y: none;
+  }
+
+  .topbar {
+    top: 0;
+  }
+
+  .main {
+    padding-bottom:
+      max(82px, calc(62px + env(safe-area-inset-bottom)));
+  }
+}
+
+/* Khóa icon Chưa có quyển thành hình vuông như các mục khác */
+.status-filter-icon.no-book,
+.advanced-filter-choice-icon.no-book {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  max-width: 34px !important;
+  max-height: 34px !important;
+  flex: 0 0 34px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  align-self: center !important;
+  justify-self: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 11px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  line-height: 1 !important;
+}
+
+.advanced-filter-item {
+  min-height: 78px;
+}
+
+.advanced-filter-main {
+  align-items: center;
+}
+
+@media (max-width: 760px) {
+  .status-filter-icon.no-book,
+  .advanced-filter-choice-icon.no-book {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    max-width: 32px !important;
+    max-height: 32px !important;
+    flex-basis: 32px !important;
+    border-radius: 10px !important;
+  }
+
+  .advanced-filter-item {
+    min-height: 72px;
   }
 }
 
@@ -3207,7 +3366,7 @@ td {
                   type="button"
                   class="status-filter-btn"
                   data-status-filter="empty">
-                  <span class="status-filter-icon empty">○</span>
+                  <span class="status-filter-icon no-book">＋</span>
                   <span>Chưa có quyển</span>
                   <b data-filter-count="empty">0</b>
                 </button>
@@ -3270,7 +3429,6 @@ td {
           <div class="page-head">
             <div>
               <h1>Thống kê tổng quan</h1>
-              <p>Số liệu lấy trực tiếp từ Google Sheet</p>
             </div>
           </div>
           <div id="statsGrid" class="dashboard-stats"></div>
@@ -3355,7 +3513,7 @@ td {
         <label class="advanced-filter-item">
           <div class="advanced-filter-main">
             <input type="radio" name="advancedStatus" value="empty">
-           <span class="advanced-filter-choice-icon empty">◌</span>
+            <span class="advanced-filter-choice-icon no-book">＋</span>
 
             <div>
               <strong>Chưa có quyển</strong>
@@ -4368,9 +4526,6 @@ td {
           </article>
         </div>
 
-        <div class="dashboard-footnote">
-          Số liệu cập nhật trực tiếp từ Google Sheet tại thời điểm mở ứng dụng.
-        </div>
       `;
     }
 
@@ -4744,6 +4899,48 @@ td {
       return escapeHtml(value);
     }
   </script>
-  <div class="build-version" aria-hidden="true">2026.07.12.2</div>
+  <div class="build-version" aria-hidden="true">2026.07.12.4</div>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("./service-worker.js?v=2026.07.12.3", { scope: "./" })
+          .then(registration => registration.update())
+          .catch(error => console.warn("Không đăng ký được Service Worker:", error));
+      });
+    }
+  </script>
+
+
+  <script>
+    /*
+     * Ứng dụng hiện chỉ dùng index.html và hai file logo trong thư mục assets.
+     * Tự gỡ Service Worker/cache cũ để tránh giữ giao diện cũ.
+     */
+    window.addEventListener("load", async () => {
+      try {
+        if ("serviceWorker" in navigator) {
+          const registrations =
+            await navigator.serviceWorker.getRegistrations();
+
+          await Promise.all(
+            registrations.map(registration => registration.unregister())
+          );
+        }
+
+        if ("caches" in window) {
+          const cacheNames = await caches.keys();
+
+          await Promise.all(
+            cacheNames.map(cacheName => caches.delete(cacheName))
+          );
+        }
+      } catch (error) {
+        console.warn("Không thể xóa bộ nhớ đệm cũ:", error);
+      }
+    });
+  </script>
+
 </body>
 </html>
