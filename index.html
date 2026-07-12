@@ -2643,10 +2643,20 @@ td {
 .advanced-filter-choice-icon {
   width: 34px;
   height: 34px;
-  display: grid;
-  place-items: center;
+  min-width: 34px;
+  min-height: 34px;
+  max-width: 34px;
+  max-height: 34px;
+  aspect-ratio: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 34px;
   border-radius: 11px;
   font-size: 15px;
+  line-height: 1;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .advanced-filter-choice-icon.all {
@@ -2672,6 +2682,8 @@ td {
 .advanced-filter-choice-icon.empty {
   background: #eef2f6;
   color: #677b8b;
+  font-size: 18px;
+  font-weight: 700;
 }
 
 .advanced-filter-main strong,
@@ -3000,12 +3012,24 @@ td {
     gap: 9px;
   }
 
-  .advanced-filter-choice-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 10px;
-    font-size: 14px;
-  }
+ .advanced-filter-choice-icon {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  max-width: 32px;
+  max-height: 32px;
+  aspect-ratio: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 32px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1;
+  overflow: hidden;
+  box-sizing: border-box;
+}
 
   .advanced-filter-main strong {
     font-size: 13px;
@@ -3331,7 +3355,7 @@ td {
         <label class="advanced-filter-item">
           <div class="advanced-filter-main">
             <input type="radio" name="advancedStatus" value="empty">
-            <span class="advanced-filter-choice-icon empty">○</span>
+           <span class="advanced-filter-choice-icon empty">◌</span>
 
             <div>
               <strong>Chưa có quyển</strong>
