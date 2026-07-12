@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.07.12.firebase-test.1">
+  <meta name="version" content="2026.07.12.firebase-test.2">
   <title>HSBA Firebase Test</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -3926,8 +3926,7 @@ body {
     import {
       getAuth,
       GoogleAuthProvider,
-      signInWithRedirect,
-      getRedirectResult,
+      signInWithPopup,
       onAuthStateChanged,
       signOut,
       setPersistence,
@@ -3985,6 +3984,12 @@ body {
       prompt: 'select_account'
     });
 
+    /*
+     * GitHub Pages chạy khác miền với firebaseapp.com.
+     * Dùng cửa sổ đăng nhập Google để Safari giữ ổn định
+     * trạng thái xác thực khi ứng dụng chạy trên GitHub Pages.
+     */
+
 
     const NETWORK_HOSTS = new Set([
       'thanhbds2011-droid.github.io',
@@ -4036,6 +4041,24 @@ body {
       if (code === 'auth/unauthorized-domain') {
         return new Error(
           'Tên miền GitHub chưa có trong Authentication → Settings → Authorized domains.'
+        );
+      }
+
+      if (code === 'auth/popup-blocked') {
+        return new Error(
+          'Safari đang chặn cửa sổ đăng nhập. Hãy cho phép cửa sổ bật lên rồi thử lại.'
+        );
+      }
+
+      if (code === 'auth/popup-closed-by-user') {
+        return new Error(
+          'Cửa sổ đăng nhập đã được đóng trước khi hoàn tất.'
+        );
+      }
+
+      if (code === 'auth/cancelled-popup-request') {
+        return new Error(
+          'Đã có một cửa sổ đăng nhập khác đang mở. Vui lòng thử lại.'
         );
       }
 
@@ -4708,12 +4731,6 @@ body {
         console.warn('Không đặt được chế độ lưu đăng nhập:', error);
       }
 
-      try {
-        await getRedirectResult(firebaseAuth);
-      } catch (error) {
-        showAuthError(firebaseError(error).message);
-      }
-
       onAuthStateChanged(firebaseAuth, async user => {
         if (!user) {
           showLoggedOutState();
@@ -4740,14 +4757,18 @@ body {
       $('#googleLoginBtn').addEventListener('click', async () => {
         const button = $('#googleLoginBtn');
         button.disabled = true;
-        button.textContent = 'Đang chuyển đến Google...';
+        button.textContent = 'Đang mở cửa sổ Google...';
         hideAuthError();
 
         try {
-          await signInWithRedirect(
+          const result = await signInWithPopup(
             firebaseAuth,
             googleProvider
           );
+
+          if (result?.user) {
+            showLoggedInState(result.user);
+          }
         } catch (error) {
           button.disabled = false;
           button.innerHTML =
