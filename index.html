@@ -3566,6 +3566,108 @@ body {
   }
 }
 
+
+/* ============================================================
+   TỐI ƯU RIÊNG GIAO DIỆN DESKTOP
+   - Bỏ nút Lọc chi tiết bị trùng chức năng
+   - Ẩn nút đặt lại dạng biểu tượng đồng bộ ở desktop
+   - Giữ nguyên bộ lọc dạng hộp thoại trên điện thoại
+   ============================================================ */
+@media (min-width: 761px) {
+  .search-filter-panel {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    border-radius: 22px;
+    border-color: #d4e8e4;
+    box-shadow: 0 14px 36px rgba(30, 104, 101, .09);
+  }
+
+  .search-filter-panel .search-main-row {
+    min-height: 72px;
+    padding: 11px 14px;
+  }
+
+  .search-box {
+    min-height: 48px;
+    border-radius: 14px;
+  }
+
+  .search-submit-btn {
+    min-width: 126px;
+    min-height: 48px;
+    border-radius: 14px;
+  }
+
+  .filter-toolbar {
+    display: grid;
+    grid-template-columns: 205px minmax(0, 1fr) !important;
+    gap: 20px;
+    align-items: center;
+    padding: 16px 18px 18px;
+  }
+
+  .filter-toolbar-title {
+    grid-column: auto !important;
+    min-width: 0;
+  }
+
+  .status-filter-list {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(118px, 1fr));
+    gap: 9px;
+    width: 100%;
+  }
+
+  .status-filter-btn {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    justify-content: center;
+    padding: 8px 10px;
+  }
+
+  .status-filter-btn span:nth-child(2) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Hai thành phần này chỉ dư thừa trên desktop. */
+  .advanced-filter-open-btn,
+  .clear-filters-btn {
+    display: none !important;
+  }
+
+  .summary {
+    margin-top: 14px;
+  }
+
+  .patient-card {
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  }
+
+  .patient-card:hover {
+    transform: translateY(-2px);
+    border-color: #c5e4df;
+    box-shadow: 0 14px 32px rgba(30, 104, 101, .10);
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1180px) {
+  .filter-toolbar {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  .filter-toolbar-title {
+    grid-column: auto !important;
+  }
+
+  .status-filter-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 </style>
 </head>
 
