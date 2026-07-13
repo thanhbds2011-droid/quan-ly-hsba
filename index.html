@@ -3545,12 +3545,16 @@ body {
   }
 
   .auth-user-summary span:last-child {
-    font-size: 0;
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 10px;
   }
 
   .auth-user-summary span:last-child::after {
-    content: "Firebase";
-    font-size: 10px;
+    content: none;
   }
 
   .auth-logout-btn {
