@@ -4068,8 +4068,11 @@ body {
       </label>
 
       <label>File scan
-        <input name="file" type="file" accept=".pdf,image/jpeg,image/png,image/webp">
-        <small>Hồ sơ tử vong bắt buộc phải có file scan.</small>
+        <input
+          name="file"
+          type="file"
+          accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif,application/pdf,image/jpeg,image/png,image/webp,image/heic,image/heif">
+        <small>Chấp nhận PDF, JPG, PNG, WEBP, HEIC/HEIF; tối đa 20 MB. Hồ sơ tử vong bắt buộc phải có file scan.</small>
       </label>
 
       <label>Ghi chú
@@ -4186,7 +4189,7 @@ body {
       DRIVE_UPLOAD_URL:
         'https://script.google.com/macros/s/AKfycbwTuGwnLDDDE7sUi2Isy4W_TwvboLaC-Qo7g5QqueSSS0Z_Mo8UxaTBq8eGaI6ax9Mz/exec',
 
-      MAX_UPLOAD_BYTES: 10 * 1024 * 1024,
+      MAX_UPLOAD_BYTES: 20 * 1024 * 1024,
 
       STATUS: {
         DANG_KHAM: 'Đang khám',
@@ -4516,18 +4519,23 @@ body {
         if (!file) throw new Error('Chưa chọn file.');
 
         if (file.size > CONFIG.MAX_UPLOAD_BYTES) {
-          throw new Error('File vượt quá 10 MB.');
+          throw new Error('File vượt quá 20 MB.');
         }
 
+        const mimeType = resolveUploadMimeType(file);
         const allowedTypes = new Set([
           'application/pdf',
           'image/jpeg',
           'image/png',
-          'image/webp'
+          'image/webp',
+          'image/heic',
+          'image/heif'
         ]);
 
-        if (!allowedTypes.has(file.type)) {
-          throw new Error('Chỉ chấp nhận PDF, JPG, PNG hoặc WEBP.');
+        if (!allowedTypes.has(mimeType)) {
+          throw new Error(
+            'Chỉ chấp nhận PDF, JPG/JPEG, PNG, WEBP, HEIC hoặc HEIF.'
+          );
         }
 
         const base64Data = await fileToBase64(file);
@@ -4537,9 +4545,9 @@ body {
           soHoSo,
           quyenSo,
           fileName: file.name,
-          mimeType: file.type,
+          mimeType,
           base64Data
-        }, 90000);
+        }, 150000);
       }
 
       async removeTemporary(fileId) {
@@ -6424,6 +6432,40 @@ body {
       showToast.timer = setTimeout(() => {
         toast.classList.remove('show');
       }, 3800);
+    }
+
+    function resolveUploadMimeType(file) {
+      const rawType = String(file?.type || '').trim().toLowerCase();
+
+      if (rawType === 'image/jpg') return 'image/jpeg';
+
+      const allowedDirectTypes = new Set([
+        'application/pdf',
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+        'image/heic',
+        'image/heif'
+      ]);
+
+      if (allowedDirectTypes.has(rawType)) return rawType;
+
+      const fileName = String(file?.name || '').trim().toLowerCase();
+      const extension = fileName.includes('.')
+        ? fileName.split('.').pop()
+        : '';
+
+      const mimeByExtension = {
+        pdf: 'application/pdf',
+        jpg: 'image/jpeg',
+        jpeg: 'image/jpeg',
+        png: 'image/png',
+        webp: 'image/webp',
+        heic: 'image/heic',
+        heif: 'image/heif'
+      };
+
+      return mimeByExtension[extension] || rawType;
     }
 
     function fileToBase64(file) {
