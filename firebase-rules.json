@@ -1,0 +1,60 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "phanQuyen": {
+      "$uid": {
+        ".read": "auth != null && auth.token.email_verified == true && (auth.token.email == 'thanhbds2011@gmail.com' || auth.uid == $uid)",
+        ".write": "auth != null && auth.token.email_verified == true && auth.token.email == 'thanhbds2011@gmail.com'",
+        ".validate": "!newData.exists() || (newData.hasChildren(['email','role','active']) && newData.child('email').isString() && newData.child('email').val().length <= 200 && newData.child('role').isString() && (newData.child('role').val() == 'admin' || newData.child('role').val() == 'editor' || newData.child('role').val() == 'viewer') && newData.child('active').isBoolean())"
+      }
+    },
+
+    "doiTuong": {
+      ".read": "auth != null && auth.token.email_verified == true && (auth.token.email == 'thanhbds2011@gmail.com' || root.child('phanQuyen').child(auth.uid).child('active').val() == true)",
+      ".indexOn": ["soHoSo", "hoTenTimKiem", "namSinh", "trangThaiHienTai", "updatedAt"],
+      "$patientId": {
+        ".write": "auth != null && auth.token.email_verified == true && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && (root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin' || root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor'))) && ((!data.exists() && newData.exists()) || root.child('khoaThaoTac').child($patientId).child('uid').val() == auth.uid)",
+        ".validate": "newData.exists() && newData.hasChildren(['soHoSo','hoTen','hoTenTimKiem','namSinh','tongSoQuyen','quyenDangMo','trangThaiHienTai','soQuyenDaLuuKho','soQuyenTuVong','soQuyenCoFile','createdAt','updatedAt','createdBy']) && newData.child('soHoSo').isString() && newData.child('soHoSo').val().length > 0 && newData.child('soHoSo').val().length <= 50 && newData.child('hoTen').isString() && newData.child('hoTen').val().length > 0 && newData.child('hoTen').val().length <= 150 && newData.child('hoTenTimKiem').isString() && newData.child('hoTenTimKiem').val().length <= 200 && newData.child('namSinh').isNumber() && newData.child('namSinh').val() >= 1900 && newData.child('namSinh').val() <= 2100 && newData.child('tongSoQuyen').isNumber() && newData.child('tongSoQuyen').val() >= 0 && (newData.child('quyenDangMo').isString() || newData.child('quyenDangMo').isNumber()) && newData.child('trangThaiHienTai').isString() && (newData.child('trangThaiHienTai').val() == '' || newData.child('trangThaiHienTai').val() == 'Đang khám' || newData.child('trangThaiHienTai').val() == 'Đã lưu kho' || newData.child('trangThaiHienTai').val() == 'Đối tượng tử vong') && newData.child('soQuyenDaLuuKho').isNumber() && newData.child('soQuyenDaLuuKho').val() >= 0 && newData.child('soQuyenTuVong').isNumber() && newData.child('soQuyenTuVong').val() >= 0 && newData.child('soQuyenCoFile').isNumber() && newData.child('soQuyenCoFile').val() >= 0 && newData.child('createdAt').isNumber() && newData.child('updatedAt').isNumber() && newData.child('createdBy').isString()"
+      }
+    },
+
+    "quyenHoSo": {
+      "$patientId": {
+        ".read": "auth != null && auth.token.email_verified == true && (auth.token.email == 'thanhbds2011@gmail.com' || root.child('phanQuyen').child(auth.uid).child('active').val() == true)",
+        ".indexOn": ["quyenSo", "trangThai", "updatedAt"],
+        "$bookId": {
+          ".write": "auth != null && auth.token.email_verified == true && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && (root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin' || root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor'))) && root.child('khoaThaoTac').child($patientId).child('uid').val() == auth.uid",
+          ".validate": "newData.exists() && newData.hasChildren(['soHoSo','quyenSo','ngayBatDau','ngayKetThuc','trangThai','maLuuTru','fileDinhKem','ghiChu','createdAt','updatedAt','createdBy']) && newData.child('soHoSo').isString() && newData.child('soHoSo').val().length > 0 && newData.child('soHoSo').val().length <= 50 && newData.child('quyenSo').isNumber() && newData.child('quyenSo').val() >= 1 && newData.child('ngayBatDau').isString() && newData.child('ngayBatDau').val().matches(/^\\d{4}-\\d{2}-\\d{2}$/) && newData.child('ngayKetThuc').isString() && (newData.child('ngayKetThuc').val() == '' || newData.child('ngayKetThuc').val().matches(/^\\d{4}-\\d{2}-\\d{2}$/)) && newData.child('trangThai').isString() && (newData.child('trangThai').val() == 'Đang khám' || newData.child('trangThai').val() == 'Đã lưu kho' || newData.child('trangThai').val() == 'Đối tượng tử vong') && newData.child('maLuuTru').isString() && newData.child('maLuuTru').val().length <= 150 && newData.child('fileDinhKem').isString() && newData.child('fileDinhKem').val().length <= 2000 && newData.child('ghiChu').isString() && newData.child('ghiChu').val().length <= 2000 && newData.child('createdAt').isNumber() && newData.child('updatedAt').isNumber() && newData.child('createdBy').isString() && (!newData.hasChild('closedBy') || newData.child('closedBy').isString())"
+        }
+      }
+    },
+
+    "hoSoTuVong": {
+      ".read": "auth != null && auth.token.email_verified == true && (auth.token.email == 'thanhbds2011@gmail.com' || root.child('phanQuyen').child(auth.uid).child('active').val() == true)",
+      ".indexOn": ["soHoSo", "updatedAt"],
+      "$patientId": {
+        ".write": "auth != null && auth.token.email_verified == true && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && (root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin' || root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor'))) && root.child('khoaThaoTac').child($patientId).child('uid').val() == auth.uid",
+        ".validate": "!newData.exists() || (newData.hasChildren(['soHoSo','hoTen','namSinh','quyenSo','ngayKetThuc','maLuuTru','fileDinhKem','updatedAt']) && newData.child('soHoSo').isString() && newData.child('hoTen').isString() && newData.child('namSinh').isNumber() && newData.child('quyenSo').isNumber() && newData.child('ngayKetThuc').isString() && newData.child('ngayKetThuc').val().matches(/^\\d{4}-\\d{2}-\\d{2}$/) && newData.child('maLuuTru').isString() && newData.child('fileDinhKem').isString() && newData.child('fileDinhKem').val().length > 0 && newData.child('updatedAt').isNumber())"
+      }
+    },
+
+    "nhatKy": {
+      ".read": "auth != null && auth.token.email_verified == true && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin'))",
+      ".indexOn": ["createdAt", "uid", "email", "action"],
+      "$logId": {
+        ".write": "auth != null && auth.token.email_verified == true && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && (root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin' || root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor'))) && !data.exists() && newData.exists() && newData.child('uid').val() == auth.uid",
+        ".validate": "newData.hasChildren(['action','content','email','uid','createdAt']) && newData.child('action').isString() && newData.child('action').val().length > 0 && newData.child('action').val().length <= 100 && newData.child('email').isString() && newData.child('email').val() == auth.token.email && newData.child('uid').isString() && newData.child('uid').val() == auth.uid && newData.child('createdAt').isNumber()"
+      }
+    },
+
+    "khoaThaoTac": {
+      "$patientId": {
+        ".read": "auth != null && auth.token.email_verified == true && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && (root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin' || root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor')))",
+        ".write": "auth != null && auth.token.email_verified == true && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && (root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin' || root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor'))) && (!data.exists() || data.child('uid').val() == auth.uid || data.child('expiresAt').val() < now) && (!newData.exists() || newData.child('uid').val() == auth.uid)",
+        ".validate": "!newData.exists() || (newData.hasChildren(['uid','email','operation','token','acquiredAt','expiresAt']) && newData.child('uid').isString() && newData.child('uid').val() == auth.uid && newData.child('email').isString() && newData.child('email').val() == auth.token.email && newData.child('operation').isString() && newData.child('token').isString() && newData.child('acquiredAt').isNumber() && newData.child('expiresAt').isNumber() && newData.child('expiresAt').val() > newData.child('acquiredAt').val() && newData.child('expiresAt').val() <= now + 300000)"
+      }
+    }
+  }
+}
