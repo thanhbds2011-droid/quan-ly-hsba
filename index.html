@@ -3862,6 +3862,195 @@ body {
         grid-template-columns: 1fr;
       }
     }
+
+
+/* ===== QUẢN LÝ THÙNG VÀ VỊ TRÍ LƯU TRỮ ===== */
+.storage-location-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: 54px;
+  padding: 13px 16px;
+  border: 1px dashed #b9deda;
+  border-radius: 15px;
+  background: #f6fcfb;
+  color: #5f777f;
+}
+
+.storage-location-preview span {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.storage-location-preview strong {
+  color: #36545d;
+  font-size: 14px;
+}
+
+.storage-location-preview.ready {
+  border-style: solid;
+  border-color: #78cec4;
+  background: #eafaf7;
+}
+
+.storage-location-preview.ready strong {
+  color: #087d80;
+}
+
+.dashboard-kpi-grid {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.storage-inventory-panel {
+  padding: 22px;
+  border: 1px solid #d9ebe7;
+  border-radius: 20px;
+  background: rgba(255,255,255,.97);
+  box-shadow: 0 10px 28px rgba(30, 104, 101, .075);
+}
+
+.storage-inventory-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 17px;
+}
+
+.storage-inventory-head h3 {
+  margin: 0;
+  color: #29464e;
+  font-size: 19px;
+}
+
+.storage-inventory-head p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.storage-inventory-summary {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.storage-inventory-summary span,
+.storage-warning,
+.storage-danger {
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: #eaf8f5;
+  color: #24666b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.storage-warning {
+  background: #fff4df;
+  color: #8a5b22;
+}
+
+.storage-danger {
+  background: #fff0ef;
+  color: #b0443b;
+}
+
+.storage-inventory-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.storage-inventory-toolbar input {
+  flex: 1 1 330px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid #cfe3df;
+  border-radius: 13px;
+  background: #fbfefd;
+  color: var(--text);
+  font: inherit;
+}
+
+.storage-table-wrap {
+  border: 1px solid #e1efec;
+  border-radius: 15px;
+}
+
+.storage-table th:first-child,
+.storage-table td:first-child {
+  min-width: 110px;
+}
+
+.storage-count-badge {
+  display: inline-flex;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #535cb0;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.position-chip {
+  display: inline-grid;
+  min-width: 30px;
+  height: 30px;
+  margin: 2px 4px 2px 0;
+  place-items: center;
+  border-radius: 9px;
+  background: #eaf8f5;
+  color: #087d80;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.storage-record-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.storage-record-chip {
+  display: inline-flex;
+  padding: 6px 9px;
+  border: 1px solid #dcebe8;
+  border-radius: 10px;
+  background: #fbfefd;
+  color: #445f68;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.storage-record-chip.duplicate {
+  border-color: #f0aaa3;
+  background: #fff1ef;
+  color: #b0443b;
+}
+
+@media (max-width: 760px) {
+  .storage-location-preview,
+  .storage-inventory-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .storage-inventory-summary {
+    justify-content: flex-start;
+  }
+
+  .storage-inventory-panel {
+    padding: 16px;
+  }
+}
+
 </style>
 </head>
 
@@ -3889,7 +4078,7 @@ body {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.07.15.2</small>
+        <small>Phiên bản 2026.07.15.6</small>
       </div>
     </aside>
 
@@ -4228,10 +4417,21 @@ body {
           <small class="field-hint">Bắt buộc khi chọn trạng thái Đối tượng tử vong.</small>
         </div>
 
-        <div class="form-field full-span">
-          <label for="bookMaLuuTru">Mã/Vị trí lưu trữ</label>
-          <input id="bookMaLuuTru" name="maLuuTru" type="text" required maxlength="150" placeholder="Ví dụ: Kệ A - Ngăn 2; Kho 1 - Thùng 07">
-          <small class="field-hint">Bắt buộc nhập nơi đang lưu quyển hồ sơ giấy.</small>
+        <div class="form-field">
+          <label for="bookThungSo">Thùng số</label>
+          <input id="bookThungSo" name="thungSo" type="number" min="1" step="1" inputmode="numeric" required placeholder="Ví dụ: 1">
+          <small class="field-hint">Nhập số thùng đang lưu quyển hồ sơ.</small>
+        </div>
+
+        <div class="form-field">
+          <label for="bookViTriSo">Vị trí số</label>
+          <input id="bookViTriSo" name="viTriSo" type="number" min="1" step="1" inputmode="numeric" required placeholder="Ví dụ: 10">
+          <small class="field-hint">Nhập số thứ tự của quyển bên trong thùng.</small>
+        </div>
+
+        <div id="storageLocationPreview" class="storage-location-preview full-span">
+          <span>📦 Vị trí lưu</span>
+          <strong>Chưa chọn thùng và vị trí</strong>
         </div>
 
         <div class="form-field full-span">
@@ -4534,6 +4734,60 @@ body {
       return status;
     }
 
+
+    function normalizeStorageText(value) {
+      return String(value || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D')
+        .toLowerCase();
+    }
+
+    function storageLocationLabel(thungSo, viTriSo) {
+      const box = Number(thungSo);
+      const position = Number(viTriSo);
+      if (!Number.isInteger(box) || box < 1 || !Number.isInteger(position) || position < 1) return '';
+      return `Thùng ${box} - Vị trí ${position}`;
+    }
+
+    function parseStorageLocation(source = {}) {
+      const directBox = Number(source.thungSo ?? source['THÙNG SỐ']);
+      const directPosition = Number(source.viTriSo ?? source['VỊ TRÍ SỐ']);
+
+      if (Number.isInteger(directBox) && directBox >= 1 && Number.isInteger(directPosition) && directPosition >= 1) {
+        return {
+          thungSo: directBox,
+          viTriSo: directPosition,
+          label: storageLocationLabel(directBox, directPosition),
+          structured: true
+        };
+      }
+
+      const legacy = String(source.maLuuTru ?? source['MÃ SỐ LƯU TRỮ'] ?? '').trim();
+      const normalized = normalizeStorageText(legacy);
+      const boxMatch = normalized.match(/thung\s*(?:so\s*)?(\d+)/);
+      const positionMatch = normalized.match(/vi\s*tri\s*(?:so\s*)?(\d+)/);
+      const parsedBox = boxMatch ? Number(boxMatch[1]) : 0;
+      const parsedPosition = positionMatch ? Number(positionMatch[1]) : 0;
+
+      if (Number.isInteger(parsedBox) && parsedBox >= 1 && Number.isInteger(parsedPosition) && parsedPosition >= 1) {
+        return {
+          thungSo: parsedBox,
+          viTriSo: parsedPosition,
+          label: storageLocationLabel(parsedBox, parsedPosition),
+          structured: false
+        };
+      }
+
+      return {
+        thungSo: 0,
+        viTriSo: 0,
+        label: legacy,
+        structured: false
+      };
+    }
+
     function patientToUi(id, patient = {}) {
       return {
         '_FIREBASE_ID': id,
@@ -4555,6 +4809,7 @@ body {
     }
 
     function bookToUi(patient, book = {}) {
+      const storage = parseStorageLocation(book);
       return {
         'SỐ HỒ SƠ': patient.soHoSo || '',
         'HỌ VÀ TÊN': patient.hoTen || '',
@@ -4566,13 +4821,16 @@ body {
         'NGÀY KẾT THÚC': book.ngayKetThuc || '',
         'TRẠNG THÁI HIỆN TẠI': normalizeRecordStatus(book.trangThai),
         'NƠI TỬ VONG': book.noiTuVong || '',
-        'MÃ SỐ LƯU TRỮ': book.maLuuTru || '',
+        'THÙNG SỐ': storage.thungSo || '',
+        'VỊ TRÍ SỐ': storage.viTriSo || '',
+        'MÃ SỐ LƯU TRỮ': storage.label || book.maLuuTru || '',
         'GHI CHÚ': book.ghiChu || '',
         '_LEGACY_STATUS': book.trangThai || ''
       };
     }
 
     function deathToUi(item = {}) {
+      const storage = parseStorageLocation(item);
       return {
         'SỐ HỒ SƠ': item.soHoSo || '',
         'HỌ VÀ TÊN': item.hoTen || '',
@@ -4582,7 +4840,9 @@ body {
         'NGÀY KẾT THÚC': item.ngayKetThuc || '',
         'NĂM TỬ VONG': Number(item.namTuVong) || Number(String(item.ngayKetThuc || '').slice(0, 4)) || '',
         'NƠI TỬ VONG': item.noiTuVong || '',
-        'MÃ SỐ LƯU TRỮ': item.maLuuTru || '',
+        'THÙNG SỐ': storage.thungSo || '',
+        'VỊ TRÍ SỐ': storage.viTriSo || '',
+        'MÃ SỐ LƯU TRỮ': storage.label || item.maLuuTru || '',
         'FILE ĐÍNH KÈM': item.fileDinhKem || ''
       };
     }
@@ -4647,6 +4907,76 @@ body {
             (Number(b.updatedAt) || 0) -
             (Number(a.updatedAt) || 0)
         );
+    }
+
+
+    async function readStorageStatistics() {
+      const snapshot = await get(ref(firebaseDatabase, 'quyenHoSo'));
+      const rootValue = snapshot.val() || {};
+      const boxMap = new Map();
+      let totalBooks = 0;
+      let structuredBooks = 0;
+      let unstructuredBooks = 0;
+
+      Object.entries(rootValue).forEach(([patientId, bookMap]) => {
+        Object.values(bookMap || {}).filter(Boolean).forEach(book => {
+          totalBooks += 1;
+          const storage = parseStorageLocation(book);
+
+          if (!storage.thungSo || !storage.viTriSo) {
+            unstructuredBooks += 1;
+            return;
+          }
+
+          structuredBooks += 1;
+          if (!boxMap.has(storage.thungSo)) {
+            boxMap.set(storage.thungSo, {
+              thungSo: storage.thungSo,
+              records: [],
+              positions: new Map()
+            });
+          }
+
+          const box = boxMap.get(storage.thungSo);
+          const record = {
+            patientId,
+            soHoSo: String(book.soHoSo || ''),
+            quyenSo: Number(book.quyenSo) || 0,
+            viTriSo: storage.viTriSo,
+            trangThai: normalizeRecordStatus(book.trangThai),
+            ngayKetThuc: String(book.ngayKetThuc || '')
+          };
+          box.records.push(record);
+          if (!box.positions.has(storage.viTriSo)) box.positions.set(storage.viTriSo, []);
+          box.positions.get(storage.viTriSo).push(record);
+        });
+      });
+
+      const boxes = [...boxMap.values()]
+        .map(box => {
+          const records = box.records.sort((a, b) => a.viTriSo - b.viTriSo || a.quyenSo - b.quyenSo);
+          const duplicatePositions = [...box.positions.entries()]
+            .filter(([, recordsAtPosition]) => recordsAtPosition.length > 1)
+            .map(([position]) => Number(position))
+            .sort((a, b) => a - b);
+          return {
+            thungSo: box.thungSo,
+            soQuyen: records.length,
+            viTriDaDung: [...box.positions.keys()].map(Number).sort((a, b) => a - b),
+            duplicatePositions,
+            records
+          };
+        })
+        .sort((a, b) => a.thungSo - b.thungSo);
+
+      return {
+        totalBooks,
+        structuredBooks,
+        unstructuredBooks,
+        totalBoxes: boxes.length,
+        duplicateLocationCount: boxes.reduce((sum, box) => sum + box.duplicatePositions.length, 0),
+        boxes
+      };
     }
 
     async function writeLog(action, content = {}) {
@@ -4905,6 +5235,9 @@ body {
             case 'layThongKe':
               return await this.getStats();
 
+            case 'layThongKeLuuTru':
+              return await this.getStorageStats();
+
             default:
               throw new Error('Chức năng này chưa được hỗ trợ.');
           }
@@ -5013,6 +5346,14 @@ body {
           data: calculateStats(
             patientEntries.map(item => item.patient)
           )
+        };
+      }
+
+
+      async getStorageStats() {
+        return {
+          success: true,
+          data: await readStorageStatistics()
         };
       }
 
@@ -5209,7 +5550,9 @@ body {
         const ngayKetThuc = String(payload.ngayKetThuc || '').trim();
         const trangThai = normalizeRecordStatus(payload.trangThai);
         const noiTuVong = String(payload.noiTuVong || '').trim();
-        const maLuuTru = String(payload.maLuuTru || '').trim();
+        const thungSo = Number(payload.thungSo);
+        const viTriSo = Number(payload.viTriSo);
+        const maLuuTru = storageLocationLabel(thungSo, viTriSo);
         const ghiChu = String(payload.ghiChu || '').trim();
         const existingFileUrl = String(payload.existingFileUrl || '').trim();
 
@@ -5225,7 +5568,8 @@ body {
         if (![CONFIG.STATUS.HET_QUYEN, CONFIG.STATUS.HOI_GIA, CONFIG.STATUS.TU_VONG].includes(trangThai)) {
           throw new Error('Vui lòng chọn đúng trạng thái kết thúc hồ sơ.');
         }
-        if (!maLuuTru) throw new Error('Vui lòng nhập mã hoặc vị trí lưu trữ.');
+        if (!Number.isInteger(thungSo) || thungSo < 1) throw new Error('Vui lòng nhập đúng thùng số.');
+        if (!Number.isInteger(viTriSo) || viTriSo < 1) throw new Error('Vui lòng nhập đúng vị trí số trong thùng.');
         if (trangThai === CONFIG.STATUS.TU_VONG && !noiTuVong) {
           throw new Error('Vui lòng nhập nơi tử vong.');
         }
@@ -5273,6 +5617,8 @@ body {
             ngayKetThuc,
             trangThai,
             noiTuVong: trangThai === CONFIG.STATUS.TU_VONG ? noiTuVong : '',
+            thungSo,
+            viTriSo,
             maLuuTru,
             fileDinhKem,
             ghiChu,
@@ -5301,7 +5647,7 @@ body {
             [`doiTuong/${id}/updatedAt`]: serverTimestamp(),
             [`nhatKy/${logKey}`]: this.makeLog(
               mode === 'edit' ? 'CHỈNH SỬA QUYỂN HỒ SƠ' : 'LƯU QUYỂN HỒ SƠ',
-              { soHoSo, quyenSo, ngayBatDau, ngayKetThuc, trangThai, noiTuVong, maLuuTru }
+              { soHoSo, quyenSo, ngayBatDau, ngayKetThuc, trangThai, noiTuVong, thungSo, viTriSo, maLuuTru }
             ),
             [`khoaThaoTac/${id}`]: null
           };
@@ -5321,7 +5667,9 @@ body {
               ngayKetThuc: deathBook.ngayKetThuc || '',
               namTuVong: Number(String(deathBook.ngayKetThuc || '').slice(0, 4)) || 0,
               noiTuVong: deathBook.noiTuVong || '',
-              maLuuTru: deathBook.maLuuTru || '',
+              thungSo: Number(deathBook.thungSo) || parseStorageLocation(deathBook).thungSo || 0,
+              viTriSo: Number(deathBook.viTriSo) || parseStorageLocation(deathBook).viTriSo || 0,
+              maLuuTru: deathBook.maLuuTru || parseStorageLocation(deathBook).label || '',
               fileDinhKem: deathBook.fileDinhKem || '',
               updatedAt: serverTimestamp()
             };
@@ -5358,6 +5706,9 @@ body {
       deaths: [],
       deathsLoaded: false,
       stats: {},
+      storageStats: { totalBooks: 0, structuredBooks: 0, unstructuredBooks: 0, totalBoxes: 0, duplicateLocationCount: 0, boxes: [] },
+      storageStatsLoaded: false,
+      storageSearch: '',
       currentPatient: null,
       currentBooks: [],
       allPatients: [],
@@ -5424,6 +5775,7 @@ body {
           state.allPatients = [...state.patients];
           state.deaths = [];
           state.deathsLoaded = false;
+          state.storageStatsLoaded = false;
           state.stats = result.data.stats || {};
 
           renderPatients();
@@ -5647,6 +5999,8 @@ body {
       });
 
       $('#bookForm [name="trangThai"]').addEventListener('change', updateDeathPlaceVisibility);
+      $('#bookForm [name="thungSo"]').addEventListener('input', updateStorageLocationPreview);
+      $('#bookForm [name="viTriSo"]').addEventListener('input', updateStorageLocationPreview);
       $('#patientForm').addEventListener('submit', submitPatient);
       $('#bookForm').addEventListener('submit', submitBook);
       $('#deletePatientForm').addEventListener('submit', submitDeletePatient);
@@ -5838,10 +6192,10 @@ body {
           <table>
             <thead><tr>
               <th>Quyển số</th><th>Ngày mở quyển</th><th>Ngày kết thúc</th><th>Trạng thái</th>
-              <th>Nơi tử vong</th><th>Mã/Vị trí lưu trữ</th><th>File</th><th>Ghi chú khác</th><th>Thao tác</th>
+              <th>Nơi tử vong</th><th>Thùng số</th><th>Vị trí số</th><th>File</th><th>Ghi chú khác</th><th>Thao tác</th>
             </tr></thead>
             <tbody>
-              ${books.length ? books.map(bookRowHtml).join('') : `<tr><td colspan="9">Chưa lưu quyển hồ sơ. Bấm “Lưu hồ sơ” để nhập quyển lưu trữ đầu tiên.</td></tr>`}
+              ${books.length ? books.map(bookRowHtml).join('') : `<tr><td colspan="10">Chưa lưu quyển hồ sơ. Bấm “Lưu hồ sơ” để nhập quyển lưu trữ đầu tiên.</td></tr>`}
             </tbody>
           </table>
         </div>`;
@@ -5864,7 +6218,8 @@ body {
           <td>${escapeHtml(book['NGÀY KẾT THÚC'] || '—')}</td>
           <td><span class="badge ${statusClass}">${escapeHtml(status)}</span>${book['_LEGACY_STATUS'] === CONFIG.STATUS.LEGACY_DANG_KHAM ? '<span class="legacy-status-note">Cần chỉnh sửa để hoàn tất hồ sơ.</span>' : ''}</td>
           <td>${escapeHtml(book['NƠI TỬ VONG'] || '—')}</td>
-          <td>${escapeHtml(book['MÃ SỐ LƯU TRỮ'] || '—')}</td>
+          <td>${book['THÙNG SỐ'] ? `Thùng ${escapeHtml(book['THÙNG SỐ'])}` : '—'}</td>
+          <td>${book['VỊ TRÍ SỐ'] ? `Vị trí ${escapeHtml(book['VỊ TRÍ SỐ'])}` : escapeHtml(book['MÃ SỐ LƯU TRỮ'] || '—')}</td>
           <td>${book['FILE ĐÍNH KÈM'] ? `<a class="file-link" href="${escapeAttr(book['FILE ĐÍNH KÈM'])}" target="_blank" rel="noopener">📎 Mở file</a>` : '—'}</td>
           <td>${escapeHtml(book['GHI CHÚ'] || '—')}</td>
           <td>${canEditRecords() ? `<button class="btn small edit-action" data-action="edit-book" data-quyen-so="${escapeAttr(book['QUYỂN SỐ'])}">✎ Chỉnh sửa</button>` : '—'}</td>
@@ -5888,15 +6243,15 @@ body {
           </label>
         </div>
         <div class="table-wrap"><table>
-          <thead><tr><th>Số hồ sơ</th><th>Họ và tên</th><th>Năm sinh</th><th>Giới tính</th><th>Quyển số</th><th>Ngày tử vong</th><th>Năm</th><th>Nơi tử vong</th><th>Vị trí lưu</th><th>File</th></tr></thead>
+          <thead><tr><th>Số hồ sơ</th><th>Họ và tên</th><th>Năm sinh</th><th>Giới tính</th><th>Quyển số</th><th>Ngày tử vong</th><th>Năm</th><th>Nơi tử vong</th><th>Thùng số</th><th>Vị trí số</th><th>File</th></tr></thead>
           <tbody>${filtered.length ? filtered.map(item => `<tr>
             <td><strong>${escapeHtml(item['SỐ HỒ SƠ'])}</strong></td><td>${escapeHtml(item['HỌ VÀ TÊN'])}</td>
             <td>${escapeHtml(item['NĂM SINH'])}</td><td>${escapeHtml(item['GIỚI TÍNH'] || '—')}</td>
             <td><span class="badge closed">Quyển ${escapeHtml(item['QUYỂN SỐ'])}</span></td>
             <td>${escapeHtml(item['NGÀY KẾT THÚC'])}</td><td><strong>${escapeHtml(item['NĂM TỬ VONG'])}</strong></td>
-            <td>${escapeHtml(item['NƠI TỬ VONG'] || '—')}</td><td>${escapeHtml(item['MÃ SỐ LƯU TRỮ'])}</td>
+            <td>${escapeHtml(item['NƠI TỬ VONG'] || '—')}</td><td>${item['THÙNG SỐ'] ? `Thùng ${escapeHtml(item['THÙNG SỐ'])}` : '—'}</td><td>${item['VỊ TRÍ SỐ'] ? `Vị trí ${escapeHtml(item['VỊ TRÍ SỐ'])}` : escapeHtml(item['MÃ SỐ LƯU TRỮ'] || '—')}</td>
             <td>${item['FILE ĐÍNH KÈM'] ? `<a class="file-link" href="${escapeAttr(item['FILE ĐÍNH KÈM'])}" target="_blank" rel="noopener">📎 Mở file</a>` : '—'}</td>
-          </tr>`).join('') : `<tr><td colspan="10">Chưa có hồ sơ tử vong trong năm đã chọn.</td></tr>`}</tbody>
+          </tr>`).join('') : `<tr><td colspan="11">Chưa có hồ sơ tử vong trong năm đã chọn.</td></tr>`}</tbody>
         </table></div>`;
       $('#deathYearSelect')?.addEventListener('change', event => {
         state.deathYearFilter = event.target.value || 'all';
@@ -5916,6 +6271,10 @@ body {
       const scanRate = totalBooks ? Math.round(scannedBooks / totalBooks * 100) : 0;
       const averageBooks = totalPatients ? (totalBooks / totalPatients).toFixed(1) : '0';
       const rate = value => totalBooks ? Math.round(value / totalBooks * 100) : 0;
+      const storageStats = state.storageStats || {};
+      const totalBoxes = Number(storageStats.totalBoxes) || 0;
+      const structuredBooks = Number(storageStats.structuredBooks) || 0;
+      const unstructuredBooks = Number(storageStats.unstructuredBooks) || 0;
 
       $('#statsGrid').innerHTML = `
         <div class="dashboard-kpi-grid">
@@ -5923,6 +6282,7 @@ body {
           ${dashboardKpiHtml({icon:'📚',label:'Tổng quyển lưu',value:totalBooks,note:`Bình quân ${averageBooks} quyển/hồ sơ`,color:'#5b63b7',bg:'#eeeffd',soft:'rgba(91,99,183,.11)'})}
           ${dashboardKpiHtml({icon:'✓',label:'Hết quyển',value:finishedBooks,note:`${rate(finishedBooks)}% tổng số quyển`,color:'#1c9664',bg:'#e6f7ee',soft:'rgba(46,182,125,.12)'})}
           ${dashboardKpiHtml({icon:'⌂',label:'Đối tượng hồi gia',value:returnedBooks,note:`${rate(returnedBooks)}% tổng số quyển`,color:'#c47b13',bg:'#fff3db',soft:'rgba(249,176,65,.13)'})}
+          ${dashboardKpiHtml({icon:'📦',label:'Tổng thùng lưu trữ',value:totalBoxes,note:`${structuredBooks} quyển đã xác định vị trí`,color:'#8a5b22',bg:'#fff4df',soft:'rgba(202,139,54,.13)'})}
         </div>
         <div class="dashboard-panels">
           <article class="dashboard-panel">
@@ -5948,10 +6308,81 @@ body {
             </div>
           </article>
         </div>
+        ${storageInventoryPanelHtml(storageStats)}
         <div class="dashboard-alerts">
           <article class="dashboard-alert ${unscannedBooks ? 'warning' : 'success'}"><div class="dashboard-alert-icon">${unscannedBooks ? '⚠️' : '✓'}</div><div><strong>${unscannedBooks ? `${unscannedBooks} quyển chưa có file` : 'Đã hoàn tất file số hóa'}</strong><p>${unscannedBooks ? 'Cần tiếp tục bổ sung file scan hoặc hình ảnh.' : 'Tất cả quyển hiện có đều đã đính kèm file.'}</p></div></article>
           <article class="dashboard-alert ${deathBooks ? '' : 'success'}"><div class="dashboard-alert-icon">${deathBooks ? '●' : '✓'}</div><div><strong>${deathBooks ? `${deathBooks} quyển thuộc hồ sơ tử vong` : 'Chưa có hồ sơ tử vong'}</strong><p>Danh mục tử vong có thể lọc theo năm và nơi tử vong.</p></div></article>
         </div>`;
+
+      const storageSearchInput = $('#storageInventorySearch');
+      if (storageSearchInput) {
+        storageSearchInput.value = state.storageSearch || '';
+        storageSearchInput.addEventListener('input', event => {
+          state.storageSearch = event.target.value || '';
+          renderStorageInventoryRows();
+        });
+      }
+      renderStorageInventoryRows();
+    }
+
+    function storageInventoryPanelHtml(storageStats = {}) {
+      const totalBoxes = Number(storageStats.totalBoxes) || 0;
+      const structuredBooks = Number(storageStats.structuredBooks) || 0;
+      const unstructuredBooks = Number(storageStats.unstructuredBooks) || 0;
+      const duplicateCount = Number(storageStats.duplicateLocationCount) || 0;
+      return `
+        <article class="storage-inventory-panel">
+          <div class="storage-inventory-head">
+            <div>
+              <h3>Thống kê thùng và vị trí lưu trữ</h3>
+              <p>Tra cứu quyển hồ sơ theo thùng, vị trí, số hồ sơ hoặc số quyển.</p>
+            </div>
+            <div class="storage-inventory-summary">
+              <span><strong>${totalBoxes}</strong> thùng</span>
+              <span><strong>${structuredBooks}</strong> quyển</span>
+            </div>
+          </div>
+          <div class="storage-inventory-toolbar">
+            <input id="storageInventorySearch" type="search" placeholder="Tìm thùng, vị trí, số hồ sơ hoặc quyển..." aria-label="Tìm vị trí lưu trữ">
+            ${unstructuredBooks ? `<span class="storage-warning">⚠ ${unstructuredBooks} quyển cũ chưa tách thùng/vị trí</span>` : ''}
+            ${duplicateCount ? `<span class="storage-danger">⚠ ${duplicateCount} vị trí đang bị trùng</span>` : ''}
+          </div>
+          <div class="table-wrap storage-table-wrap">
+            <table class="storage-table">
+              <thead><tr><th>Thùng</th><th>Số quyển</th><th>Vị trí đã dùng</th><th>Chi tiết quyển trong thùng</th></tr></thead>
+              <tbody id="storageInventoryBody"></tbody>
+            </table>
+          </div>
+        </article>`;
+    }
+
+    function renderStorageInventoryRows() {
+      const body = $('#storageInventoryBody');
+      if (!body) return;
+      const boxes = Array.isArray(state.storageStats?.boxes) ? state.storageStats.boxes : [];
+      const keyword = normalizeStorageText(state.storageSearch || '').trim();
+      const filteredBoxes = boxes.map(box => {
+        const boxMatches = !keyword || normalizeStorageText(`thung ${box.thungSo}`).includes(keyword);
+        const records = boxMatches ? box.records : box.records.filter(record =>
+          normalizeStorageText(`thung ${box.thungSo} vi tri ${record.viTriSo} ${record.soHoSo} quyen ${record.quyenSo} ${record.trangThai}`).includes(keyword)
+        );
+        return { ...box, records };
+      }).filter(box => box.records.length);
+
+      body.innerHTML = filteredBoxes.length ? filteredBoxes.map(box => {
+        const positions = [...new Set(box.records.map(record => Number(record.viTriSo)).filter(Boolean))].sort((a, b) => a - b);
+        const details = box.records.map(record => `
+          <span class="storage-record-chip${box.duplicatePositions?.includes(record.viTriSo) ? ' duplicate' : ''}">
+            HS ${escapeHtml(record.soHoSo || '—')} · Q${escapeHtml(record.quyenSo || '—')} · VT${escapeHtml(record.viTriSo || '—')}
+          </span>`).join('');
+        return `
+          <tr>
+            <td><strong>Thùng ${escapeHtml(box.thungSo)}</strong></td>
+            <td><span class="storage-count-badge">${box.records.length} quyển</span></td>
+            <td>${positions.map(position => `<span class="position-chip">${position}</span>`).join('')}</td>
+            <td><div class="storage-record-list">${details}</div></td>
+          </tr>`;
+      }).join('') : `<tr><td colspan="4">${boxes.length ? 'Không tìm thấy vị trí phù hợp.' : 'Chưa có dữ liệu thùng và vị trí lưu trữ.'}</td></tr>`;
     }
 
     function dashboardKpiHtml({
@@ -6057,6 +6488,16 @@ body {
       if (!isDeath) form.elements.noiTuVong.value = '';
     }
 
+
+    function updateStorageLocationPreview() {
+      const form = $('#bookForm');
+      const label = storageLocationLabel(form.elements.thungSo.value, form.elements.viTriSo.value);
+      const preview = $('#storageLocationPreview');
+      if (!preview) return;
+      preview.classList.toggle('ready', Boolean(label));
+      preview.querySelector('strong').textContent = label || 'Chưa chọn thùng và vị trí';
+    }
+
     function openBookDialog(soHoSo) {
       if (!requireEditPermission()) return;
       const form = $('#bookForm');
@@ -6065,6 +6506,8 @@ body {
       form.elements.soHoSo.value = soHoSo;
       form.elements.originalQuyenSo.value = '';
       form.elements.existingFileUrl.value = '';
+      form.elements.thungSo.value = '';
+      form.elements.viTriSo.value = '';
       const nextBook = state.currentBooks.length ? Math.max(...state.currentBooks.map(book => Number(book['QUYỂN SỐ']) || 0)) + 1 : 1;
       form.elements.quyenSo.value = nextBook;
       form.elements.quyenSo.readOnly = false;
@@ -6076,6 +6519,7 @@ body {
       $('#bookNumberHelp').textContent = 'Hệ thống gợi ý số quyển tiếp theo; có thể điều chỉnh khi nhập hồ sơ lưu trữ cũ.';
       $('#existingFileNotice').classList.add('hidden');
       updateDeathPlaceVisibility();
+      updateStorageLocationPreview();
       $('#bookDialog').showModal();
     }
 
@@ -6095,7 +6539,9 @@ body {
       const mappedStatus = normalizeRecordStatus(book['TRẠNG THÁI HIỆN TẠI']);
       form.elements.trangThai.value = mappedStatus || CONFIG.STATUS.HET_QUYEN;
       form.elements.noiTuVong.value = book['NƠI TỬ VONG'] || '';
-      form.elements.maLuuTru.value = book['MÃ SỐ LƯU TRỮ'] || '';
+      const storage = parseStorageLocation(book);
+      form.elements.thungSo.value = storage.thungSo || '';
+      form.elements.viTriSo.value = storage.viTriSo || '';
       form.elements.ghiChu.value = book['GHI CHÚ'] || '';
       form.elements.existingFileUrl.value = book['FILE ĐÍNH KÈM'] || '';
       $('#bookDialogTitle').textContent = `Chỉnh sửa quyển ${book['QUYỂN SỐ']}`;
@@ -6109,6 +6555,7 @@ body {
         notice.classList.add('hidden');
       }
       updateDeathPlaceVisibility();
+      updateStorageLocationPreview();
       $('#bookDialog').showModal();
     }
 
@@ -6238,6 +6685,7 @@ body {
           if (refreshed) state.currentPatient = refreshed;
           renderDetail();
           state.deathsLoaded = false;
+          state.storageStatsLoaded = false;
         });
       } finally {
         submitButton.disabled = false;
@@ -6280,6 +6728,18 @@ body {
       }
     }
 
+
+    async function refreshStorageStatsSilently() {
+      try {
+        const result = await api.get('layThongKeLuuTru');
+        state.storageStats = result.data || { totalBooks: 0, structuredBooks: 0, unstructuredBooks: 0, totalBoxes: 0, duplicateLocationCount: 0, boxes: [] };
+        state.storageStatsLoaded = true;
+        renderStats();
+      } catch (error) {
+        console.warn(error);
+      }
+    }
+
     async function switchView(name) {
       $$('.view').forEach(view => view.classList.remove('active'));
       $$('.nav-btn').forEach(button => {
@@ -6298,6 +6758,10 @@ body {
 
       if (name === 'deaths' && !state.deathsLoaded) {
         await withLoading(refreshDeathsSilently);
+      }
+
+      if (name === 'dashboard' && !state.storageStatsLoaded) {
+        await withLoading(refreshStorageStatsSilently);
       }
     }
 
