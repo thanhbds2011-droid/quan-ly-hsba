@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.07.13.02">
+  <meta name="version" content="2026.07.15.03">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -3248,7 +3248,7 @@ body {
 
 
 /* ============================================================
-   FIREBASE — ĐĂNG NHẬP VÀ TRẠNG THÁI TÀI KHOẢN
+   ĐĂNG NHẬP VÀ TRẠNG THÁI TÀI KHOẢN
    ============================================================ */
 
 .firebase-test-badge {
@@ -4279,7 +4279,7 @@ body {
       <div class="form-field">
         <label for="deleteConfirmInput">Nhập lại số hồ sơ để xác nhận</label>
         <input id="deleteConfirmInput" name="confirmSoHoSo" autocomplete="off" required>
-        <small class="field-hint">Dữ liệu hồ sơ cá nhân sẽ bị xóa khỏi Firebase và không thể khôi phục từ giao diện.</small>
+        <small class="field-hint">Dữ liệu hồ sơ cá nhân sẽ bị xóa khỏi hệ thống và không thể khôi phục từ giao diện.</small>
       </div>
 
       <div class="modal-actions">
@@ -4467,14 +4467,14 @@ body {
         code.includes('PERMISSION_DENIED')
       ) {
         return new Error(
-          'Tài khoản Google hiện tại chưa được cấp quyền đọc/ghi Firebase. '
-          + 'Kiểm tra lại Realtime Database Rules và đúng email đăng nhập.'
+          'Tài khoản hiện tại chưa được cấp quyền thực hiện thao tác này. '
+          + 'Vui lòng liên hệ người quản trị hệ thống.'
         );
       }
 
       if (code === 'auth/unauthorized-domain') {
         return new Error(
-          'Tên miền GitHub chưa có trong Authentication → Settings → Authorized domains.'
+          'Địa chỉ truy cập hiện tại chưa được hệ thống cho phép. Vui lòng liên hệ người quản trị.'
         );
       }
 
@@ -4518,13 +4518,13 @@ body {
 
       if (code.startsWith('auth/')) {
         return new Error(
-          `Không đăng nhập được Firebase (${code}). Vui lòng thử lại.`
+          'Không đăng nhập được hệ thống. Vui lòng thử lại.'
         );
       }
 
       return error instanceof Error
         ? error
-        : new Error('Không thực hiện được yêu cầu Firebase.');
+        : new Error('Không thực hiện được yêu cầu. Vui lòng thử lại.');
     }
 
     function normalizeRecordStatus(value) {
@@ -4664,7 +4664,7 @@ body {
           createdAt: serverTimestamp()
         });
       } catch (error) {
-        console.warn('Không ghi được nhật ký Firebase:', error);
+        console.warn('Không ghi được nhật ký hệ thống:', error);
       }
     }
 
@@ -4689,8 +4689,8 @@ body {
           }
 
           throw new Error(
-            'Không kết nối được dịch vụ file Google Drive. '
-            + 'Vui lòng kiểm tra mạng hoặc bản triển khai Apps Script.'
+            'Không kết nối được dịch vụ lưu trữ tệp. '
+            + 'Vui lòng kiểm tra kết nối mạng rồi thử lại.'
           );
         } finally {
           clearTimeout(timer);
@@ -4906,7 +4906,7 @@ body {
               return await this.getStats();
 
             default:
-              throw new Error(`Chưa hỗ trợ thao tác Firebase: ${action}`);
+              throw new Error('Chức năng này chưa được hỗ trợ.');
           }
         } catch (error) {
           throw firebaseError(error);
@@ -4931,7 +4931,7 @@ body {
               return await this.saveBook(payload, null);
 
             default:
-              throw new Error(`Chưa hỗ trợ thao tác Firebase: ${action}`);
+              throw new Error('Chức năng này chưa được hỗ trợ.');
           }
         } catch (error) {
           throw firebaseError(error);
@@ -4973,7 +4973,7 @@ body {
         );
 
         if (!patientSnapshot.exists()) {
-          throw new Error('Không tìm thấy đối tượng trong Firebase.');
+          throw new Error('Không tìm thấy hồ sơ trên hệ thống.');
         }
 
         const patient = patientSnapshot.val() || {};
@@ -5128,8 +5128,8 @@ body {
         const soHoSo = String(payload.soHoSo || '').trim();
         const confirmSoHoSo = String(payload.confirmSoHoSo || '').trim();
 
-        if (state.currentRole !== 'admin') {
-          throw new Error('Chỉ tài khoản quản trị mới được xóa hồ sơ.');
+        if (!['admin', 'editor'].includes(state.currentRole)) {
+          throw new Error('Tài khoản hiện tại không có quyền xóa hồ sơ.');
         }
 
         if (!soHoSo || normalize(confirmSoHoSo) !== normalize(soHoSo)) {
@@ -5266,7 +5266,7 @@ body {
             const upload = await this.driveUploader.upload(soHoSo, quyenSo, file);
             uploadedFileId = upload.data?.fileId || '';
             fileDinhKem = upload.data?.fileUrl || '';
-            if (!fileDinhKem) throw new Error('Dịch vụ file không trả về đường dẫn Google Drive.');
+            if (!fileDinhKem) throw new Error('Không nhận được đường dẫn tệp sau khi tải lên.');
           }
 
           const nowEmail = this.auth.currentUser.email || '';
@@ -5479,7 +5479,7 @@ body {
     }
 
     function canDeleteRecords() {
-      return state.currentRole === 'admin';
+      return state.currentRole === 'admin' || state.currentRole === 'editor';
     }
 
     function roleLabel(role) {
@@ -6119,7 +6119,7 @@ body {
 
     function openDeletePatientDialog(patient) {
       if (!canDeleteRecords()) {
-        showToast('Chỉ tài khoản quản trị mới được xóa hồ sơ.', true);
+        showToast('Tài khoản hiện tại không có quyền xóa hồ sơ.', true);
         return;
       }
 
@@ -6174,7 +6174,7 @@ body {
       event.preventDefault();
 
       if (!canDeleteRecords()) {
-        showToast('Chỉ tài khoản quản trị mới được xóa hồ sơ.', true);
+        showToast('Tài khoản hiện tại không có quyền xóa hồ sơ.', true);
         return;
       }
 
