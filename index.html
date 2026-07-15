@@ -3713,6 +3713,155 @@ body {
       .detail-action-group { justify-content: stretch; }
       .detail-action-group .btn { flex: 1 1 150px; }
     }
+
+    /* Chuẩn hóa bố cục biểu mẫu hồ sơ */
+    .record-dialog form {
+      padding: 26px;
+    }
+
+    .record-dialog .modal-head {
+      align-items: flex-start;
+      margin-bottom: 22px;
+    }
+
+    .record-dialog .form-grid {
+      align-items: start;
+      column-gap: 18px;
+      row-gap: 18px;
+    }
+
+    .record-dialog .form-field {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      gap: 8px;
+      margin: 0;
+    }
+
+    .record-dialog .form-field > label {
+      display: block;
+      margin: 0;
+      color: #162936;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .record-dialog .form-field > input,
+    .record-dialog .form-field > select,
+    .record-dialog .form-field > textarea {
+      min-height: 48px;
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .record-dialog .form-field > textarea {
+      min-height: 108px;
+      resize: vertical;
+    }
+
+    .record-dialog .field-hint {
+      display: block;
+      min-height: 18px;
+      color: #718390;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1.45;
+    }
+
+    .record-dialog .full-span {
+      grid-column: 1 / -1;
+    }
+
+    .patient-form-grid .form-field,
+    .book-form-grid .form-field {
+      align-self: stretch;
+    }
+
+    .record-dialog .modal-actions {
+      padding-top: 18px;
+      border-top: 1px solid #e7efef;
+    }
+
+    .btn.danger-action {
+      border-color: #f3c2c2;
+      background: #fff1f1;
+      color: #b42318;
+    }
+
+    .btn.danger-action:hover:not(:disabled) {
+      border-color: #e89a9a;
+      background: #ffe5e5;
+    }
+
+    .btn.danger-primary {
+      border-color: #c93232;
+      background: #c93232;
+      color: #fff;
+    }
+
+    .btn.danger-primary:hover:not(:disabled) {
+      background: #a92323;
+    }
+
+    .delete-warning {
+      margin: 0 0 18px;
+      padding: 14px 15px;
+      border: 1px solid #f0c7c7;
+      border-radius: 14px;
+      background: #fff6f6;
+      color: #7f1d1d;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .delete-warning strong {
+      color: #991b1b;
+    }
+
+    .delete-confirm-record {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin: 0 0 18px;
+      padding: 12px 14px;
+      border: 1px solid #e1eaea;
+      border-radius: 13px;
+      background: #f8fbfb;
+    }
+
+    .delete-confirm-record span {
+      color: #687b86;
+      font-size: 12px;
+    }
+
+    .delete-confirm-record strong {
+      display: block;
+      margin-top: 3px;
+      color: #173a43;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .record-dialog form {
+        padding: 20px;
+      }
+
+      .record-dialog .form-grid {
+        row-gap: 15px;
+      }
+
+      .record-dialog .full-span {
+        grid-column: auto;
+      }
+
+      .record-dialog .field-hint {
+        min-height: auto;
+      }
+
+      .delete-confirm-record {
+        grid-template-columns: 1fr;
+      }
+    }
 </style>
 </head>
 
@@ -3740,7 +3889,7 @@ body {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.07.15</small>
+        <small>Phiên bản 2026.07.15.2</small>
       </div>
     </aside>
 
@@ -3991,27 +4140,34 @@ body {
 
       <input type="hidden" name="mode" value="add">
 
-      <div class="form-grid two-columns">
-        <label>Số hồ sơ
-          <input name="soHoSo" required maxlength="50" autocomplete="off">
-          <small id="patientNumberHelp">Số hồ sơ phải duy nhất trên hệ thống.</small>
-        </label>
+      <div class="form-grid two-columns patient-form-grid">
+        <div class="form-field">
+          <label for="patientSoHoSo">Số hồ sơ</label>
+          <input id="patientSoHoSo" name="soHoSo" required maxlength="50" autocomplete="off">
+          <small id="patientNumberHelp" class="field-hint">Số hồ sơ phải duy nhất trên hệ thống.</small>
+        </div>
 
-        <label>Họ và tên
-          <input name="hoTen" required maxlength="150" autocomplete="off">
-        </label>
+        <div class="form-field">
+          <label for="patientHoTen">Họ và tên</label>
+          <input id="patientHoTen" name="hoTen" required maxlength="150" autocomplete="off">
+          <small class="field-hint">Nhập đầy đủ họ và tên theo hồ sơ giấy.</small>
+        </div>
 
-        <label>Năm sinh
-          <input name="namSinh" type="number" min="1900" max="2100" required>
-        </label>
+        <div class="form-field">
+          <label for="patientNamSinh">Năm sinh</label>
+          <input id="patientNamSinh" name="namSinh" type="number" min="1900" max="2100" inputmode="numeric" required>
+          <small class="field-hint">Nhập năm sinh gồm 4 chữ số.</small>
+        </div>
 
-        <label>Giới tính
-          <select name="gioiTinh" required>
+        <div class="form-field">
+          <label for="patientGioiTinh">Giới tính</label>
+          <select id="patientGioiTinh" name="gioiTinh" required>
             <option value="">— Chọn giới tính —</option>
             <option value="Nam">Nam</option>
             <option value="Nữ">Nữ</option>
           </select>
-        </label>
+          <small class="field-hint">Chọn giới tính của đối tượng.</small>
+        </div>
       </div>
 
       <div class="modal-actions">
@@ -4036,53 +4192,99 @@ body {
       <input type="hidden" name="originalQuyenSo">
       <input type="hidden" name="existingFileUrl">
 
-      <div class="form-grid two-columns">
-        <label>Quyển số
-          <input name="quyenSo" type="number" min="1" step="1" inputmode="numeric" required>
-          <small id="bookNumberHelp">Hệ thống gợi ý số quyển tiếp theo; có thể điều chỉnh khi nhập dữ liệu lưu trữ cũ.</small>
-        </label>
+      <div class="form-grid two-columns book-form-grid">
+        <div class="form-field">
+          <label for="bookQuyenSo">Quyển số</label>
+          <input id="bookQuyenSo" name="quyenSo" type="number" min="1" step="1" inputmode="numeric" required>
+          <small id="bookNumberHelp" class="field-hint">Hệ thống gợi ý số quyển tiếp theo; có thể điều chỉnh khi nhập dữ liệu lưu trữ cũ.</small>
+        </div>
 
-        <label>Trạng thái kết thúc
-          <select name="trangThai" required>
+        <div class="form-field">
+          <label for="bookTrangThai">Trạng thái kết thúc</label>
+          <select id="bookTrangThai" name="trangThai" required>
             <option value="">— Chọn trạng thái —</option>
             <option value="Hết quyển">Hết quyển</option>
             <option value="Đối tượng hồi gia">Đối tượng hồi gia</option>
             <option value="Đối tượng tử vong">Đối tượng tử vong</option>
           </select>
-        </label>
+          <small class="field-hint">Chọn lý do kết thúc quyển hồ sơ.</small>
+        </div>
 
-        <label>Ngày mở quyển
-          <input name="ngayBatDau" type="date" required>
-        </label>
+        <div class="form-field">
+          <label for="bookNgayBatDau">Ngày mở quyển</label>
+          <input id="bookNgayBatDau" name="ngayBatDau" type="date" required>
+          <small class="field-hint">Ngày bắt đầu sử dụng quyển hồ sơ.</small>
+        </div>
 
-        <label>Ngày kết thúc
-          <input name="ngayKetThuc" type="date" required>
-        </label>
+        <div class="form-field">
+          <label for="bookNgayKetThuc">Ngày kết thúc</label>
+          <input id="bookNgayKetThuc" name="ngayKetThuc" type="date" required>
+          <small class="field-hint">Ngày chốt quyển và đưa vào lưu trữ.</small>
+        </div>
 
-        <label id="deathPlaceField" class="conditional-field hidden">Nơi tử vong
-          <input name="noiTuVong" type="text" maxlength="200" placeholder="Ví dụ: Trung tâm; Bệnh viện...">
-          <small>Bắt buộc khi chọn trạng thái Đối tượng tử vong.</small>
-        </label>
+        <div id="deathPlaceField" class="form-field full-span conditional-field hidden">
+          <label for="bookNoiTuVong">Nơi tử vong</label>
+          <input id="bookNoiTuVong" name="noiTuVong" type="text" maxlength="200" placeholder="Ví dụ: Trung tâm; Bệnh viện...">
+          <small class="field-hint">Bắt buộc khi chọn trạng thái Đối tượng tử vong.</small>
+        </div>
 
-        <label>Mã/Vị trí lưu trữ
-          <input name="maLuuTru" type="text" required maxlength="150" placeholder="Ví dụ: Kệ A - Ngăn 2; Kho 1 - Thùng 07">
-          <small>Bắt buộc nhập nơi đang lưu quyển hồ sơ giấy.</small>
-        </label>
+        <div class="form-field full-span">
+          <label for="bookMaLuuTru">Mã/Vị trí lưu trữ</label>
+          <input id="bookMaLuuTru" name="maLuuTru" type="text" required maxlength="150" placeholder="Ví dụ: Kệ A - Ngăn 2; Kho 1 - Thùng 07">
+          <small class="field-hint">Bắt buộc nhập nơi đang lưu quyển hồ sơ giấy.</small>
+        </div>
+
+        <div class="form-field full-span">
+          <label for="bookFile">File scan hoặc hình ảnh</label>
+          <input id="bookFile" name="file" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif,application/pdf,image/jpeg,image/png,image/webp,image/heic,image/heif">
+          <small class="field-hint">PDF, JPG, PNG, WEBP, HEIC/HEIF; tối đa 20 MB. Hồ sơ tử vong bắt buộc phải có file.</small>
+          <span id="existingFileNotice" class="existing-file-notice hidden"></span>
+        </div>
+
+        <div class="form-field full-span">
+          <label for="bookGhiChu">Ghi chú khác</label>
+          <textarea id="bookGhiChu" name="ghiChu" rows="3" maxlength="2000" placeholder="Nhập nội dung cần lưu ý (nếu có)"></textarea>
+          <small class="field-hint">Có thể ghi thêm thông tin cần theo dõi hoặc đối chiếu.</small>
+        </div>
       </div>
-
-      <label>File scan hoặc hình ảnh
-        <input name="file" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif,application/pdf,image/jpeg,image/png,image/webp,image/heic,image/heif">
-        <small>PDF, JPG, PNG, WEBP, HEIC/HEIF; tối đa 20 MB. Hồ sơ tử vong bắt buộc phải có file.</small>
-        <span id="existingFileNotice" class="existing-file-notice hidden"></span>
-      </label>
-
-      <label>Ghi chú khác
-        <textarea name="ghiChu" rows="3" maxlength="2000" placeholder="Nhập nội dung cần lưu ý (nếu có)"></textarea>
-      </label>
 
       <div class="modal-actions">
         <button type="button" class="btn close-dialog">Hủy</button>
         <button id="bookSubmitBtn" type="submit" class="btn primary">Lưu hồ sơ</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="deletePatientDialog" class="record-dialog">
+    <form id="deletePatientForm">
+      <div class="modal-head">
+        <div>
+          <h3>Xóa hồ sơ đã nhập nhầm</h3>
+          <p class="modal-subtitle">Chỉ quản trị viên được thực hiện thao tác này</p>
+        </div>
+        <button type="button" class="icon-btn close-dialog" aria-label="Đóng">✕</button>
+      </div>
+
+      <input type="hidden" name="soHoSo">
+
+      <div class="delete-warning">
+        <strong>Lưu ý:</strong> Chỉ xóa được hồ sơ chưa có quyển lưu trữ. Nếu hồ sơ đã có quyển, hãy sử dụng chức năng chỉnh sửa để tránh mất dữ liệu nghiệp vụ.
+      </div>
+
+      <div class="delete-confirm-record">
+        <div><span>Số hồ sơ</span><strong id="deletePatientNumber">—</strong></div>
+        <div><span>Họ và tên</span><strong id="deletePatientName">—</strong></div>
+      </div>
+
+      <div class="form-field">
+        <label for="deleteConfirmInput">Nhập lại số hồ sơ để xác nhận</label>
+        <input id="deleteConfirmInput" name="confirmSoHoSo" autocomplete="off" required>
+        <small class="field-hint">Dữ liệu hồ sơ cá nhân sẽ bị xóa khỏi Firebase và không thể khôi phục từ giao diện.</small>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn close-dialog">Hủy</button>
+        <button id="deletePatientSubmitBtn" type="submit" class="btn danger-primary">Xóa hồ sơ</button>
       </div>
     </form>
   </dialog>
@@ -4722,6 +4924,9 @@ body {
             case 'capNhatDoiTuong':
               return await this.updatePatient(payload);
 
+            case 'xoaDoiTuong':
+              return await this.deletePatient(payload);
+
             case 'luuQuyenHoSo':
               return await this.saveBook(payload, null);
 
@@ -4913,6 +5118,65 @@ body {
           await update(ref(this.database), updates);
           const updated = { ...patientSnapshot.val(), hoTen, namSinh, gioiTinh, updatedAt: Date.now() };
           return { success: true, message: 'Đã cập nhật thông tin hồ sơ.', data: patientToUi(id, updated) };
+        } catch (error) {
+          await this.releasePatientLock(id, lockToken);
+          throw error;
+        }
+      }
+
+      async deletePatient(payload) {
+        const soHoSo = String(payload.soHoSo || '').trim();
+        const confirmSoHoSo = String(payload.confirmSoHoSo || '').trim();
+
+        if (state.currentRole !== 'admin') {
+          throw new Error('Chỉ tài khoản quản trị mới được xóa hồ sơ.');
+        }
+
+        if (!soHoSo || normalize(confirmSoHoSo) !== normalize(soHoSo)) {
+          throw new Error('Số hồ sơ xác nhận không chính xác.');
+        }
+
+        const id = firebaseKey(soHoSo);
+        const lockToken = await this.acquirePatientLock(id, 'XOA_HO_SO');
+
+        try {
+          const [patientSnapshot, booksSnapshot] = await Promise.all([
+            get(ref(this.database, `doiTuong/${id}`)),
+            get(ref(this.database, `quyenHoSo/${id}`))
+          ]);
+
+          if (!patientSnapshot.exists()) {
+            throw new Error('Hồ sơ không còn tồn tại trên hệ thống.');
+          }
+
+          const bookMap = booksSnapshot.val() || {};
+          const bookCount = Object.values(bookMap).filter(Boolean).length;
+
+          if (bookCount > 0) {
+            throw new Error('Không thể xóa vì hồ sơ đã có quyển lưu trữ. Hãy chỉnh sửa thông tin thay vì xóa.');
+          }
+
+          const patient = patientSnapshot.val() || {};
+          const logKey = push(ref(this.database, 'nhatKy')).key;
+          const updates = {
+            [`doiTuong/${id}`]: null,
+            [`quyenHoSo/${id}`]: null,
+            [`hoSoTuVong/${id}`]: null,
+            [`nhatKy/${logKey}`]: this.makeLog('XÓA HỒ SƠ NHẬP NHẦM', {
+              soHoSo,
+              hoTen: patient.hoTen || '',
+              namSinh: patient.namSinh || '',
+              gioiTinh: patient.gioiTinh || ''
+            }),
+            [`khoaThaoTac/${id}`]: null
+          };
+
+          await update(ref(this.database), updates);
+
+          return {
+            success: true,
+            message: `Đã xóa hồ sơ ${soHoSo}.`
+          };
         } catch (error) {
           await this.releasePatientLock(id, lockToken);
           throw error;
@@ -5214,6 +5478,10 @@ body {
       return state.currentRole === 'admin' || state.currentRole === 'editor';
     }
 
+    function canDeleteRecords() {
+      return state.currentRole === 'admin';
+    }
+
     function roleLabel(role) {
       if (role === 'admin') return 'Quản trị';
       if (role === 'editor') return 'Cập nhật';
@@ -5386,6 +5654,7 @@ body {
       $('#bookForm [name="trangThai"]').addEventListener('change', updateDeathPlaceVisibility);
       $('#patientForm').addEventListener('submit', submitPatient);
       $('#bookForm').addEventListener('submit', submitBook);
+      $('#deletePatientForm').addEventListener('submit', submitDeletePatient);
     }
 
     function setToday() {
@@ -5564,6 +5833,7 @@ body {
           <div class="detail-action">
             ${canEdit ? `<div class="detail-action-group">
               <button id="editPatientBtn" class="btn secondary-action">✎ Chỉnh sửa thông tin</button>
+              ${canDeleteRecords() ? `<button id="deletePatientBtn" class="btn danger-action" ${books.length ? 'disabled title="Chỉ xóa được hồ sơ chưa có quyển lưu trữ"' : ''}>🗑 Xóa hồ sơ</button>` : ''}
               <button id="openBookBtn" class="btn primary" ${isDeath ? 'disabled title="Hồ sơ tử vong không mở thêm quyển mới"' : ''}>＋ Lưu hồ sơ</button>
             </div>` : `<span class="readonly-label">👁 Chế độ chỉ xem</span>`}
           </div>
@@ -5583,6 +5853,7 @@ body {
 
       $('#openBookBtn')?.addEventListener('click', () => openBookDialog(patient['SỐ HỒ SƠ']));
       $('#editPatientBtn')?.addEventListener('click', () => openPatientDialog('edit', patient));
+      $('#deletePatientBtn')?.addEventListener('click', () => openDeletePatientDialog(patient));
       $$('[data-action="edit-book"]').forEach(button => {
         button.addEventListener('click', () => openEditBookDialog(Number(button.dataset.quyenSo)));
       });
@@ -5846,6 +6117,26 @@ body {
       $('#bookDialog').showModal();
     }
 
+    function openDeletePatientDialog(patient) {
+      if (!canDeleteRecords()) {
+        showToast('Chỉ tài khoản quản trị mới được xóa hồ sơ.', true);
+        return;
+      }
+
+      if (state.currentBooks.length > 0) {
+        showToast('Chỉ xóa được hồ sơ chưa có quyển lưu trữ.', true);
+        return;
+      }
+
+      const form = $('#deletePatientForm');
+      form.reset();
+      form.elements.soHoSo.value = patient['SỐ HỒ SƠ'];
+      $('#deletePatientNumber').textContent = patient['SỐ HỒ SƠ'] || '—';
+      $('#deletePatientName').textContent = patient['HỌ VÀ TÊN'] || '—';
+      $('#deletePatientDialog').showModal();
+      setTimeout(() => $('#deleteConfirmInput')?.focus(), 80);
+    }
+
     async function submitPatient(event) {
       event.preventDefault();
       if (!requireEditPermission()) return;
@@ -5872,6 +6163,51 @@ body {
           $('#patientDialog').close();
           showToast(result.message);
           refreshPatientSummariesSilently();
+        });
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
+      }
+    }
+
+    async function submitDeletePatient(event) {
+      event.preventDefault();
+
+      if (!canDeleteRecords()) {
+        showToast('Chỉ tài khoản quản trị mới được xóa hồ sơ.', true);
+        return;
+      }
+
+      const form = event.currentTarget;
+      const submitButton = $('#deletePatientSubmitBtn');
+      const originalText = submitButton.textContent;
+      const data = Object.fromEntries(new FormData(form).entries());
+
+      submitButton.disabled = true;
+      submitButton.textContent = 'Đang xóa...';
+
+      try {
+        await withLoading(async () => {
+          const result = await api.post('xoaDoiTuong', data);
+          const targetNumber = normalize(data.soHoSo);
+
+          state.allPatients = state.allPatients.filter(
+            item => normalize(item['SỐ HỒ SƠ']) !== targetNumber
+          );
+          state.patients = state.patients.filter(
+            item => normalize(item['SỐ HỒ SƠ']) !== targetNumber
+          );
+          state.currentPatient = null;
+          state.currentBooks = [];
+          state.deathsLoaded = false;
+
+          form.reset();
+          $('#deletePatientDialog').close();
+          searchPatients();
+          renderStats();
+          switchView('patients');
+          showToast(result.message);
+          await refreshPatientSummariesSilently();
         });
       } finally {
         submitButton.disabled = false;
