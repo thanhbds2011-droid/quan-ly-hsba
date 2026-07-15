@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.07.15.03">
+  <meta name="version" content="2026.07.15.04">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -4260,7 +4260,7 @@ body {
       <div class="modal-head">
         <div>
           <h3>Xóa hồ sơ đã nhập nhầm</h3>
-          <p class="modal-subtitle">Chỉ quản trị viên được thực hiện thao tác này</p>
+          <p class="modal-subtitle">Người có quyền cập nhật được thực hiện thao tác này</p>
         </div>
         <button type="button" class="icon-btn close-dialog" aria-label="Đóng">✕</button>
       </div>
@@ -4268,7 +4268,7 @@ body {
       <input type="hidden" name="soHoSo">
 
       <div class="delete-warning">
-        <strong>Lưu ý:</strong> Chỉ xóa được hồ sơ chưa có quyển lưu trữ. Nếu hồ sơ đã có quyển, hãy sử dụng chức năng chỉnh sửa để tránh mất dữ liệu nghiệp vụ.
+        <strong>Lưu ý:</strong> Chỉ xóa được hồ sơ chưa có quyển lưu trữ. Hồ sơ đã có quyển chỉ được chỉnh sửa để bảo đảm an toàn dữ liệu.
       </div>
 
       <div class="delete-confirm-record">
@@ -4277,9 +4277,9 @@ body {
       </div>
 
       <div class="form-field">
-        <label for="deleteConfirmInput">Nhập lại số hồ sơ để xác nhận</label>
-        <input id="deleteConfirmInput" name="confirmSoHoSo" autocomplete="off" required>
-        <small class="field-hint">Dữ liệu hồ sơ cá nhân sẽ bị xóa khỏi hệ thống và không thể khôi phục từ giao diện.</small>
+        <label for="deleteReasonInput">Lý do xóa hồ sơ</label>
+        <textarea id="deleteReasonInput" name="lyDoXoa" rows="3" minlength="3" maxlength="500" autocomplete="off" placeholder="Ví dụ: Nhập nhầm người; trùng số hồ sơ; thông tin tạo sai..." required></textarea>
+        <small class="field-hint">Bắt buộc nhập lý do. Nội dung xóa sẽ được ghi nhận để phục vụ kiểm tra, đối chiếu.</small>
       </div>
 
       <div class="modal-actions">
@@ -5126,61 +5126,56 @@ body {
 
       async deletePatient(payload) {
         const soHoSo = String(payload.soHoSo || '').trim();
-        const confirmSoHoSo = String(payload.confirmSoHoSo || '').trim();
+        const lyDoXoa = String(payload.lyDoXoa || '').trim();
 
         if (!['admin', 'editor'].includes(state.currentRole)) {
-          throw new Error('Tài khoản hiện tại không có quyền xóa hồ sơ.');
+          throw new Error('Tài khoản chỉ xem không được phép xóa hồ sơ.');
         }
 
-        if (!soHoSo || normalize(confirmSoHoSo) !== normalize(soHoSo)) {
-          throw new Error('Số hồ sơ xác nhận không chính xác.');
+        if (!soHoSo) {
+          throw new Error('Không xác định được hồ sơ cần xóa.');
+        }
+
+        if (lyDoXoa.length < 3) {
+          throw new Error('Vui lòng nhập lý do xóa hồ sơ.');
         }
 
         const id = firebaseKey(soHoSo);
-        const lockToken = await this.acquirePatientLock(id, 'XOA_HO_SO');
+        const [patientSnapshot, booksSnapshot] = await Promise.all([
+          get(ref(this.database, `doiTuong/${id}`)),
+          get(ref(this.database, `quyenHoSo/${id}`))
+        ]);
 
-        try {
-          const [patientSnapshot, booksSnapshot] = await Promise.all([
-            get(ref(this.database, `doiTuong/${id}`)),
-            get(ref(this.database, `quyenHoSo/${id}`))
-          ]);
-
-          if (!patientSnapshot.exists()) {
-            throw new Error('Hồ sơ không còn tồn tại trên hệ thống.');
-          }
-
-          const bookMap = booksSnapshot.val() || {};
-          const bookCount = Object.values(bookMap).filter(Boolean).length;
-
-          if (bookCount > 0) {
-            throw new Error('Không thể xóa vì hồ sơ đã có quyển lưu trữ. Hãy chỉnh sửa thông tin thay vì xóa.');
-          }
-
-          const patient = patientSnapshot.val() || {};
-          const logKey = push(ref(this.database, 'nhatKy')).key;
-          const updates = {
-            [`doiTuong/${id}`]: null,
-            [`quyenHoSo/${id}`]: null,
-            [`hoSoTuVong/${id}`]: null,
-            [`nhatKy/${logKey}`]: this.makeLog('XÓA HỒ SƠ NHẬP NHẦM', {
-              soHoSo,
-              hoTen: patient.hoTen || '',
-              namSinh: patient.namSinh || '',
-              gioiTinh: patient.gioiTinh || ''
-            }),
-            [`khoaThaoTac/${id}`]: null
-          };
-
-          await update(ref(this.database), updates);
-
-          return {
-            success: true,
-            message: `Đã xóa hồ sơ ${soHoSo}.`
-          };
-        } catch (error) {
-          await this.releasePatientLock(id, lockToken);
-          throw error;
+        if (!patientSnapshot.exists()) {
+          throw new Error('Hồ sơ không còn tồn tại trên hệ thống.');
         }
+
+        const bookMap = booksSnapshot.val() || {};
+        const bookCount = Object.values(bookMap).filter(Boolean).length;
+
+        if (bookCount > 0) {
+          throw new Error('Không thể xóa vì hồ sơ đã có quyển lưu trữ. Hãy chỉnh sửa thông tin thay vì xóa.');
+        }
+
+        const patient = patientSnapshot.val() || {};
+        const logKey = push(ref(this.database, 'nhatKy')).key;
+        const updates = {
+          [`doiTuong/${id}`]: null,
+          [`nhatKy/${logKey}`]: this.makeLog('XÓA HỒ SƠ NHẬP NHẦM', {
+            soHoSo,
+            hoTen: patient.hoTen || '',
+            namSinh: patient.namSinh || '',
+            gioiTinh: patient.gioiTinh || '',
+            lyDoXoa
+          })
+        };
+
+        await update(ref(this.database), updates);
+
+        return {
+          success: true,
+          message: `Đã xóa hồ sơ ${soHoSo}.`
+        };
       }
 
       summarizeBooks(bookMap) {
@@ -6134,7 +6129,7 @@ body {
       $('#deletePatientNumber').textContent = patient['SỐ HỒ SƠ'] || '—';
       $('#deletePatientName').textContent = patient['HỌ VÀ TÊN'] || '—';
       $('#deletePatientDialog').showModal();
-      setTimeout(() => $('#deleteConfirmInput')?.focus(), 80);
+      setTimeout(() => $('#deleteReasonInput')?.focus(), 80);
     }
 
     async function submitPatient(event) {
