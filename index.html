@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.07.16.05">
+  <meta name="version" content="2026.07.16.07">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -4850,7 +4850,7 @@ body.guest-mode #patientsEmpty {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.07.16.6</small>
+        <small>Phiên bản 2026.07.16.7</small>
       </div>
     </aside>
 
@@ -5409,10 +5409,7 @@ body.guest-mode #patientsEmpty {
       getAuth,
       GoogleAuthProvider,
       signInWithPopup,
-      linkWithPopup,
-      signInWithCredential,
       signInWithEmailAndPassword,
-      signInAnonymously,
       onAuthStateChanged,
       signOut,
       setPersistence,
@@ -5792,7 +5789,11 @@ body.guest-mode #patientsEmpty {
     }
 
     function isPublicSession() {
-      return firebaseAuth.currentUser?.isAnonymous === true;
+      return (
+        !firebaseAuth.currentUser ||
+        firebaseAuth.currentUser?.isAnonymous === true ||
+        state.currentRole === 'public'
+      );
     }
 
     function publicBookFromSource(book = {}) {
@@ -5902,16 +5903,14 @@ body.guest-mode #patientsEmpty {
     }
 
     async function readPublicCatalog() {
-      const catalogRef = ref(firebaseDatabase, 'congKhai');
-      let snapshot = await get(catalogRef);
+      // Cấu trúc chính thức: congKhai/hoSo/{patientId}
+      let snapshot = await get(ref(firebaseDatabase, 'congKhai/hoSo'));
       let value = snapshot.val() || {};
       let entries = extractPublicCatalogEntries(value);
 
-      // Sau khi vừa tạo phiên ẩn danh, token có thể cần một nhịp ngắn
-      // trước khi dữ liệu mới đồng bộ được đọc ổn định.
-      if (!entries.length && firebaseAuth.currentUser?.isAnonymous) {
-        await new Promise(resolve => setTimeout(resolve, 450));
-        snapshot = await get(catalogRef);
+      // Tương thích dữ liệu thử nghiệm cũ từng lưu trực tiếp dưới congKhai/{patientId}.
+      if (!entries.length) {
+        snapshot = await get(ref(firebaseDatabase, 'congKhai'));
         value = snapshot.val() || {};
         entries = extractPublicCatalogEntries(value);
       }
@@ -6266,9 +6265,9 @@ body.guest-mode #patientsEmpty {
         this.lockLifetimeMs = 3 * 60 * 1000;
       }
 
-      ensureSignedIn() {
-        if (!this.auth.currentUser) {
-          throw new Error('Không thể kết nối phiên sử dụng. Vui lòng tải lại trang.');
+      ensureSignedIn(allowPublic = false) {
+        if (!this.auth.currentUser && !allowPublic) {
+          throw new Error('Phiên chỉnh sửa đã hết hạn. Vui lòng đăng nhập lại.');
         }
       }
 
@@ -6366,38 +6365,78 @@ body.guest-mode #patientsEmpty {
 
 
       isPublicSession() {
-        return this.auth.currentUser?.isAnonymous === true;
+        return (
+          !this.auth.currentUser ||
+          this.auth.currentUser?.isAnonymous === true ||
+          state.currentRole === 'public'
+        );
       }
 
       async rebuildPublicCatalog(patientEntries = null) {
-        if (this.isPublicSession()) return;
+        if (this.isPublicSession()) {
+          throw new Error('Chỉ tài khoản có quyền chỉnh sửa mới được cập nhật danh mục xem.');
+        }
+
+        const currentUser = this.auth.currentUser;
+        if (!currentUser) {
+          throw new Error('Phiên chỉnh sửa đã hết hạn.');
+        }
+
+        // Làm mới token trước khi ghi để tránh quyền cũ còn lưu từ phiên xem.
+        await currentUser.getIdToken(true);
 
         const entries = patientEntries || await readPatientObjects();
         const booksSnapshot = await get(ref(this.database, 'quyenHoSo'));
         const booksRoot = booksSnapshot.val() || {};
-        const catalog = {
-          _meta: {
-            schemaVersion: CONFIG.PUBLIC_SCHEMA_VERSION,
-            patientCount: entries.length,
-            sourceUpdatedAt: entries.reduce(
-              (maximum, item) =>
-                Math.max(maximum, Number(item.patient?.updatedAt) || 0),
-              0
-            ),
-            updatedAt: Date.now()
+        const existingSnapshot = await get(ref(this.database, 'congKhai'));
+        const existingRoot = existingSnapshot.val() || {};
+        const existingItems = existingRoot.hoSo || {};
+        const now = Date.now();
+        const sourceUpdatedAt = entries.reduce(
+          (maximum, item) =>
+            Math.max(maximum, Number(item.patient?.updatedAt) || 0),
+          0
+        );
+
+        const updates = {};
+        const nextIds = new Set(entries.map(item => item.id));
+
+        // Xóa hồ sơ đã bị xóa khỏi nguồn chính.
+        Object.keys(existingItems).forEach(id => {
+          if (!nextIds.has(id)) {
+            updates[`congKhai/hoSo/${id}`] = null;
           }
-        };
+        });
+
+        // Dọn cấu trúc thử nghiệm cũ từng lưu trực tiếp dưới congKhai/{id}.
+        Object.keys(existingRoot).forEach(key => {
+          if (key !== '_meta' && key !== 'hoSo') {
+            updates[`congKhai/${key}`] = null;
+          }
+        });
 
         entries.forEach(({ id, patient }) => {
-          catalog[id] = publicPatientFromSource(
+          updates[`congKhai/hoSo/${id}`] = publicPatientFromSource(
             patient,
             booksRoot[id] || {}
           );
         });
 
-        await set(ref(this.database, 'congKhai'), catalog);
+        updates['congKhai/_meta/schemaVersion'] =
+          CONFIG.PUBLIC_SCHEMA_VERSION;
+        updates['congKhai/_meta/patientCount'] = entries.length;
+        updates['congKhai/_meta/sourceUpdatedAt'] = sourceUpdatedAt;
+        updates['congKhai/_meta/updatedAt'] = now;
 
-        const verifiedEntries = await readPublicCatalog();
+        // Một lần cập nhật đa đường dẫn: hoặc toàn bộ thành công, hoặc không thay đổi.
+        await update(ref(this.database), updates);
+
+        const verifiedSnapshot = await get(
+          ref(this.database, 'congKhai/hoSo')
+        );
+        const verifiedValue = verifiedSnapshot.val() || {};
+        const verifiedEntries = extractPublicCatalogEntries(verifiedValue);
+
         if (verifiedEntries.length !== entries.length) {
           throw new Error(
             `Danh mục xem chỉ ghi được ${verifiedEntries.length}/${entries.length} hồ sơ.`
@@ -6406,7 +6445,7 @@ body.guest-mode #patientsEmpty {
 
         return {
           patientCount: verifiedEntries.length,
-          updatedAt: catalog._meta.updatedAt
+          updatedAt: now
         };
       }
 
@@ -6454,7 +6493,7 @@ body.guest-mode #patientsEmpty {
       }
 
       async get(action, params = {}) {
-        this.ensureSignedIn();
+        this.ensureSignedIn(true);
 
         try {
           switch (action) {
@@ -6548,12 +6587,19 @@ body.guest-mode #patientsEmpty {
       async getBooks(soHoSo) {
         const id = firebaseKey(soHoSo);
         const publicSession = this.isPublicSession();
-        const patientSnapshot = await get(
+        let patientSnapshot = await get(
           ref(
             this.database,
-            publicSession ? `congKhai/${id}` : `doiTuong/${id}`
+            publicSession ? `congKhai/hoSo/${id}` : `doiTuong/${id}`
           )
         );
+
+        // Tương thích cấu trúc công khai cũ trong giai đoạn chuyển đổi.
+        if (publicSession && !patientSnapshot.exists()) {
+          patientSnapshot = await get(
+            ref(this.database, `congKhai/${id}`)
+          );
+        }
 
         if (!patientSnapshot.exists()) {
           throw new Error('Không tìm thấy hồ sơ trên hệ thống.');
@@ -6663,7 +6709,7 @@ body.guest-mode #patientsEmpty {
         }
 
         await set(
-          ref(this.database, `congKhai/${id}`),
+          ref(this.database, `congKhai/hoSo/${id}`),
           publicPatientFromSource(patient, {})
         );
         await this.updatePublicMeta(1, now);
@@ -6707,11 +6753,11 @@ body.guest-mode #patientsEmpty {
             [`doiTuong/${id}/namSinh`]: namSinh,
             [`doiTuong/${id}/gioiTinh`]: gioiTinh,
             [`doiTuong/${id}/updatedAt`]: serverTimestamp(),
-            [`congKhai/${id}/hoTen`]: hoTen,
-            [`congKhai/${id}/hoTenTimKiem`]: normalize(hoTen),
-            [`congKhai/${id}/namSinh`]: namSinh,
-            [`congKhai/${id}/gioiTinh`]: gioiTinh,
-            [`congKhai/${id}/updatedAt`]: Date.now(),
+            [`congKhai/hoSo/${id}/hoTen`]: hoTen,
+            [`congKhai/hoSo/${id}/hoTenTimKiem`]: normalize(hoTen),
+            [`congKhai/hoSo/${id}/namSinh`]: namSinh,
+            [`congKhai/hoSo/${id}/gioiTinh`]: gioiTinh,
+            [`congKhai/hoSo/${id}/updatedAt`]: Date.now(),
             [`congKhai/_meta/schemaVersion`]: CONFIG.PUBLIC_SCHEMA_VERSION,
             [`congKhai/_meta/sourceUpdatedAt`]: Date.now(),
             [`congKhai/_meta/updatedAt`]: Date.now(),
@@ -6774,7 +6820,7 @@ body.guest-mode #patientsEmpty {
         const logKey = push(ref(this.database, 'nhatKy')).key;
         const updates = {
           [`doiTuong/${id}`]: null,
-          [`congKhai/${id}`]: null,
+          [`congKhai/hoSo/${id}`]: null,
           [`nhatKy/${logKey}`]: this.makeLog('XÓA HỒ SƠ NHẬP NHẦM', {
             soHoSo,
             hoTen: patient.hoTen || '',
@@ -6961,7 +7007,7 @@ body.guest-mode #patientsEmpty {
             [`doiTuong/${id}/soQuyenTuVong`]: summary.deaths,
             [`doiTuong/${id}/soQuyenCoFile`]: summary.files,
             [`doiTuong/${id}/updatedAt`]: serverTimestamp(),
-            [`congKhai/${id}`]: publicPatient,
+            [`congKhai/hoSo/${id}`]: publicPatient,
             [`congKhai/_meta/schemaVersion`]: CONFIG.PUBLIC_SCHEMA_VERSION,
             [`congKhai/_meta/sourceUpdatedAt`]: Date.now(),
             [`congKhai/_meta/updatedAt`]: Date.now(),
@@ -7097,35 +7143,22 @@ body.guest-mode #patientsEmpty {
       });
 
       onAuthStateChanged(firebaseAuth, async user => {
-        if (!user) {
-          if (authUpgradeInProgress) return;
-
-          try {
-            await signInAnonymously(firebaseAuth);
-          } catch (error) {
-            console.error(error);
-            showPublicConnectionError();
-          }
-          return;
-        }
+        if (authUpgradeInProgress && !user) return;
 
         $('#loading').classList.remove('hidden');
-
         let accessResolved = false;
+        const publicMode = !user || user.isAnonymous;
 
         try {
-          if (user.isAnonymous) {
+          if (publicMode) {
             state.currentRole = 'public';
             showPublicState();
-            await user.getIdToken(true).catch(() => {});
           } else {
             const access = await resolveUserAccess(user);
             accessResolved = true;
             state.currentRole = access.role;
             showLoggedInState(user, access.role);
 
-            // Sau lần đăng nhập chỉnh sửa, chủ động tạo lại danh mục xem
-            // nếu nhánh congKhai chưa tồn tại hoặc phiên đăng nhập vừa đổi.
             const forcePublicSync =
               sessionStorage.getItem('hsba_force_public_sync') === '1';
 
@@ -7142,7 +7175,7 @@ body.guest-mode #patientsEmpty {
                   publicSyncError
                 );
                 showToast(
-                  'Đã đăng nhập nhưng chưa khởi tạo được danh mục xem. Vui lòng tải lại trang.',
+                  'Đã đăng nhập nhưng chưa cập nhật được danh mục xem. Hãy bấm “Cập nhật danh mục xem”.',
                   true
                 );
               }
@@ -7165,13 +7198,13 @@ body.guest-mode #patientsEmpty {
         } catch (error) {
           console.error(error);
 
-          if (!user.isAnonymous && !accessResolved) {
+          if (!publicMode && !accessResolved) {
             await signOut(firebaseAuth).catch(() => {});
             openLoginDialog();
             showAuthError(
               error.message || 'Tài khoản chưa được cấp quyền.'
             );
-          } else if (!user.isAnonymous) {
+          } else if (!publicMode) {
             showLoggedInState(user, state.currentRole || 'viewer');
             applyRoleUi();
             showToast(
@@ -7305,34 +7338,13 @@ body.guest-mode #patientsEmpty {
         try {
           const currentUser = firebaseAuth.currentUser;
 
+          // Dọn phiên Anonymous cũ nếu trình duyệt từng sử dụng bản thử nghiệm.
           if (currentUser?.isAnonymous) {
-            try {
-              await linkWithPopup(currentUser, googleProvider);
-            } catch (linkError) {
-              const code = String(linkError?.code || '');
-              const credential =
-                GoogleAuthProvider.credentialFromError(linkError);
-
-              if (
-                credential &&
-                [
-                  'auth/credential-already-in-use',
-                  'auth/email-already-in-use',
-                  'auth/account-exists-with-different-credential'
-                ].includes(code)
-              ) {
-                await signInWithCredential(firebaseAuth, credential);
-              } else {
-                throw linkError;
-              }
-            }
-          } else {
-            await signInWithPopup(firebaseAuth, googleProvider);
+            await signOut(firebaseAuth);
           }
 
-          // Sau khi đăng nhập Google thành công, tải lại trang để bảo đảm
-          // tài khoản ẩn danh đã được thay bằng tài khoản thật và token
-          // mới được áp dụng trước khi ghi nhánh congKhai.
+          await signInWithPopup(firebaseAuth, googleProvider);
+
           sessionStorage.setItem('hsba_force_public_sync', '1');
           window.location.reload();
         } catch (error) {
