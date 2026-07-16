@@ -3525,6 +3525,23 @@ body {
   font-weight: 700;
 }
 
+.auth-sync-public-btn {
+  min-height: 34px;
+  padding: 7px 11px;
+  border: 1px solid #bfe4de;
+  border-radius: 10px;
+  background: #f0fbf9;
+  color: #087d78;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.auth-sync-public-btn:hover {
+  border-color: #88d2c8;
+  background: #e5f8f5;
+}
+
 @media (max-width: 760px) {
   .firebase-test-badge {
     display: none;
@@ -3566,6 +3583,18 @@ body {
 
   .auth-logout-btn::before {
     content: "↪";
+    font-size: 18px;
+  }
+
+  .auth-sync-public-btn {
+    width: 35px;
+    min-width: 35px;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .auth-sync-public-btn::before {
+    content: "↻";
     font-size: 18px;
   }
 }
@@ -4821,7 +4850,7 @@ body.guest-mode #patientsEmpty {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.07.16.5</small>
+        <small>Phiên bản 2026.07.16.6</small>
       </div>
     </aside>
 
@@ -4844,6 +4873,10 @@ body.guest-mode #patientsEmpty {
             <span class="auth-user-dot"></span>
             <span id="authUserEmail">Đã đăng nhập</span>
           </div>
+
+          <button id="syncPublicBtn" class="auth-sync-public-btn hidden" type="button" title="Cập nhật danh mục xem">
+            ↻ Cập nhật danh mục xem
+          </button>
 
           <button id="logoutBtn" class="auth-logout-btn" type="button">
             Đăng xuất
@@ -5837,23 +5870,62 @@ body.guest-mode #patientsEmpty {
       };
     }
 
+    function extractPublicCatalogEntries(value = {}) {
+      if (!value || typeof value !== 'object') return [];
+
+      // Hỗ trợ cả cấu trúc trực tiếp và các cấu trúc trung gian
+      // từng được tạo trong quá trình thử nghiệm.
+      const candidates = [
+        value,
+        value.data,
+        value.items,
+        value.hoSo,
+        value.danhSach
+      ].filter(item => item && typeof item === 'object');
+
+      for (const source of candidates) {
+        const entries = Object.entries(source)
+          .filter(([key, patient]) => {
+            if (key.startsWith('_')) return false;
+            if (!patient || typeof patient !== 'object') return false;
+            return Boolean(
+              String(patient.soHoSo || '').trim() ||
+              String(patient.hoTen || '').trim()
+            );
+          })
+          .map(([id, patient]) => ({ id, patient: patient || {} }));
+
+        if (entries.length) return entries;
+      }
+
+      return [];
+    }
+
     async function readPublicCatalog() {
-      const snapshot = await get(ref(firebaseDatabase, 'congKhai'));
-      const value = snapshot.val() || {};
+      const catalogRef = ref(firebaseDatabase, 'congKhai');
+      let snapshot = await get(catalogRef);
+      let value = snapshot.val() || {};
+      let entries = extractPublicCatalogEntries(value);
 
-      return Object.entries(value)
-        .filter(([key, patient]) => key !== '_meta' && patient)
-        .map(([id, patient]) => ({ id, patient: patient || {} }))
-        .sort((a, b) => {
-          const updatedDifference =
-            (Number(b.patient.updatedAt) || 0) -
-            (Number(a.patient.updatedAt) || 0);
+      // Sau khi vừa tạo phiên ẩn danh, token có thể cần một nhịp ngắn
+      // trước khi dữ liệu mới đồng bộ được đọc ổn định.
+      if (!entries.length && firebaseAuth.currentUser?.isAnonymous) {
+        await new Promise(resolve => setTimeout(resolve, 450));
+        snapshot = await get(catalogRef);
+        value = snapshot.val() || {};
+        entries = extractPublicCatalogEntries(value);
+      }
 
-          if (updatedDifference) return updatedDifference;
+      return entries.sort((a, b) => {
+        const updatedDifference =
+          (Number(b.patient.updatedAt) || 0) -
+          (Number(a.patient.updatedAt) || 0);
 
-          return String(a.patient.soHoSo || '')
-            .localeCompare(String(b.patient.soHoSo || ''), 'vi');
-        });
+        if (updatedDifference) return updatedDifference;
+
+        return String(a.patient.soHoSo || '')
+          .localeCompare(String(b.patient.soHoSo || ''), 'vi');
+      });
     }
 
     async function readPublicDeaths() {
@@ -6324,6 +6396,18 @@ body.guest-mode #patientsEmpty {
         });
 
         await set(ref(this.database, 'congKhai'), catalog);
+
+        const verifiedEntries = await readPublicCatalog();
+        if (verifiedEntries.length !== entries.length) {
+          throw new Error(
+            `Danh mục xem chỉ ghi được ${verifiedEntries.length}/${entries.length} hồ sơ.`
+          );
+        }
+
+        return {
+          patientCount: verifiedEntries.length,
+          updatedAt: catalog._meta.updatedAt
+        };
       }
 
       async syncPublicCatalogIfNeeded(patientEntries = []) {
@@ -6333,6 +6417,7 @@ body.guest-mode #patientsEmpty {
           ref(this.database, 'congKhai/_meta')
         );
         const meta = metaSnapshot.val() || {};
+        const publicEntries = await readPublicCatalog();
         const sourceUpdatedAt = patientEntries.reduce(
           (maximum, item) =>
             Math.max(maximum, Number(item.patient?.updatedAt) || 0),
@@ -6342,6 +6427,7 @@ body.guest-mode #patientsEmpty {
         const needsSync =
           Number(meta.schemaVersion) !== CONFIG.PUBLIC_SCHEMA_VERSION ||
           Number(meta.patientCount) !== patientEntries.length ||
+          publicEntries.length !== patientEntries.length ||
           Number(meta.sourceUpdatedAt) < sourceUpdatedAt;
 
         if (needsSync) {
@@ -7031,6 +7117,7 @@ body.guest-mode #patientsEmpty {
           if (user.isAnonymous) {
             state.currentRole = 'public';
             showPublicState();
+            await user.getIdToken(true).catch(() => {});
           } else {
             const access = await resolveUserAccess(user);
             accessResolved = true;
@@ -7152,6 +7239,7 @@ body.guest-mode #patientsEmpty {
       const canEdit = canEditRecords();
       const isGuest = state.currentRole === 'public' || !state.currentRole;
       $('#addPatientBtn')?.classList.toggle('hidden', !canEdit);
+      $('#syncPublicBtn')?.classList.toggle('hidden', !canEdit);
       document.body.classList.toggle('read-only-mode', !canEdit);
       document.body.classList.toggle('guest-mode', isGuest);
     }
@@ -7254,6 +7342,31 @@ body.guest-mode #patientsEmpty {
           button.disabled = false;
           button.innerHTML =
             '<span class="google-mark">G</span> Đăng nhập bằng Google';
+        }
+      });
+
+      $('#syncPublicBtn').addEventListener('click', async () => {
+        if (!canEditRecords()) return;
+
+        const button = $('#syncPublicBtn');
+        const oldText = button.textContent;
+        button.disabled = true;
+        button.textContent = 'Đang cập nhật...';
+
+        try {
+          const result = await api.rebuildPublicCatalog();
+          showToast(
+            `Đã cập nhật danh mục xem với ${Number(result?.patientCount) || 0} hồ sơ.`
+          );
+        } catch (error) {
+          console.error(error);
+          showToast(
+            'Chưa cập nhật được danh mục xem. Vui lòng tải lại trang và thử lại.',
+            true
+          );
+        } finally {
+          button.disabled = false;
+          button.textContent = oldText;
         }
       });
 
@@ -7506,7 +7619,7 @@ body.guest-mode #patientsEmpty {
         emptyElement.textContent = state.allPatients.length
           ? 'Không tìm thấy hồ sơ phù hợp với điều kiện tra cứu.'
           : state.currentRole === 'public'
-            ? 'Danh mục xem chưa được khởi tạo. Người quản trị vui lòng đăng nhập một lần để đồng bộ dữ liệu.'
+            ? 'Danh mục xem hiện chưa có hồ sơ. Người quản trị vui lòng bấm “Cập nhật danh mục xem”.'
             : 'Chưa có dữ liệu.';
         renderFilterControls();
         return;
