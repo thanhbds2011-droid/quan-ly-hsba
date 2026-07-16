@@ -4292,6 +4292,490 @@ body {
   }
 }
 
+
+
+/* ===== CHI TIẾT QUYỂN HỒ SƠ: GỌN, CHUYÊN NGHIỆP, RESPONSIVE ===== */
+.book-table {
+  min-width: 1080px;
+}
+
+.book-table th,
+.book-table td {
+  vertical-align: top;
+}
+
+.book-number-cell strong {
+  display: inline-grid;
+  place-items: center;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: 11px;
+  background: #e8f8f5;
+  color: #087d80;
+  font-size: 14px;
+}
+
+.book-period-cell,
+.storage-position-cell {
+  display: grid;
+  gap: 7px;
+  min-width: 145px;
+}
+
+.book-period-line,
+.storage-position-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #526a72;
+  font-size: 12px;
+}
+
+.book-period-line span,
+.storage-position-line span {
+  color: #83959b;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+}
+
+.book-period-line strong,
+.storage-position-line strong {
+  color: #173f47;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.book-status-cell {
+  min-width: 155px;
+}
+
+.death-place-inline {
+  display: grid;
+  gap: 3px;
+  margin-top: 8px;
+  padding: 8px 10px;
+  border: 1px solid #f2d1cb;
+  border-radius: 10px;
+  background: #fff6f4;
+}
+
+.death-place-inline small {
+  color: #a36a61;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+
+.death-place-inline strong {
+  color: #8f342a;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.inventory-summary-card {
+  min-width: 175px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 11px;
+  border: 1px solid #cde7e2;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f7fcfb, #edf9f6);
+}
+
+.inventory-summary-card small {
+  display: block;
+  margin-bottom: 3px;
+  color: #70898e;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.inventory-summary-card strong {
+  display: block;
+  color: #087d80;
+  font-size: 14px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.inventory-detail-btn {
+  min-height: 34px;
+  padding: 7px 10px;
+  border: 1px solid #b7ddd6;
+  border-radius: 9px;
+  background: #fff;
+  color: #0b7377;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.inventory-detail-btn:hover {
+  background: #e9f8f5;
+}
+
+.book-note-cell {
+  min-width: 150px;
+  max-width: 230px;
+  color: #52676e;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.inventory-detail-dialog {
+  width: min(600px, calc(100vw - 28px));
+  max-width: 600px;
+}
+
+.inventory-detail-dialog form {
+  padding: 0;
+}
+
+.inventory-detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px 24px 17px;
+  border-bottom: 1px solid #e1eeeb;
+}
+
+.inventory-detail-head h3 {
+  margin: 0 0 5px;
+  color: #173f47;
+  font-size: 20px;
+}
+
+.inventory-detail-head p {
+  margin: 0;
+  color: #71858c;
+  font-size: 12px;
+}
+
+.inventory-detail-content {
+  padding: 20px 24px 24px;
+}
+
+.inventory-detail-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 15px 16px;
+  border: 1px solid #b9dfd8;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #e9f8f5, #f8fcfb);
+}
+
+.inventory-detail-total span {
+  color: #456d73;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.inventory-detail-total strong {
+  color: #07858a;
+  font-size: 22px;
+}
+
+.inventory-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.inventory-detail-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 52px;
+  padding: 12px 13px;
+  border: 1px solid #dcebe8;
+  border-radius: 12px;
+  background: #fbfefd;
+}
+
+.inventory-detail-item span {
+  color: #526b72;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.inventory-detail-item strong {
+  min-width: 34px;
+  padding: 6px 9px;
+  border-radius: 9px;
+  background: #eaf8f5;
+  color: #087d80;
+  font-size: 14px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .book-table {
+    min-width: 0;
+  }
+
+  .book-table thead {
+    display: none;
+  }
+
+  .book-table tbody {
+    display: grid;
+    gap: 14px;
+    padding: 12px;
+    background: #f3faf8;
+  }
+
+  .book-table tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid #d7e9e5;
+    border-radius: 17px;
+    background: #fff;
+    box-shadow: 0 7px 20px rgba(35, 103, 99, .07);
+  }
+
+  .book-table td {
+    min-width: 0;
+    padding: 12px 13px;
+    border-bottom: 1px solid #e6f0ee;
+    background: #fff;
+  }
+
+  .book-table td::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 7px;
+    color: #82959b;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+
+  .book-table td[data-full="true"] {
+    grid-column: 1 / -1;
+  }
+
+  .book-table td:last-child {
+    border-bottom: 0;
+  }
+
+  .book-period-cell,
+  .storage-position-cell,
+  .book-status-cell,
+  .inventory-summary-card,
+  .book-note-cell {
+    min-width: 0;
+    max-width: none;
+    width: 100%;
+  }
+
+  .inventory-summary-card {
+    padding: 12px;
+  }
+
+  .inventory-detail-dialog {
+    position: fixed;
+    inset: auto 0 0;
+    width: 100%;
+    max-width: none;
+    max-height: 88vh;
+    margin: 0;
+    border-radius: 24px 24px 0 0;
+  }
+
+  .inventory-detail-content {
+    max-height: 65vh;
+    overflow: auto;
+  }
+
+  .inventory-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+/* ===== ĐĂNG NHẬP GỌN TRÊN THANH ĐẦU, GIỮ DỮ LIỆU RIÊNG TƯ ===== */
+.auth-login-top-btn {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border: 1px solid #cde7e2;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #0b7377;
+  font-size: 12px;
+  font-weight: 850;
+  cursor: pointer;
+  box-shadow: 0 7px 18px rgba(30, 116, 110, .08);
+}
+
+.auth-login-top-btn:hover {
+  background: #eaf8f5;
+}
+
+.auth-card {
+  position: relative;
+}
+
+.auth-card-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #d9e8e5;
+  border-radius: 11px;
+  background: #fff;
+  color: #526b72;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+body.guest-mode .search-filter-panel,
+body.guest-mode #summary,
+body.guest-mode #patientsList,
+body.guest-mode #addPatientBtn,
+body.guest-mode .nav-btn[data-view="deaths"],
+body.guest-mode .nav-btn[data-view="dashboard"] {
+  display: none !important;
+}
+
+body.guest-mode #patientsEmpty {
+  display: block !important;
+}
+
+.guest-access-card {
+  max-width: 720px;
+  margin: 34px auto;
+  padding: 30px;
+  border: 1px solid #d5e9e5;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #f7fcfb, #ffffff);
+  box-shadow: 0 14px 36px rgba(34, 102, 98, .09);
+  text-align: center;
+}
+
+.guest-access-card .guest-icon {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 14px;
+  border-radius: 18px;
+  background: #e6f8f4;
+  color: #0a8589;
+  font-size: 26px;
+}
+
+.guest-access-card h3 {
+  margin: 0 0 8px;
+  color: #173f47;
+  font-size: 22px;
+}
+
+.guest-access-card p {
+  margin: 0 0 18px;
+  color: #6b8188;
+  line-height: 1.6;
+}
+
+.guest-access-card button {
+  min-width: 170px;
+}
+
+@media (max-width: 768px) {
+  .auth-login-top-btn {
+    width: 42px;
+    min-width: 42px;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .auth-login-top-btn::before {
+    content: "🔐";
+    font-size: 17px;
+  }
+
+  .guest-access-card {
+    margin: 22px 0;
+    padding: 24px 18px;
+  }
+}
+
+
+
+    .compact-conditional-field {
+      max-width: 460px;
+    }
+
+    .status-detail-stack {
+      display: grid;
+      gap: 7px;
+      margin-top: 9px;
+    }
+
+    .status-detail-item {
+      display: grid;
+      gap: 2px;
+      padding: 8px 10px;
+      border: 1px solid rgba(18, 166, 166, .14);
+      border-radius: 10px;
+      background: rgba(234, 251, 248, .72);
+      line-height: 1.35;
+    }
+
+    .status-detail-item small {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .035em;
+    }
+
+    .status-detail-item strong {
+      color: var(--text);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .death-cause-cell {
+      min-width: 210px;
+      max-width: 320px;
+      white-space: normal;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 720px) {
+      .compact-conditional-field {
+        max-width: none;
+      }
+
+      .status-detail-item {
+        padding: 9px 11px;
+      }
+    }
 </style>
 </head>
 
@@ -4319,7 +4803,7 @@ body {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.07.15.7</small>
+        <small>Phiên bản 2026.07.16.2</small>
       </div>
     </aside>
 
@@ -4334,6 +4818,8 @@ body {
             <div class="top-subtitle">Số hóa, tra cứu và quản lý hồ sơ tập trung</div>
           </div>
         </div>
+
+        <button id="openLoginBtn" class="auth-login-top-btn hidden" type="button">🔐 Đăng nhập</button>
 
         <div id="authUserBar" class="auth-user-bar hidden">
           <div class="auth-user-summary">
@@ -4658,6 +5144,18 @@ body {
           <small class="field-hint">Bắt buộc khi chọn trạng thái Đối tượng tử vong.</small>
         </div>
 
+        <div id="deathCauseField" class="form-field full-span conditional-field hidden">
+          <label for="bookNguyenNhanTuVong">Nguyên nhân tử vong</label>
+          <textarea id="bookNguyenNhanTuVong" name="nguyenNhanTuVong" maxlength="500" rows="3" placeholder="Nhập nguyên nhân tử vong theo hồ sơ hoặc giấy tờ có liên quan"></textarea>
+          <small class="field-hint">Bắt buộc khi chọn trạng thái Đối tượng tử vong.</small>
+        </div>
+
+        <div id="returnDateField" class="form-field full-span conditional-field hidden compact-conditional-field">
+          <label for="bookNgayHoiGia">Ngày đối tượng hồi gia</label>
+          <input id="bookNgayHoiGia" name="ngayHoiGia" type="date">
+          <small class="field-hint">Bắt buộc khi chọn trạng thái Đối tượng hồi gia.</small>
+        </div>
+
         <div class="form-field">
           <label for="bookThungSo">Thùng số</label>
           <input id="bookThungSo" name="thungSo" type="number" min="1" step="1" inputmode="numeric" required placeholder="Ví dụ: 1">
@@ -4775,8 +5273,23 @@ body {
     </form>
   </dialog>
 
-  <section id="authGate" class="auth-gate">
+
+  <dialog id="inventoryDetailDialog" class="record-dialog inventory-detail-dialog">
+    <form method="dialog">
+      <div class="inventory-detail-head">
+        <div>
+          <h3 id="inventoryDetailTitle">Kiểm kê giấy tờ</h3>
+          <p id="inventoryDetailSubtitle">Chi tiết thành phần trong quyển hồ sơ</p>
+        </div>
+        <button type="button" class="icon-btn close-dialog" aria-label="Đóng">×</button>
+      </div>
+      <div id="inventoryDetailContent" class="inventory-detail-content"></div>
+    </form>
+  </dialog>
+
+  <section id="authGate" class="auth-gate hidden">
     <div class="auth-card">
+      <button id="closeAuthGateBtn" class="auth-card-close" type="button" aria-label="Đóng">×</button>
       <div class="auth-logo">✚</div>
 
       <div>
@@ -5148,6 +5661,8 @@ body {
         'NGÀY KẾT THÚC': book.ngayKetThuc || '',
         'TRẠNG THÁI HIỆN TẠI': normalizeRecordStatus(book.trangThai),
         'NƠI TỬ VONG': book.noiTuVong || '',
+        'NGUYÊN NHÂN TỬ VONG': book.nguyenNhanTuVong || '',
+        'NGÀY HỒI GIA': book.ngayHoiGia || '',
         'THÙNG SỐ': storage.thungSo || '',
         'VỊ TRÍ SỐ': storage.viTriSo || '',
         'MÃ SỐ LƯU TRỮ': storage.label || book.maLuuTru || '',
@@ -5174,6 +5689,7 @@ body {
         'NGÀY KẾT THÚC': item.ngayKetThuc || '',
         'NĂM TỬ VONG': Number(item.namTuVong) || Number(String(item.ngayKetThuc || '').slice(0, 4)) || '',
         'NƠI TỬ VONG': item.noiTuVong || '',
+        'NGUYÊN NHÂN TỬ VONG': item.nguyenNhanTuVong || '',
         'THÙNG SỐ': storage.thungSo || '',
         'VỊ TRÍ SỐ': storage.viTriSo || '',
         'MÃ SỐ LƯU TRỮ': storage.label || item.maLuuTru || '',
@@ -5916,6 +6432,8 @@ body {
         const ngayKetThuc = String(payload.ngayKetThuc || '').trim();
         const trangThai = normalizeRecordStatus(payload.trangThai);
         const noiTuVong = String(payload.noiTuVong || '').trim();
+        const nguyenNhanTuVong = String(payload.nguyenNhanTuVong || '').trim();
+        const ngayHoiGia = String(payload.ngayHoiGia || '').trim();
         const thungSo = Number(payload.thungSo);
         const viTriSo = Number(payload.viTriSo);
         const maLuuTru = storageLocationLabel(thungSo, viTriSo);
@@ -5949,6 +6467,17 @@ body {
         }
         if (trangThai === CONFIG.STATUS.TU_VONG && !noiTuVong) {
           throw new Error('Vui lòng nhập nơi tử vong.');
+        }
+        if (trangThai === CONFIG.STATUS.TU_VONG && !nguyenNhanTuVong) {
+          throw new Error('Vui lòng nhập nguyên nhân tử vong.');
+        }
+        if (trangThai === CONFIG.STATUS.HOI_GIA) {
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(ngayHoiGia)) {
+            throw new Error('Vui lòng nhập ngày đối tượng hồi gia.');
+          }
+          if (ngayHoiGia < ngayBatDau || ngayHoiGia > ngayKetThuc) {
+            throw new Error('Ngày hồi gia phải nằm trong khoảng từ ngày mở quyển đến ngày kết thúc.');
+          }
         }
         if (trangThai === CONFIG.STATUS.TU_VONG && !file && !existingFileUrl) {
           throw new Error('Hồ sơ tử vong bắt buộc phải có file scan hoặc hình ảnh.');
@@ -5994,6 +6523,8 @@ body {
             ngayKetThuc,
             trangThai,
             noiTuVong: trangThai === CONFIG.STATUS.TU_VONG ? noiTuVong : '',
+            nguyenNhanTuVong: trangThai === CONFIG.STATUS.TU_VONG ? nguyenNhanTuVong : '',
+            ngayHoiGia: trangThai === CONFIG.STATUS.HOI_GIA ? ngayHoiGia : '',
             thungSo,
             viTriSo,
             maLuuTru,
@@ -6032,7 +6563,9 @@ body {
                 ngayBatDau,
                 ngayKetThuc,
                 trangThai,
-                noiTuVong,
+                noiTuVong: trangThai === CONFIG.STATUS.TU_VONG ? noiTuVong : '',
+                nguyenNhanTuVong: trangThai === CONFIG.STATUS.TU_VONG ? nguyenNhanTuVong : '',
+                ngayHoiGia: trangThai === CONFIG.STATUS.HOI_GIA ? ngayHoiGia : '',
                 thungSo,
                 viTriSo,
                 maLuuTru,
@@ -6058,6 +6591,7 @@ body {
               ngayKetThuc: deathBook.ngayKetThuc || '',
               namTuVong: Number(String(deathBook.ngayKetThuc || '').slice(0, 4)) || 0,
               noiTuVong: deathBook.noiTuVong || '',
+              nguyenNhanTuVong: deathBook.nguyenNhanTuVong || '',
               thungSo: Number(deathBook.thungSo) || parseStorageLocation(deathBook).thungSo || 0,
               viTriSo: Number(deathBook.viTriSo) || parseStorageLocation(deathBook).viTriSo || 0,
               maLuuTru: deathBook.maLuuTru || parseStorageLocation(deathBook).label || '',
@@ -6111,7 +6645,7 @@ body {
       allPatients: [],
       activeStatusFilter: 'all',
       deathYearFilter: 'all',
-      currentRole: ''
+      currentRole: 'guest'
     };
 
     const $ = (selector, root = document) => root.querySelector(selector);
@@ -6154,7 +6688,7 @@ body {
 
       onAuthStateChanged(firebaseAuth, async user => {
         if (!user) {
-          showLoggedOutState();
+          showGuestState();
           return;
         }
 
@@ -6181,7 +6715,8 @@ body {
         } catch (error) {
           console.error(error);
           await signOut(firebaseAuth).catch(() => {});
-          showLoggedOutState();
+          showGuestState();
+          openLoginDialog();
           showAuthError(error.message || 'Tài khoản chưa được cấp quyền.');
         } finally {
           $('#loading').classList.add('hidden');
@@ -6234,8 +6769,10 @@ body {
 
     function applyRoleUi() {
       const canEdit = canEditRecords();
+      const isGuest = state.currentRole === 'guest' || !state.currentRole;
       $('#addPatientBtn')?.classList.toggle('hidden', !canEdit);
       document.body.classList.toggle('read-only-mode', !canEdit);
+      document.body.classList.toggle('guest-mode', isGuest);
     }
 
     function requireEditPermission() {
@@ -6245,6 +6782,12 @@ body {
     }
 
     function bindAuthentication() {
+      $('#openLoginBtn').addEventListener('click', openLoginDialog);
+      $('#closeAuthGateBtn').addEventListener('click', closeLoginDialog);
+      $('#authGate').addEventListener('click', event => {
+        if (event.target === $('#authGate')) closeLoginDialog();
+      });
+
       $('#emailLoginForm').addEventListener('submit', async event => {
         event.preventDefault();
 
@@ -6295,12 +6838,41 @@ body {
       });
     }
 
-    function showLoggedOutState() {
-      state.currentRole = '';
+    function openLoginDialog() {
+      hideAuthError();
+      $('#authGate').classList.remove('hidden');
+      setTimeout(() => $('#emailLoginInput')?.focus(), 60);
+    }
+
+    function closeLoginDialog() {
+      $('#authGate').classList.add('hidden');
+      hideAuthError();
+    }
+
+    function showGuestState() {
+      state.currentRole = 'guest';
+      state.patients = [];
+      state.allPatients = [];
+      state.deaths = [];
+      state.currentPatient = null;
+      state.currentBooks = [];
       applyRoleUi();
 
-      $('#authGate').classList.remove('hidden');
+      $('#authGate').classList.add('hidden');
+      $('#openLoginBtn').classList.remove('hidden');
       $('#authUserBar').classList.add('hidden');
+      $('#summary').innerHTML = '';
+      $('#patientsList').innerHTML = '';
+      $('#patientsEmpty').classList.remove('hidden');
+      $('#patientsEmpty').innerHTML = `
+        <div class="guest-access-card">
+          <div class="guest-icon">🔐</div>
+          <h3>Đăng nhập để xem hồ sơ</h3>
+          <p>Dữ liệu hồ sơ được bảo vệ. Người có quyền xem hoặc cập nhật vui lòng đăng nhập bằng tài khoản đã được cấp.</p>
+          <button id="guestLoginBtn" class="btn primary" type="button">Đăng nhập hệ thống</button>
+        </div>`;
+      $('#guestLoginBtn')?.addEventListener('click', openLoginDialog);
+      switchView('patients');
 
       const emailButton = $('#emailLoginBtn');
       emailButton.disabled = false;
@@ -6314,7 +6886,9 @@ body {
 
     function showLoggedInState(user, role) {
       $('#authGate').classList.add('hidden');
+      $('#openLoginBtn').classList.add('hidden');
       $('#authUserBar').classList.remove('hidden');
+      document.body.classList.remove('guest-mode');
       $('#authUserEmail').textContent =
         `${user.email || user.displayName || 'Đã đăng nhập'} · ${roleLabel(role)}`;
       hideAuthError();
@@ -6607,13 +7181,13 @@ body {
         </section>
 
         <div class="table-wrap">
-          <table>
+          <table class="book-table">
             <thead><tr>
-              <th>Quyển số</th><th>Ngày mở quyển</th><th>Ngày kết thúc</th><th>Trạng thái</th>
-              <th>Nơi tử vong</th><th>Thùng số</th><th>Vị trí số</th><th>Kiểm kê giấy tờ</th><th>File</th><th>Ghi chú khác</th><th>Thao tác</th>
+              <th>Quyển</th><th>Thời gian</th><th>Trạng thái</th><th>Vị trí lưu</th>
+              <th>Kiểm kê</th><th>Tệp</th><th>Ghi chú</th><th>Thao tác</th>
             </tr></thead>
             <tbody>
-              ${books.length ? books.map(bookRowHtml).join('') : `<tr><td colspan="11">Chưa lưu quyển hồ sơ. Bấm “Lưu hồ sơ” để nhập quyển lưu trữ đầu tiên.</td></tr>`}
+              ${books.length ? books.map(bookRowHtml).join('') : `<tr><td colspan="8">Chưa lưu quyển hồ sơ. Bấm “Lưu hồ sơ” để nhập quyển lưu trữ đầu tiên.</td></tr>`}
             </tbody>
           </table>
         </div>`;
@@ -6624,6 +7198,37 @@ body {
       $$('[data-action="edit-book"]').forEach(button => {
         button.addEventListener('click', () => openEditBookDialog(Number(button.dataset.quyenSo)));
       });
+      $$('[data-action="view-inventory"]').forEach(button => {
+        button.addEventListener('click', () => openInventoryDetailDialog(Number(button.dataset.quyenSo)));
+      });
+    }
+
+    function openInventoryDetailDialog(quyenSo) {
+      const book = state.currentBooks.find(item => Number(item['QUYỂN SỐ']) === Number(quyenSo));
+      if (!book) return;
+
+      const inventory = documentInventoryFromSource(book);
+      $('#inventoryDetailTitle').textContent = `Kiểm kê giấy tờ · Quyển ${quyenSo}`;
+      $('#inventoryDetailSubtitle').textContent = `${state.currentPatient?.['HỌ VÀ TÊN'] || ''} · Số hồ sơ ${state.currentPatient?.['SỐ HỒ SƠ'] || ''}`;
+
+      if (!inventory.complete) {
+        $('#inventoryDetailContent').innerHTML = '<div class="empty">Quyển hồ sơ này chưa được kiểm kê thành phần giấy tờ.</div>';
+      } else {
+        $('#inventoryDetailContent').innerHTML = `
+          <div class="inventory-detail-total">
+            <span>Tổng số tờ và phiếu đã kiểm kê</span>
+            <strong>${escapeHtml(inventory.total)}</strong>
+          </div>
+          <div class="inventory-detail-grid">
+            ${INVENTORY_FIELDS.map(field => `
+              <div class="inventory-detail-item">
+                <span>${escapeHtml(field.label)}</span>
+                <strong>${escapeHtml(inventory[field.key])}</strong>
+              </div>`).join('')}
+          </div>`;
+      }
+
+      $('#inventoryDetailDialog').showModal();
     }
 
     function documentInventoryCellHtml(source = {}) {
@@ -6633,35 +7238,69 @@ body {
       }
 
       return `
-        <div class="inventory-cell">
-          ${INVENTORY_FIELDS.map(field => `
-            <span class="inventory-chip" title="${escapeAttr(field.label)}">
-              <span>${escapeHtml(field.shortLabel)}</span>
-              <strong>${escapeHtml(inventory[field.key])}</strong>
-            </span>`).join('')}
-          <span class="inventory-chip inventory-total-chip">
-            <span>Tổng tờ/phiếu</span>
-            <strong>${escapeHtml(inventory.total)}</strong>
-          </span>
+        <div class="inventory-summary-card">
+          <div>
+            <small>Tổng kiểm kê</small>
+            <strong>${escapeHtml(inventory.total)} tờ/phiếu</strong>
+          </div>
+          <button
+            type="button"
+            class="inventory-detail-btn"
+            data-action="view-inventory"
+            data-quyen-so="${escapeAttr(source['QUYỂN SỐ'])}">
+            Chi tiết
+          </button>
         </div>`;
     }
 
     function bookRowHtml(book) {
       const status = normalizeRecordStatus(book['TRẠNG THÁI HIỆN TẠI']) || 'Chưa hoàn tất';
       const statusClass = status === CONFIG.STATUS.TU_VONG ? 'death' : status === CONFIG.STATUS.HOI_GIA ? 'open' : 'closed';
+      const isDeathBook = status === CONFIG.STATUS.TU_VONG;
+      const storageBox = book['THÙNG SỐ'] ? `Thùng ${escapeHtml(book['THÙNG SỐ'])}` : 'Chưa cập nhật';
+      const storagePosition = book['VỊ TRÍ SỐ'] ? `Vị trí ${escapeHtml(book['VỊ TRÍ SỐ'])}` : escapeHtml(book['MÃ SỐ LƯU TRỮ'] || 'Chưa cập nhật');
+
       return `
         <tr>
-          <td><strong>${escapeHtml(book['QUYỂN SỐ'])}</strong></td>
-          <td>${escapeHtml(formatDateVN(book['NGÀY BẮT ĐẦU']))}</td>
-          <td>${escapeHtml(formatDateVN(book['NGÀY KẾT THÚC']))}</td>
-          <td><span class="badge ${statusClass}">${escapeHtml(status)}</span>${book['_LEGACY_STATUS'] === CONFIG.STATUS.LEGACY_DANG_KHAM ? '<span class="legacy-status-note">Cần chỉnh sửa để hoàn tất hồ sơ.</span>' : ''}</td>
-          <td>${escapeHtml(book['NƠI TỬ VONG'] || '—')}</td>
-          <td>${book['THÙNG SỐ'] ? `Thùng ${escapeHtml(book['THÙNG SỐ'])}` : '—'}</td>
-          <td>${book['VỊ TRÍ SỐ'] ? `Vị trí ${escapeHtml(book['VỊ TRÍ SỐ'])}` : escapeHtml(book['MÃ SỐ LƯU TRỮ'] || '—')}</td>
-          <td>${documentInventoryCellHtml(book)}</td>
-          <td>${book['FILE ĐÍNH KÈM'] ? `<a class="file-link" href="${escapeAttr(book['FILE ĐÍNH KÈM'])}" target="_blank" rel="noopener">📎 Mở file</a>` : '—'}</td>
-          <td>${escapeHtml(book['GHI CHÚ'] || '—')}</td>
-          <td>${canEditRecords() ? `<button class="btn small edit-action" data-action="edit-book" data-quyen-so="${escapeAttr(book['QUYỂN SỐ'])}">✎ Chỉnh sửa</button>` : '—'}</td>
+          <td class="book-number-cell" data-label="Quyển số"><strong>${escapeHtml(book['QUYỂN SỐ'])}</strong></td>
+          <td data-label="Thời gian">
+            <div class="book-period-cell">
+              <div class="book-period-line"><span>Mở</span><strong>${escapeHtml(formatDateVN(book['NGÀY BẮT ĐẦU']))}</strong></div>
+              <div class="book-period-line"><span>Kết thúc</span><strong>${escapeHtml(formatDateVN(book['NGÀY KẾT THÚC']))}</strong></div>
+            </div>
+          </td>
+          <td class="book-status-cell" data-label="Trạng thái">
+            <span class="badge ${statusClass}">${escapeHtml(status)}</span>
+            ${(isDeathBook || status === CONFIG.STATUS.HOI_GIA) ? `
+              <div class="status-detail-stack">
+                ${isDeathBook && book['NƠI TỬ VONG'] ? `
+                  <div class="status-detail-item">
+                    <small>Nơi tử vong</small>
+                    <strong>${escapeHtml(book['NƠI TỬ VONG'])}</strong>
+                  </div>` : ''}
+                ${isDeathBook && book['NGUYÊN NHÂN TỬ VONG'] ? `
+                  <div class="status-detail-item">
+                    <small>Nguyên nhân tử vong</small>
+                    <strong>${escapeHtml(book['NGUYÊN NHÂN TỬ VONG'])}</strong>
+                  </div>` : ''}
+                ${status === CONFIG.STATUS.HOI_GIA && book['NGÀY HỒI GIA'] ? `
+                  <div class="status-detail-item">
+                    <small>Ngày hồi gia</small>
+                    <strong>${escapeHtml(formatDateVN(book['NGÀY HỒI GIA']))}</strong>
+                  </div>` : ''}
+              </div>` : ''}
+            ${book['_LEGACY_STATUS'] === CONFIG.STATUS.LEGACY_DANG_KHAM ? '<span class="legacy-status-note">Cần chỉnh sửa để hoàn tất hồ sơ.</span>' : ''}
+          </td>
+          <td data-label="Vị trí lưu">
+            <div class="storage-position-cell">
+              <div class="storage-position-line"><span>Thùng</span><strong>${storageBox}</strong></div>
+              <div class="storage-position-line"><span>Vị trí</span><strong>${storagePosition}</strong></div>
+            </div>
+          </td>
+          <td data-label="Kiểm kê" data-full="true">${documentInventoryCellHtml(book)}</td>
+          <td data-label="Tệp">${book['FILE ĐÍNH KÈM'] ? `<a class="file-link" href="${escapeAttr(book['FILE ĐÍNH KÈM'])}" target="_blank" rel="noopener">📎 Mở tệp</a>` : '—'}</td>
+          <td class="book-note-cell" data-label="Ghi chú" data-full="true">${escapeHtml(book['GHI CHÚ'] || '—')}</td>
+          <td data-label="Thao tác">${canEditRecords() ? `<button class="btn small edit-action" data-action="edit-book" data-quyen-so="${escapeAttr(book['QUYỂN SỐ'])}">✎ Chỉnh sửa</button>` : '—'}</td>
         </tr>`;
     }
 
@@ -6670,7 +7309,7 @@ body {
       const filtered = state.deathYearFilter === 'all' ? state.deaths : state.deaths.filter(item => String(item['NĂM TỬ VONG']) === String(state.deathYearFilter));
       $('#deathsList').innerHTML = `
         <div class="death-overview">
-          <div><h3>Danh mục hồ sơ tử vong</h3><p>Tra cứu theo năm, nơi tử vong và vị trí lưu trữ.</p></div>
+          <div><h3>Danh mục hồ sơ tử vong</h3><p>Tra cứu theo năm, nơi và nguyên nhân tử vong, vị trí lưu trữ.</p></div>
           <div class="death-count">${filtered.length}</div>
         </div>
         <div class="death-year-toolbar">
@@ -6682,16 +7321,16 @@ body {
           </label>
         </div>
         <div class="table-wrap"><table>
-          <thead><tr><th>Số hồ sơ</th><th>Họ và tên</th><th>Năm sinh</th><th>Giới tính</th><th>Quyển số</th><th>Ngày tử vong</th><th>Năm</th><th>Nơi tử vong</th><th>Thùng số</th><th>Vị trí số</th><th>Kiểm kê giấy tờ</th><th>File</th></tr></thead>
+          <thead><tr><th>Số hồ sơ</th><th>Họ và tên</th><th>Năm sinh</th><th>Giới tính</th><th>Quyển số</th><th>Ngày tử vong</th><th>Năm</th><th>Nơi tử vong</th><th>Nguyên nhân tử vong</th><th>Thùng số</th><th>Vị trí số</th><th>Kiểm kê giấy tờ</th><th>File</th></tr></thead>
           <tbody>${filtered.length ? filtered.map(item => `<tr>
             <td><strong>${escapeHtml(item['SỐ HỒ SƠ'])}</strong></td><td>${escapeHtml(item['HỌ VÀ TÊN'])}</td>
             <td>${escapeHtml(item['NĂM SINH'])}</td><td>${escapeHtml(item['GIỚI TÍNH'] || '—')}</td>
             <td><span class="badge closed">Quyển ${escapeHtml(item['QUYỂN SỐ'])}</span></td>
             <td>${escapeHtml(formatDateVN(item['NGÀY KẾT THÚC']))}</td><td><strong>${escapeHtml(item['NĂM TỬ VONG'])}</strong></td>
-            <td>${escapeHtml(item['NƠI TỬ VONG'] || '—')}</td><td>${item['THÙNG SỐ'] ? `Thùng ${escapeHtml(item['THÙNG SỐ'])}` : '—'}</td><td>${item['VỊ TRÍ SỐ'] ? `Vị trí ${escapeHtml(item['VỊ TRÍ SỐ'])}` : escapeHtml(item['MÃ SỐ LƯU TRỮ'] || '—')}</td>
+            <td>${escapeHtml(item['NƠI TỬ VONG'] || '—')}</td><td class="death-cause-cell">${escapeHtml(item['NGUYÊN NHÂN TỬ VONG'] || '—')}</td><td>${item['THÙNG SỐ'] ? `Thùng ${escapeHtml(item['THÙNG SỐ'])}` : '—'}</td><td>${item['VỊ TRÍ SỐ'] ? `Vị trí ${escapeHtml(item['VỊ TRÍ SỐ'])}` : escapeHtml(item['MÃ SỐ LƯU TRỮ'] || '—')}</td>
             <td>${documentInventoryCellHtml(item)}</td>
             <td>${item['FILE ĐÍNH KÈM'] ? `<a class="file-link" href="${escapeAttr(item['FILE ĐÍNH KÈM'])}" target="_blank" rel="noopener">📎 Mở file</a>` : '—'}</td>
-          </tr>`).join('') : `<tr><td colspan="12">Chưa có hồ sơ tử vong trong năm đã chọn.</td></tr>`}</tbody>
+          </tr>`).join('') : `<tr><td colspan="13">Chưa có hồ sơ tử vong trong năm đã chọn.</td></tr>`}</tbody>
         </table></div>`;
       $('#deathYearSelect')?.addEventListener('change', event => {
         state.deathYearFilter = event.target.value || 'all';
@@ -6954,10 +7593,26 @@ body {
 
     function updateDeathPlaceVisibility() {
       const form = $('#bookForm');
-      const isDeath = form.elements.trangThai.value === CONFIG.STATUS.TU_VONG;
+      const status = form.elements.trangThai.value;
+      const isDeath = status === CONFIG.STATUS.TU_VONG;
+      const isReturned = status === CONFIG.STATUS.HOI_GIA;
+
       $('#deathPlaceField').classList.toggle('hidden', !isDeath);
+      $('#deathCauseField').classList.toggle('hidden', !isDeath);
+      $('#returnDateField').classList.toggle('hidden', !isReturned);
+
       form.elements.noiTuVong.required = isDeath;
-      if (!isDeath) form.elements.noiTuVong.value = '';
+      form.elements.nguyenNhanTuVong.required = isDeath;
+      form.elements.ngayHoiGia.required = isReturned;
+
+      if (!isDeath) {
+        form.elements.noiTuVong.value = '';
+        form.elements.nguyenNhanTuVong.value = '';
+      }
+
+      if (!isReturned) {
+        form.elements.ngayHoiGia.value = '';
+      }
     }
 
 
@@ -7004,6 +7659,8 @@ body {
       const today = new Date().toISOString().slice(0, 10);
       form.elements.ngayBatDau.value = today;
       form.elements.ngayKetThuc.value = today;
+      form.elements.nguyenNhanTuVong.value = '';
+      form.elements.ngayHoiGia.value = '';
       $('#bookDialogTitle').textContent = 'Lưu hồ sơ bệnh án';
       $('#bookSubmitBtn').textContent = 'Lưu hồ sơ';
       $('#bookNumberHelp').textContent = 'Hệ thống gợi ý số quyển tiếp theo; có thể điều chỉnh khi nhập hồ sơ lưu trữ cũ.';
@@ -7030,6 +7687,8 @@ body {
       const mappedStatus = normalizeRecordStatus(book['TRẠNG THÁI HIỆN TẠI']);
       form.elements.trangThai.value = mappedStatus || CONFIG.STATUS.HET_QUYEN;
       form.elements.noiTuVong.value = book['NƠI TỬ VONG'] || '';
+      form.elements.nguyenNhanTuVong.value = book['NGUYÊN NHÂN TỬ VONG'] || '';
+      form.elements.ngayHoiGia.value = book['NGÀY HỒI GIA'] || '';
       const storage = parseStorageLocation(book);
       form.elements.thungSo.value = storage.thungSo || '';
       form.elements.viTriSo.value = storage.viTriSo || '';
