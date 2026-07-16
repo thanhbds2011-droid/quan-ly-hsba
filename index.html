@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.07.15.07">
+  <meta name="version" content="2026.07.16.04">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -4776,6 +4776,24 @@ body.guest-mode #patientsEmpty {
         padding: 9px 11px;
       }
     }
+
+
+    .public-view-note {
+      margin-bottom: 14px;
+      padding: 12px 14px;
+      border: 1px solid #cce8e2;
+      border-radius: 13px;
+      background: #f1fbf8;
+      color: #3a6d70;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    body.guest-mode .nav-btn[data-view="deaths"],
+    body.guest-mode .nav-btn[data-view="dashboard"] {
+      display: flex;
+    }
+
 </style>
 </head>
 
@@ -4819,7 +4837,7 @@ body.guest-mode #patientsEmpty {
           </div>
         </div>
 
-        <button id="openLoginBtn" class="auth-login-top-btn hidden" type="button">🔐 Đăng nhập</button>
+        <button id="openLoginBtn" class="auth-login-top-btn hidden" type="button">🔐 Đăng nhập chỉnh sửa</button>
 
         <div id="authUserBar" class="auth-user-bar hidden">
           <div class="auth-user-summary">
@@ -5336,7 +5354,7 @@ body.guest-mode #patientsEmpty {
       </button>
 
       <p class="auth-help">
-        Chỉ tài khoản đã được cấp quyền mới có thể truy cập hệ thống.
+        Đăng nhập bằng tài khoản đã được cấp quyền để thêm hoặc chỉnh sửa hồ sơ.
       </p>
 
       <div id="authError" class="auth-error hidden"></div>
@@ -5359,6 +5377,7 @@ body.guest-mode #patientsEmpty {
       GoogleAuthProvider,
       signInWithPopup,
       signInWithEmailAndPassword,
+      signInAnonymously,
       onAuthStateChanged,
       signOut,
       setPersistence,
@@ -5391,6 +5410,7 @@ body.guest-mode #patientsEmpty {
         'https://script.google.com/macros/s/AKfycbwTuGwnLDDDE7sUi2Isy4W_TwvboLaC-Qo7g5QqueSSS0Z_Mo8UxaTBq8eGaI6ax9Mz/exec',
 
       MAX_UPLOAD_BYTES: 20 * 1024 * 1024,
+      PUBLIC_SCHEMA_VERSION: 1,
 
       STATUS: {
         HET_QUYEN: 'Hết quyển',
@@ -5735,6 +5755,152 @@ body.guest-mode #patientsEmpty {
       return stats;
     }
 
+    function isPublicSession() {
+      return firebaseAuth.currentUser?.isAnonymous === true;
+    }
+
+    function publicBookFromSource(book = {}) {
+      const inventory = documentInventoryFromSource(book);
+      const storage = parseStorageLocation(book);
+
+      return {
+        soHoSo: String(book.soHoSo || ''),
+        quyenSo: Number(book.quyenSo) || 0,
+        ngayBatDau: String(book.ngayBatDau || ''),
+        ngayKetThuc: String(book.ngayKetThuc || ''),
+        trangThai: normalizeRecordStatus(book.trangThai),
+        ngayHoiGia:
+          normalizeRecordStatus(book.trangThai) === CONFIG.STATUS.HOI_GIA
+            ? String(book.ngayHoiGia || '')
+            : '',
+        thungSo: Number(book.thungSo) || Number(storage.thungSo) || 0,
+        viTriSo: Number(book.viTriSo) || Number(storage.viTriSo) || 0,
+        maLuuTru: String(book.maLuuTru || storage.label || ''),
+        soToChamSoc: Number(inventory.soToChamSoc) || 0,
+        soToDieuTri: Number(inventory.soToDieuTri) || 0,
+        soPhieuTruyenDich: Number(inventory.soPhieuTruyenDich) || 0,
+        soPhieuDanhGiaTeNga: Number(inventory.soPhieuDanhGiaTeNga) || 0,
+        soPhieuDanhGiaLoetTiDe: Number(inventory.soPhieuDanhGiaLoetTiDe) || 0,
+        tongSoGiayTo: Number(inventory.total) || 0,
+        updatedAt: Number(book.updatedAt) || Date.now()
+      };
+    }
+
+    function publicPatientFromSource(patient = {}, bookMap = {}) {
+      const publicBooks = {};
+
+      Object.entries(bookMap || {}).forEach(([key, book]) => {
+        if (!book) return;
+        publicBooks[key] = publicBookFromSource(book);
+      });
+
+      const summaryBooks = Object.values(bookMap || {}).filter(Boolean);
+      const normalizedBooks = summaryBooks.map(book => ({
+        ...book,
+        normalizedStatus: normalizeRecordStatus(book.trangThai)
+      }));
+      const latest = [...normalizedBooks].sort((a, b) => {
+        const dateDifference = String(
+          b.ngayKetThuc || b.ngayBatDau || ''
+        ).localeCompare(String(a.ngayKetThuc || a.ngayBatDau || ''));
+        if (dateDifference) return dateDifference;
+        return Number(b.quyenSo || 0) - Number(a.quyenSo || 0);
+      })[0] || null;
+
+      return {
+        soHoSo: String(patient.soHoSo || ''),
+        hoTen: String(patient.hoTen || ''),
+        hoTenTimKiem: String(
+          patient.hoTenTimKiem || normalize(patient.hoTen || '')
+        ),
+        namSinh: Number(patient.namSinh) || 0,
+        gioiTinh: String(patient.gioiTinh || ''),
+        tongSoQuyen: summaryBooks.length,
+        trangThaiHienTai:
+          latest?.normalizedStatus ||
+          normalizeRecordStatus(patient.trangThaiHienTai),
+        soQuyenHetQuyen: normalizedBooks.filter(
+          book => book.normalizedStatus === CONFIG.STATUS.HET_QUYEN
+        ).length,
+        soQuyenHoiGia: normalizedBooks.filter(
+          book => book.normalizedStatus === CONFIG.STATUS.HOI_GIA
+        ).length,
+        soQuyenTuVong: normalizedBooks.filter(
+          book => book.normalizedStatus === CONFIG.STATUS.TU_VONG
+        ).length,
+        soQuyenCoFile: Number(patient.soQuyenCoFile) || 0,
+        updatedAt: Number(patient.updatedAt) || Date.now(),
+        quyenHoSo: publicBooks
+      };
+    }
+
+    async function readPublicCatalog() {
+      const snapshot = await get(ref(firebaseDatabase, 'congKhai'));
+      const value = snapshot.val() || {};
+
+      return Object.entries(value)
+        .filter(([key, patient]) => key !== '_meta' && patient)
+        .map(([id, patient]) => ({ id, patient: patient || {} }))
+        .sort((a, b) => {
+          const updatedDifference =
+            (Number(b.patient.updatedAt) || 0) -
+            (Number(a.patient.updatedAt) || 0);
+
+          if (updatedDifference) return updatedDifference;
+
+          return String(a.patient.soHoSo || '')
+            .localeCompare(String(b.patient.soHoSo || ''), 'vi');
+        });
+    }
+
+    async function readPublicDeaths() {
+      const entries = await readPublicCatalog();
+      const deaths = [];
+
+      entries.forEach(({ patient }) => {
+        Object.values(patient.quyenHoSo || {})
+          .filter(Boolean)
+          .forEach(book => {
+            if (
+              normalizeRecordStatus(book.trangThai) !==
+              CONFIG.STATUS.TU_VONG
+            ) return;
+
+            deaths.push({
+              soHoSo: patient.soHoSo || '',
+              hoTen: patient.hoTen || '',
+              namSinh: Number(patient.namSinh) || 0,
+              gioiTinh: patient.gioiTinh || '',
+              quyenSo: Number(book.quyenSo) || 0,
+              ngayKetThuc: book.ngayKetThuc || '',
+              namTuVong:
+                Number(String(book.ngayKetThuc || '').slice(0, 4)) || 0,
+              noiTuVong: '',
+              nguyenNhanTuVong: '',
+              thungSo: Number(book.thungSo) || 0,
+              viTriSo: Number(book.viTriSo) || 0,
+              maLuuTru: book.maLuuTru || '',
+              soToChamSoc: Number(book.soToChamSoc) || 0,
+              soToDieuTri: Number(book.soToDieuTri) || 0,
+              soPhieuTruyenDich: Number(book.soPhieuTruyenDich) || 0,
+              soPhieuDanhGiaTeNga:
+                Number(book.soPhieuDanhGiaTeNga) || 0,
+              soPhieuDanhGiaLoetTiDe:
+                Number(book.soPhieuDanhGiaLoetTiDe) || 0,
+              tongSoGiayTo: Number(book.tongSoGiayTo) || 0,
+              fileDinhKem: '',
+              updatedAt: Number(book.updatedAt) || 0
+            });
+          });
+      });
+
+      return deaths.sort(
+        (a, b) =>
+          (Number(b.updatedAt) || 0) -
+          (Number(a.updatedAt) || 0)
+      );
+    }
+
     async function readPatientObjects() {
       const snapshot = await get(ref(firebaseDatabase, 'doiTuong'));
       const value = snapshot.val() || {};
@@ -5767,9 +5933,7 @@ body.guest-mode #patientsEmpty {
     }
 
 
-    async function readStorageStatistics() {
-      const snapshot = await get(ref(firebaseDatabase, 'quyenHoSo'));
-      const rootValue = snapshot.val() || {};
+    function calculateStorageStatistics(rootValue = {}) {
       const boxMap = new Map();
       let totalBooks = 0;
       let structuredBooks = 0;
@@ -5824,14 +5988,18 @@ body.guest-mode #patientsEmpty {
             ngayKetThuc: String(book.ngayKetThuc || '')
           };
           box.records.push(record);
-          if (!box.positions.has(storage.viTriSo)) box.positions.set(storage.viTriSo, []);
+          if (!box.positions.has(storage.viTriSo)) {
+            box.positions.set(storage.viTriSo, []);
+          }
           box.positions.get(storage.viTriSo).push(record);
         });
       });
 
       const boxes = [...boxMap.values()]
         .map(box => {
-          const records = box.records.sort((a, b) => a.viTriSo - b.viTriSo || a.quyenSo - b.quyenSo);
+          const records = box.records.sort(
+            (a, b) => a.viTriSo - b.viTriSo || a.quyenSo - b.quyenSo
+          );
           const duplicatePositions = [...box.positions.entries()]
             .filter(([, recordsAtPosition]) => recordsAtPosition.length > 1)
             .map(([position]) => Number(position))
@@ -5839,7 +6007,9 @@ body.guest-mode #patientsEmpty {
           return {
             thungSo: box.thungSo,
             soQuyen: records.length,
-            viTriDaDung: [...box.positions.keys()].map(Number).sort((a, b) => a - b),
+            viTriDaDung: [...box.positions.keys()]
+              .map(Number)
+              .sort((a, b) => a - b),
             duplicatePositions,
             records
           };
@@ -5851,7 +6021,10 @@ body.guest-mode #patientsEmpty {
         structuredBooks,
         unstructuredBooks,
         totalBoxes: boxes.length,
-        duplicateLocationCount: boxes.reduce((sum, box) => sum + box.duplicatePositions.length, 0),
+        duplicateLocationCount: boxes.reduce(
+          (sum, box) => sum + box.duplicatePositions.length,
+          0
+        ),
         inventory: {
           inventoriedBooks,
           unInventoriedBooks,
@@ -5859,6 +6032,22 @@ body.guest-mode #patientsEmpty {
         },
         boxes
       };
+    }
+
+    async function readStorageStatistics() {
+      const snapshot = await get(ref(firebaseDatabase, 'quyenHoSo'));
+      return calculateStorageStatistics(snapshot.val() || {});
+    }
+
+    async function readPublicStorageStatistics() {
+      const entries = await readPublicCatalog();
+      const rootValue = {};
+
+      entries.forEach(({ id, patient }) => {
+        rootValue[id] = patient.quyenHoSo || {};
+      });
+
+      return calculateStorageStatistics(rootValue);
     }
 
     async function writeLog(action, content = {}) {
@@ -6004,7 +6193,7 @@ body.guest-mode #patientsEmpty {
 
       ensureSignedIn() {
         if (!this.auth.currentUser) {
-          throw new Error('Vui lòng đăng nhập Google trước khi sử dụng.');
+          throw new Error('Không thể kết nối phiên sử dụng. Vui lòng tải lại trang.');
         }
       }
 
@@ -6100,6 +6289,81 @@ body.guest-mode #patientsEmpty {
         };
       }
 
+
+      isPublicSession() {
+        return this.auth.currentUser?.isAnonymous === true;
+      }
+
+      async rebuildPublicCatalog(patientEntries = null) {
+        if (this.isPublicSession()) return;
+
+        const entries = patientEntries || await readPatientObjects();
+        const booksSnapshot = await get(ref(this.database, 'quyenHoSo'));
+        const booksRoot = booksSnapshot.val() || {};
+        const catalog = {
+          _meta: {
+            schemaVersion: CONFIG.PUBLIC_SCHEMA_VERSION,
+            patientCount: entries.length,
+            sourceUpdatedAt: entries.reduce(
+              (maximum, item) =>
+                Math.max(maximum, Number(item.patient?.updatedAt) || 0),
+              0
+            ),
+            updatedAt: Date.now()
+          }
+        };
+
+        entries.forEach(({ id, patient }) => {
+          catalog[id] = publicPatientFromSource(
+            patient,
+            booksRoot[id] || {}
+          );
+        });
+
+        await set(ref(this.database, 'congKhai'), catalog);
+      }
+
+      async syncPublicCatalogIfNeeded(patientEntries = []) {
+        if (this.isPublicSession()) return;
+
+        const metaSnapshot = await get(
+          ref(this.database, 'congKhai/_meta')
+        );
+        const meta = metaSnapshot.val() || {};
+        const sourceUpdatedAt = patientEntries.reduce(
+          (maximum, item) =>
+            Math.max(maximum, Number(item.patient?.updatedAt) || 0),
+          0
+        );
+
+        const needsSync =
+          Number(meta.schemaVersion) !== CONFIG.PUBLIC_SCHEMA_VERSION ||
+          Number(meta.patientCount) !== patientEntries.length ||
+          Number(meta.sourceUpdatedAt) < sourceUpdatedAt;
+
+        if (needsSync) {
+          await this.rebuildPublicCatalog(patientEntries);
+        }
+      }
+
+      async updatePublicMeta(delta = 0, sourceUpdatedAt = Date.now()) {
+        if (this.isPublicSession()) return;
+
+        if (delta) {
+          await runTransaction(
+            ref(this.database, 'congKhai/_meta/patientCount'),
+            current => Math.max(0, Number(current || 0) + delta),
+            { applyLocally: false }
+          );
+        }
+
+        await update(ref(this.database, 'congKhai/_meta'), {
+          schemaVersion: CONFIG.PUBLIC_SCHEMA_VERSION,
+          sourceUpdatedAt: Number(sourceUpdatedAt) || Date.now(),
+          updatedAt: Date.now()
+        });
+      }
+
       async get(action, params = {}) {
         this.ensureSignedIn();
 
@@ -6164,7 +6428,14 @@ body.guest-mode #patientsEmpty {
       }
 
       async bootstrap() {
-        const patientEntries = await readPatientObjects();
+        const patientEntries = this.isPublicSession()
+          ? await readPublicCatalog()
+          : await readPatientObjects();
+
+        if (!this.isPublicSession()) {
+          await this.syncPublicCatalogIfNeeded(patientEntries);
+        }
+
         const patients = patientEntries.map(({ id, patient }) =>
           patientToUi(id, patient)
         );
@@ -6183,8 +6454,12 @@ body.guest-mode #patientsEmpty {
 
       async getBooks(soHoSo) {
         const id = firebaseKey(soHoSo);
+        const publicSession = this.isPublicSession();
         const patientSnapshot = await get(
-          ref(this.database, `doiTuong/${id}`)
+          ref(
+            this.database,
+            publicSession ? `congKhai/${id}` : `doiTuong/${id}`
+          )
         );
 
         if (!patientSnapshot.exists()) {
@@ -6192,11 +6467,13 @@ body.guest-mode #patientsEmpty {
         }
 
         const patient = patientSnapshot.val() || {};
-        const booksSnapshot = await get(
-          ref(this.database, `quyenHoSo/${id}`)
-        );
+        const booksSnapshot = publicSession
+          ? null
+          : await get(ref(this.database, `quyenHoSo/${id}`));
 
-        const value = booksSnapshot.val() || {};
+        const value = publicSession
+          ? patient.quyenHoSo || {}
+          : booksSnapshot.val() || {};
 
         const books = Object.values(value)
           .map(book => bookToUi(patient, book))
@@ -6212,7 +6489,9 @@ body.guest-mode #patientsEmpty {
       }
 
       async getDeaths() {
-        const deaths = await readDeathObjects();
+        const deaths = this.isPublicSession()
+          ? await readPublicDeaths()
+          : await readDeathObjects();
 
         return {
           success: true,
@@ -6221,7 +6500,9 @@ body.guest-mode #patientsEmpty {
       }
 
       async getStats() {
-        const patientEntries = await readPatientObjects();
+        const patientEntries = this.isPublicSession()
+          ? await readPublicCatalog()
+          : await readPatientObjects();
 
         return {
           success: true,
@@ -6235,7 +6516,9 @@ body.guest-mode #patientsEmpty {
       async getStorageStats() {
         return {
           success: true,
-          data: await readStorageStatistics()
+          data: this.isPublicSession()
+            ? await readPublicStorageStatistics()
+            : await readStorageStatistics()
         };
       }
 
@@ -6286,6 +6569,12 @@ body.guest-mode #patientsEmpty {
           throw new Error(`Số hồ sơ ${soHoSo} đã tồn tại.`);
         }
 
+        await set(
+          ref(this.database, `congKhai/${id}`),
+          publicPatientFromSource(patient, {})
+        );
+        await this.updatePublicMeta(1, now);
+
         await writeLog('THÊM HỒ SƠ', { soHoSo, hoTen, namSinh, gioiTinh });
 
         return {
@@ -6325,6 +6614,14 @@ body.guest-mode #patientsEmpty {
             [`doiTuong/${id}/namSinh`]: namSinh,
             [`doiTuong/${id}/gioiTinh`]: gioiTinh,
             [`doiTuong/${id}/updatedAt`]: serverTimestamp(),
+            [`congKhai/${id}/hoTen`]: hoTen,
+            [`congKhai/${id}/hoTenTimKiem`]: normalize(hoTen),
+            [`congKhai/${id}/namSinh`]: namSinh,
+            [`congKhai/${id}/gioiTinh`]: gioiTinh,
+            [`congKhai/${id}/updatedAt`]: Date.now(),
+            [`congKhai/_meta/schemaVersion`]: CONFIG.PUBLIC_SCHEMA_VERSION,
+            [`congKhai/_meta/sourceUpdatedAt`]: Date.now(),
+            [`congKhai/_meta/updatedAt`]: Date.now(),
             [`nhatKy/${logKey}`]: this.makeLog('CHỈNH SỬA THÔNG TIN HỒ SƠ', {
               soHoSo, hoTen, namSinh, gioiTinh
             }),
@@ -6384,6 +6681,7 @@ body.guest-mode #patientsEmpty {
         const logKey = push(ref(this.database, 'nhatKy')).key;
         const updates = {
           [`doiTuong/${id}`]: null,
+          [`congKhai/${id}`]: null,
           [`nhatKy/${logKey}`]: this.makeLog('XÓA HỒ SƠ NHẬP NHẦM', {
             soHoSo,
             hoTen: patient.hoTen || '',
@@ -6394,6 +6692,7 @@ body.guest-mode #patientsEmpty {
         };
 
         await update(ref(this.database), updates);
+        await this.updatePublicMeta(-1, Date.now());
 
         return {
           success: true,
@@ -6544,6 +6843,20 @@ body.guest-mode #patientsEmpty {
           const summary = this.summarizeBooks(nextBookMap);
           const logKey = push(ref(this.database, 'nhatKy')).key;
 
+          const publicPatient = publicPatientFromSource(
+            {
+              ...patient,
+              tongSoQuyen: summary.total,
+              trangThaiHienTai: summary.latestStatus,
+              soQuyenHetQuyen: summary.finished,
+              soQuyenHoiGia: summary.returned,
+              soQuyenTuVong: summary.deaths,
+              soQuyenCoFile: summary.files,
+              updatedAt: Date.now()
+            },
+            nextBookMap
+          );
+
           const updates = {
             [`quyenHoSo/${id}/${targetKey}`]: savedBook,
             [`doiTuong/${id}/tongSoQuyen`]: summary.total,
@@ -6555,6 +6868,10 @@ body.guest-mode #patientsEmpty {
             [`doiTuong/${id}/soQuyenTuVong`]: summary.deaths,
             [`doiTuong/${id}/soQuyenCoFile`]: summary.files,
             [`doiTuong/${id}/updatedAt`]: serverTimestamp(),
+            [`congKhai/${id}`]: publicPatient,
+            [`congKhai/_meta/schemaVersion`]: CONFIG.PUBLIC_SCHEMA_VERSION,
+            [`congKhai/_meta/sourceUpdatedAt`]: Date.now(),
+            [`congKhai/_meta/updatedAt`]: Date.now(),
             [`nhatKy/${logKey}`]: this.makeLog(
               mode === 'edit' ? 'CHỈNH SỬA QUYỂN HỒ SƠ' : 'LƯU QUYỂN HỒ SƠ',
               {
@@ -6645,7 +6962,7 @@ body.guest-mode #patientsEmpty {
       allPatients: [],
       activeStatusFilter: 'all',
       deathYearFilter: 'all',
-      currentRole: 'guest'
+      currentRole: 'public'
     };
 
     const $ = (selector, root = document) => root.querySelector(selector);
@@ -6688,17 +7005,27 @@ body.guest-mode #patientsEmpty {
 
       onAuthStateChanged(firebaseAuth, async user => {
         if (!user) {
-          showGuestState();
+          try {
+            await signInAnonymously(firebaseAuth);
+          } catch (error) {
+            console.error(error);
+            showPublicConnectionError();
+          }
           return;
         }
 
         $('#loading').classList.remove('hidden');
 
         try {
-          const access = await resolveUserAccess(user);
-          state.currentRole = access.role;
+          if (user.isAnonymous) {
+            state.currentRole = 'public';
+            showPublicState();
+          } else {
+            const access = await resolveUserAccess(user);
+            state.currentRole = access.role;
+            showLoggedInState(user, access.role);
+          }
 
-          showLoggedInState(user, access.role);
           applyRoleUi();
 
           const result = await api.get('bootstrap');
@@ -6714,10 +7041,16 @@ body.guest-mode #patientsEmpty {
           renderStats();
         } catch (error) {
           console.error(error);
-          await signOut(firebaseAuth).catch(() => {});
-          showGuestState();
-          openLoginDialog();
-          showAuthError(error.message || 'Tài khoản chưa được cấp quyền.');
+
+          if (!user.isAnonymous) {
+            await signOut(firebaseAuth).catch(() => {});
+            openLoginDialog();
+            showAuthError(
+              error.message || 'Tài khoản chưa được cấp quyền.'
+            );
+          } else {
+            showPublicConnectionError();
+          }
         } finally {
           $('#loading').classList.add('hidden');
         }
@@ -6725,6 +7058,10 @@ body.guest-mode #patientsEmpty {
     }
 
     async function resolveUserAccess(user) {
+      if (user?.isAnonymous) {
+        return { active: true, role: 'public', email: '' };
+      }
+
       const email = String(user?.email || '').trim().toLowerCase();
 
       if (email === CONFIG.OWNER_EMAIL.toLowerCase()) {
@@ -6764,12 +7101,13 @@ body.guest-mode #patientsEmpty {
     function roleLabel(role) {
       if (role === 'admin') return 'Quản trị';
       if (role === 'editor') return 'Cập nhật';
-      return 'Chỉ xem';
+      if (role === 'viewer') return 'Chỉ xem';
+      return 'Xem công khai';
     }
 
     function applyRoleUi() {
       const canEdit = canEditRecords();
-      const isGuest = state.currentRole === 'guest' || !state.currentRole;
+      const isGuest = state.currentRole === 'public' || !state.currentRole;
       $('#addPatientBtn')?.classList.toggle('hidden', !canEdit);
       document.body.classList.toggle('read-only-mode', !canEdit);
       document.body.classList.toggle('guest-mode', isGuest);
@@ -6777,7 +7115,12 @@ body.guest-mode #patientsEmpty {
 
     function requireEditPermission() {
       if (canEditRecords()) return true;
-      showToast('Tài khoản này chỉ có quyền xem dữ liệu.', true);
+      if (state.currentRole === 'public') {
+        openLoginDialog();
+        showToast('Vui lòng đăng nhập để thực hiện thao tác chỉnh sửa.', true);
+      } else {
+        showToast('Tài khoản này chỉ có quyền xem dữ liệu.', true);
+      }
       return false;
     }
 
@@ -6834,7 +7177,6 @@ body.guest-mode #patientsEmpty {
 
       $('#logoutBtn').addEventListener('click', async () => {
         await signOut(firebaseAuth);
-        window.location.reload();
       });
     }
 
@@ -6849,30 +7191,15 @@ body.guest-mode #patientsEmpty {
       hideAuthError();
     }
 
-    function showGuestState() {
-      state.currentRole = 'guest';
-      state.patients = [];
-      state.allPatients = [];
-      state.deaths = [];
-      state.currentPatient = null;
-      state.currentBooks = [];
+    function showPublicState() {
+      state.currentRole = 'public';
       applyRoleUi();
 
       $('#authGate').classList.add('hidden');
       $('#openLoginBtn').classList.remove('hidden');
+      $('#openLoginBtn').textContent = '🔐 Đăng nhập chỉnh sửa';
       $('#authUserBar').classList.add('hidden');
-      $('#summary').innerHTML = '';
-      $('#patientsList').innerHTML = '';
-      $('#patientsEmpty').classList.remove('hidden');
-      $('#patientsEmpty').innerHTML = `
-        <div class="guest-access-card">
-          <div class="guest-icon">🔐</div>
-          <h3>Đăng nhập để xem hồ sơ</h3>
-          <p>Dữ liệu hồ sơ được bảo vệ. Người có quyền xem hoặc cập nhật vui lòng đăng nhập bằng tài khoản đã được cấp.</p>
-          <button id="guestLoginBtn" class="btn primary" type="button">Đăng nhập hệ thống</button>
-        </div>`;
-      $('#guestLoginBtn')?.addEventListener('click', openLoginDialog);
-      switchView('patients');
+      hideAuthError();
 
       const emailButton = $('#emailLoginBtn');
       emailButton.disabled = false;
@@ -6882,6 +7209,26 @@ body.guest-mode #patientsEmpty {
       googleButton.disabled = false;
       googleButton.innerHTML =
         '<span class="google-mark">G</span> Đăng nhập bằng Google';
+    }
+
+    function showPublicConnectionError() {
+      state.currentRole = 'public';
+      state.patients = [];
+      state.allPatients = [];
+      state.deaths = [];
+      applyRoleUi();
+      showPublicState();
+
+      $('#summary').innerHTML = '';
+      $('#patientsList').innerHTML = '';
+      $('#patientsEmpty').classList.remove('hidden');
+      $('#patientsEmpty').innerHTML = `
+        <div class="guest-access-card">
+          <div class="guest-icon">ℹ️</div>
+          <h3>Chưa thể mở danh mục xem</h3>
+          <p>Vui lòng tải lại trang. Nếu tình trạng vẫn còn, liên hệ người quản trị hệ thống.</p>
+        </div>`;
+      switchView('patients');
     }
 
     function showLoggedInState(user, role) {
@@ -7072,7 +7419,13 @@ body.guest-mode #patientsEmpty {
 
       if (!state.patients.length) {
         $('#patientsList').innerHTML = '';
-        $('#patientsEmpty').classList.remove('hidden');
+        const emptyElement = $('#patientsEmpty');
+        emptyElement.classList.remove('hidden');
+        emptyElement.textContent = state.allPatients.length
+          ? 'Không tìm thấy hồ sơ phù hợp với điều kiện tra cứu.'
+          : state.currentRole === 'public'
+            ? 'Danh mục xem chưa được khởi tạo. Người quản trị vui lòng đăng nhập một lần để đồng bộ dữ liệu.'
+            : 'Chưa có dữ liệu.';
         renderFilterControls();
         return;
       }
@@ -7156,6 +7509,12 @@ body.guest-mode #patientsEmpty {
       const isDeath = books.some(book => normalizeRecordStatus(book['TRẠNG THÁI HIỆN TẠI']) === CONFIG.STATUS.TU_VONG);
       const canEdit = canEditRecords();
 
+      const isPublicView = state.currentRole === 'public';
+      const detailHeaders = isPublicView
+        ? '<th>Quyển</th><th>Thời gian</th><th>Trạng thái</th><th>Vị trí lưu</th><th>Kiểm kê</th>'
+        : '<th>Quyển</th><th>Thời gian</th><th>Trạng thái</th><th>Vị trí lưu</th><th>Kiểm kê</th><th>Tệp</th><th>Ghi chú</th><th>Thao tác</th>';
+      const detailColumnCount = isPublicView ? 5 : 8;
+
       $('#patientDetail').innerHTML = `
         <section class="detail-card">
           <div class="detail-avatar">${escapeHtml(initials(patient['HỌ VÀ TÊN']))}</div>
@@ -7176,18 +7535,15 @@ body.guest-mode #patientsEmpty {
               <button id="editPatientBtn" class="btn secondary-action">✎ Chỉnh sửa thông tin</button>
               ${canDeleteRecords() ? `<button id="deletePatientBtn" class="btn danger-action" ${books.length ? 'disabled title="Chỉ xóa được hồ sơ chưa có quyển lưu trữ"' : ''}>🗑 Xóa hồ sơ</button>` : ''}
               <button id="openBookBtn" class="btn primary" ${isDeath ? 'disabled title="Hồ sơ tử vong không mở thêm quyển mới"' : ''}>＋ Lưu hồ sơ</button>
-            </div>` : `<span class="readonly-label">👁 Chế độ chỉ xem</span>`}
+            </div>` : `<span class="readonly-label">👁 ${isPublicView ? 'Xem công khai' : 'Chế độ chỉ xem'}</span>`}
           </div>
         </section>
 
         <div class="table-wrap">
           <table class="book-table">
-            <thead><tr>
-              <th>Quyển</th><th>Thời gian</th><th>Trạng thái</th><th>Vị trí lưu</th>
-              <th>Kiểm kê</th><th>Tệp</th><th>Ghi chú</th><th>Thao tác</th>
-            </tr></thead>
+            <thead><tr>${detailHeaders}</tr></thead>
             <tbody>
-              ${books.length ? books.map(bookRowHtml).join('') : `<tr><td colspan="8">Chưa lưu quyển hồ sơ. Bấm “Lưu hồ sơ” để nhập quyển lưu trữ đầu tiên.</td></tr>`}
+              ${books.length ? books.map(book => bookRowHtml(book, isPublicView)).join('') : `<tr><td colspan="${detailColumnCount}">Chưa lưu quyển hồ sơ.</td></tr>`}
             </tbody>
           </table>
         </div>`;
@@ -7253,7 +7609,7 @@ body.guest-mode #patientsEmpty {
         </div>`;
     }
 
-    function bookRowHtml(book) {
+    function bookRowHtml(book, publicView = false) {
       const status = normalizeRecordStatus(book['TRẠNG THÁI HIỆN TẠI']) || 'Chưa hoàn tất';
       const statusClass = status === CONFIG.STATUS.TU_VONG ? 'death' : status === CONFIG.STATUS.HOI_GIA ? 'open' : 'closed';
       const isDeathBook = status === CONFIG.STATUS.TU_VONG;
@@ -7298,40 +7654,99 @@ body.guest-mode #patientsEmpty {
             </div>
           </td>
           <td data-label="Kiểm kê" data-full="true">${documentInventoryCellHtml(book)}</td>
-          <td data-label="Tệp">${book['FILE ĐÍNH KÈM'] ? `<a class="file-link" href="${escapeAttr(book['FILE ĐÍNH KÈM'])}" target="_blank" rel="noopener">📎 Mở tệp</a>` : '—'}</td>
-          <td class="book-note-cell" data-label="Ghi chú" data-full="true">${escapeHtml(book['GHI CHÚ'] || '—')}</td>
-          <td data-label="Thao tác">${canEditRecords() ? `<button class="btn small edit-action" data-action="edit-book" data-quyen-so="${escapeAttr(book['QUYỂN SỐ'])}">✎ Chỉnh sửa</button>` : '—'}</td>
+          ${publicView ? '' : `
+            <td data-label="Tệp">${book['FILE ĐÍNH KÈM'] ? `<a class="file-link" href="${escapeAttr(book['FILE ĐÍNH KÈM'])}" target="_blank" rel="noopener">📎 Mở tệp</a>` : '—'}</td>
+            <td class="book-note-cell" data-label="Ghi chú" data-full="true">${escapeHtml(book['GHI CHÚ'] || '—')}</td>
+            <td data-label="Thao tác">${canEditRecords() ? `<button class="btn small edit-action" data-action="edit-book" data-quyen-so="${escapeAttr(book['QUYỂN SỐ'])}">✎ Chỉnh sửa</button>` : '—'}</td>
+          `}
         </tr>`;
     }
 
     function renderDeaths() {
-      const years = [...new Set(state.deaths.map(item => Number(item['NĂM TỬ VONG'])).filter(Boolean))].sort((a,b) => b-a);
-      const filtered = state.deathYearFilter === 'all' ? state.deaths : state.deaths.filter(item => String(item['NĂM TỬ VONG']) === String(state.deathYearFilter));
+      const publicView = state.currentRole === 'public';
+      const years = [...new Set(
+        state.deaths
+          .map(item => Number(item['NĂM TỬ VONG']))
+          .filter(Boolean)
+      )].sort((a, b) => b - a);
+      const filtered = state.deathYearFilter === 'all'
+        ? state.deaths
+        : state.deaths.filter(
+            item =>
+              String(item['NĂM TỬ VONG']) ===
+              String(state.deathYearFilter)
+          );
+
+      const publicHeaders = `
+        <th>Số hồ sơ</th><th>Họ và tên</th><th>Năm sinh</th>
+        <th>Giới tính</th><th>Quyển số</th><th>Ngày kết thúc</th>
+        <th>Năm</th><th>Thùng số</th><th>Vị trí số</th>
+        <th>Kiểm kê giấy tờ</th>`;
+      const privateHeaders = `
+        <th>Số hồ sơ</th><th>Họ và tên</th><th>Năm sinh</th>
+        <th>Giới tính</th><th>Quyển số</th><th>Ngày tử vong</th>
+        <th>Năm</th><th>Nơi tử vong</th><th>Nguyên nhân tử vong</th>
+        <th>Thùng số</th><th>Vị trí số</th><th>Kiểm kê giấy tờ</th>
+        <th>File</th>`;
+
       $('#deathsList').innerHTML = `
         <div class="death-overview">
-          <div><h3>Danh mục hồ sơ tử vong</h3><p>Tra cứu theo năm, nơi và nguyên nhân tử vong, vị trí lưu trữ.</p></div>
+          <div>
+            <h3>Danh mục hồ sơ tử vong</h3>
+            <p>${publicView
+              ? 'Tra cứu theo năm và vị trí lưu trữ.'
+              : 'Tra cứu theo năm, nơi và nguyên nhân tử vong, vị trí lưu trữ.'}</p>
+          </div>
           <div class="death-count">${filtered.length}</div>
         </div>
         <div class="death-year-toolbar">
           <label>Năm tử vong
             <select id="deathYearSelect">
               <option value="all">Tất cả các năm</option>
-              ${years.map(year => `<option value="${year}" ${String(state.deathYearFilter) === String(year) ? 'selected' : ''}>${year}</option>`).join('')}
+              ${years.map(year => `
+                <option value="${year}"
+                  ${String(state.deathYearFilter) === String(year)
+                    ? 'selected'
+                    : ''}>${year}</option>`).join('')}
             </select>
           </label>
         </div>
         <div class="table-wrap"><table>
-          <thead><tr><th>Số hồ sơ</th><th>Họ và tên</th><th>Năm sinh</th><th>Giới tính</th><th>Quyển số</th><th>Ngày tử vong</th><th>Năm</th><th>Nơi tử vong</th><th>Nguyên nhân tử vong</th><th>Thùng số</th><th>Vị trí số</th><th>Kiểm kê giấy tờ</th><th>File</th></tr></thead>
-          <tbody>${filtered.length ? filtered.map(item => `<tr>
-            <td><strong>${escapeHtml(item['SỐ HỒ SƠ'])}</strong></td><td>${escapeHtml(item['HỌ VÀ TÊN'])}</td>
-            <td>${escapeHtml(item['NĂM SINH'])}</td><td>${escapeHtml(item['GIỚI TÍNH'] || '—')}</td>
-            <td><span class="badge closed">Quyển ${escapeHtml(item['QUYỂN SỐ'])}</span></td>
-            <td>${escapeHtml(formatDateVN(item['NGÀY KẾT THÚC']))}</td><td><strong>${escapeHtml(item['NĂM TỬ VONG'])}</strong></td>
-            <td>${escapeHtml(item['NƠI TỬ VONG'] || '—')}</td><td class="death-cause-cell">${escapeHtml(item['NGUYÊN NHÂN TỬ VONG'] || '—')}</td><td>${item['THÙNG SỐ'] ? `Thùng ${escapeHtml(item['THÙNG SỐ'])}` : '—'}</td><td>${item['VỊ TRÍ SỐ'] ? `Vị trí ${escapeHtml(item['VỊ TRÍ SỐ'])}` : escapeHtml(item['MÃ SỐ LƯU TRỮ'] || '—')}</td>
-            <td>${documentInventoryCellHtml(item)}</td>
-            <td>${item['FILE ĐÍNH KÈM'] ? `<a class="file-link" href="${escapeAttr(item['FILE ĐÍNH KÈM'])}" target="_blank" rel="noopener">📎 Mở file</a>` : '—'}</td>
-          </tr>`).join('') : `<tr><td colspan="13">Chưa có hồ sơ tử vong trong năm đã chọn.</td></tr>`}</tbody>
+          <thead><tr>${publicView ? publicHeaders : privateHeaders}</tr></thead>
+          <tbody>${filtered.length ? filtered.map(item => {
+            const commonCells = `
+              <td><strong>${escapeHtml(item['SỐ HỒ SƠ'])}</strong></td>
+              <td>${escapeHtml(item['HỌ VÀ TÊN'])}</td>
+              <td>${escapeHtml(item['NĂM SINH'])}</td>
+              <td>${escapeHtml(item['GIỚI TÍNH'] || '—')}</td>
+              <td><span class="badge closed">Quyển ${escapeHtml(item['QUYỂN SỐ'])}</span></td>
+              <td>${escapeHtml(formatDateVN(item['NGÀY KẾT THÚC']))}</td>
+              <td><strong>${escapeHtml(item['NĂM TỬ VONG'])}</strong></td>`;
+            const storageCells = `
+              <td>${item['THÙNG SỐ']
+                ? `Thùng ${escapeHtml(item['THÙNG SỐ'])}`
+                : '—'}</td>
+              <td>${item['VỊ TRÍ SỐ']
+                ? `Vị trí ${escapeHtml(item['VỊ TRÍ SỐ'])}`
+                : escapeHtml(item['MÃ SỐ LƯU TRỮ'] || '—')}</td>
+              <td>${documentInventoryCellHtml(item)}</td>`;
+
+            if (publicView) {
+              return `<tr>${commonCells}${storageCells}</tr>`;
+            }
+
+            return `<tr>
+              ${commonCells}
+              <td>${escapeHtml(item['NƠI TỬ VONG'] || '—')}</td>
+              <td class="death-cause-cell">${escapeHtml(item['NGUYÊN NHÂN TỬ VONG'] || '—')}</td>
+              ${storageCells}
+              <td>${item['FILE ĐÍNH KÈM']
+                ? `<a class="file-link" href="${escapeAttr(item['FILE ĐÍNH KÈM'])}" target="_blank" rel="noopener">📎 Mở file</a>`
+                : '—'}</td>
+            </tr>`;
+          }).join('') : `<tr><td colspan="${publicView ? 10 : 13}">Chưa có hồ sơ tử vong trong năm đã chọn.</td></tr>`}</tbody>
         </table></div>`;
+
       $('#deathYearSelect')?.addEventListener('change', event => {
         state.deathYearFilter = event.target.value || 'all';
         renderDeaths();
@@ -7356,7 +7771,10 @@ body.guest-mode #patientsEmpty {
       const unstructuredBooks = Number(storageStats.unstructuredBooks) || 0;
       const inventoryStats = storageStats.inventory || {};
 
+      const publicView = state.currentRole === 'public';
+
       $('#statsGrid').innerHTML = `
+        ${publicView ? '<div class="public-view-note">👁 Đang xem danh mục tra cứu công khai. Đăng nhập để xem tệp, ghi chú và thông tin nghiệp vụ đầy đủ.</div>' : ''}
         <div class="dashboard-kpi-grid">
           ${dashboardKpiHtml({icon:'👥',label:'Tổng hồ sơ',value:totalPatients,note:'Số đối tượng đã tạo hồ sơ lưu trữ',color:'#0d7f86',bg:'#e5f8f4',soft:'rgba(54,194,180,.13)'})}
           ${dashboardKpiHtml({icon:'📚',label:'Tổng quyển lưu',value:totalBooks,note:`Bình quân ${averageBooks} quyển/hồ sơ`,color:'#5b63b7',bg:'#eeeffd',soft:'rgba(91,99,183,.11)'})}
