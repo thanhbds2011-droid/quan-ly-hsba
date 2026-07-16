@@ -5903,19 +5903,39 @@ body.guest-mode #patientsEmpty {
     }
 
     async function readPublicCatalog() {
+      // Đọc đồng thời cả cấu trúc chính thức và cấu trúc thử nghiệm cũ.
       // Cấu trúc chính thức: congKhai/hoSo/{patientId}
-      let snapshot = await get(ref(firebaseDatabase, 'congKhai/hoSo'));
-      let value = snapshot.val() || {};
-      let entries = extractPublicCatalogEntries(value);
+      // Cấu trúc cũ: congKhai/{patientId}
+      const [rootSnapshot, nestedSnapshot] = await Promise.all([
+        get(ref(firebaseDatabase, 'congKhai')),
+        get(ref(firebaseDatabase, 'congKhai/hoSo'))
+      ]);
 
-      // Tương thích dữ liệu thử nghiệm cũ từng lưu trực tiếp dưới congKhai/{patientId}.
-      if (!entries.length) {
-        snapshot = await get(ref(firebaseDatabase, 'congKhai'));
-        value = snapshot.val() || {};
-        entries = extractPublicCatalogEntries(value);
+      const rootValue = rootSnapshot.val() || {};
+      const nestedValue = nestedSnapshot.val() || {};
+      const merged = new Map();
+
+      // Lấy các hồ sơ từng được lưu trực tiếp dưới congKhai/{id}.
+      Object.entries(rootValue).forEach(([id, patient]) => {
+        if (id === '_meta' || id === 'hoSo' || id.startsWith('_')) return;
+        if (!patient || typeof patient !== 'object') return;
+        if (!String(patient.soHoSo || '').trim() && !String(patient.hoTen || '').trim()) return;
+        merged.set(id, { id, patient });
+      });
+
+      // Lấy cấu trúc chính thức; dữ liệu này được ưu tiên nếu trùng ID.
+      extractPublicCatalogEntries(nestedValue).forEach(entry => {
+        merged.set(entry.id, entry);
+      });
+
+      // Tương thích thêm nếu dữ liệu bị bọc trong data/items/danhSach.
+      if (!merged.size) {
+        extractPublicCatalogEntries(rootValue).forEach(entry => {
+          merged.set(entry.id, entry);
+        });
       }
 
-      return entries.sort((a, b) => {
+      return Array.from(merged.values()).sort((a, b) => {
         const updatedDifference =
           (Number(b.patient.updatedAt) || 0) -
           (Number(a.patient.updatedAt) || 0);
@@ -8657,18 +8677,8 @@ body.guest-mode #patientsEmpty {
       return escapeHtml(value);
     }
   </script>
-  <div class="build-version" aria-hidden="true">2026.07.12.4</div>
+  <div class="build-version" aria-hidden="true">2026.07.16.7</div>
 
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker
-          .register("./service-worker.js?v=2026.07.12.3", { scope: "./" })
-          .then(registration => registration.update())
-          .catch(error => console.warn("Không đăng ký được Service Worker:", error));
-      });
-    }
-  </script>
 
 
   <script>
@@ -8678,21 +8688,37 @@ body.guest-mode #patientsEmpty {
      */
     window.addEventListener("load", async () => {
       try {
+        let cleaned = false;
+
         if ("serviceWorker" in navigator) {
           const registrations =
             await navigator.serviceWorker.getRegistrations();
 
-          await Promise.all(
-            registrations.map(registration => registration.unregister())
-          );
+          if (registrations.length) {
+            const results = await Promise.all(
+              registrations.map(registration => registration.unregister())
+            );
+            cleaned = results.some(Boolean) || cleaned;
+          }
         }
 
         if ("caches" in window) {
           const cacheNames = await caches.keys();
 
-          await Promise.all(
-            cacheNames.map(cacheName => caches.delete(cacheName))
-          );
+          if (cacheNames.length) {
+            const results = await Promise.all(
+              cacheNames.map(cacheName => caches.delete(cacheName))
+            );
+            cleaned = results.some(Boolean) || cleaned;
+          }
+        }
+
+        // Tải lại đúng một lần sau khi loại bỏ bản PWA/cache cũ.
+        if (cleaned && sessionStorage.getItem("hsba_cache_cleaned") !== "1") {
+          sessionStorage.setItem("hsba_cache_cleaned", "1");
+          const url = new URL(window.location.href);
+          url.searchParams.set("v", "20260716-sw-fix");
+          window.location.replace(url.toString());
         }
       } catch (error) {
         console.warn("Không thể xóa bộ nhớ đệm cũ:", error);
