@@ -4821,7 +4821,7 @@ body.guest-mode #patientsEmpty {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.07.16.2</small>
+        <small>Phiên bản 2026.07.16.3</small>
       </div>
     </aside>
 
@@ -5376,6 +5376,8 @@ body.guest-mode #patientsEmpty {
       getAuth,
       GoogleAuthProvider,
       signInWithPopup,
+      linkWithPopup,
+      signInWithCredential,
       signInWithEmailAndPassword,
       signInAnonymously,
       onAuthStateChanged,
@@ -5437,6 +5439,7 @@ body.guest-mode #patientsEmpty {
     const firebaseAuth = getAuth(firebaseApp);
     const firebaseDatabase = getDatabase(firebaseApp);
     const googleProvider = new GoogleAuthProvider();
+    let authUpgradeInProgress = false;
 
     googleProvider.setCustomParameters({
       prompt: 'select_account'
@@ -6433,7 +6436,11 @@ body.guest-mode #patientsEmpty {
           : await readPatientObjects();
 
         if (!this.isPublicSession()) {
-          await this.syncPublicCatalogIfNeeded(patientEntries);
+          try {
+            await this.syncPublicCatalogIfNeeded(patientEntries);
+          } catch (syncError) {
+            console.warn('Không đồng bộ được danh mục xem:', syncError);
+          }
         }
 
         const patients = patientEntries.map(({ id, patient }) =>
@@ -7005,6 +7012,8 @@ body.guest-mode #patientsEmpty {
 
       onAuthStateChanged(firebaseAuth, async user => {
         if (!user) {
+          if (authUpgradeInProgress) return;
+
           try {
             await signInAnonymously(firebaseAuth);
           } catch (error) {
@@ -7016,12 +7025,15 @@ body.guest-mode #patientsEmpty {
 
         $('#loading').classList.remove('hidden');
 
+        let accessResolved = false;
+
         try {
           if (user.isAnonymous) {
             state.currentRole = 'public';
             showPublicState();
           } else {
             const access = await resolveUserAccess(user);
+            accessResolved = true;
             state.currentRole = access.role;
             showLoggedInState(user, access.role);
           }
@@ -7042,11 +7054,18 @@ body.guest-mode #patientsEmpty {
         } catch (error) {
           console.error(error);
 
-          if (!user.isAnonymous) {
+          if (!user.isAnonymous && !accessResolved) {
             await signOut(firebaseAuth).catch(() => {});
             openLoginDialog();
             showAuthError(
               error.message || 'Tài khoản chưa được cấp quyền.'
+            );
+          } else if (!user.isAnonymous) {
+            showLoggedInState(user, state.currentRole || 'viewer');
+            applyRoleUi();
+            showToast(
+              'Đã đăng nhập nhưng chưa tải được dữ liệu. Vui lòng tải lại trang.',
+              true
             );
           } else {
             showPublicConnectionError();
@@ -7141,6 +7160,7 @@ body.guest-mode #patientsEmpty {
         button.disabled = true;
         button.textContent = 'Đang đăng nhập...';
         hideAuthError();
+        authUpgradeInProgress = true;
 
         try {
           await signInWithEmailAndPassword(
@@ -7148,9 +7168,11 @@ body.guest-mode #patientsEmpty {
             email,
             password
           );
+          closeLoginDialog();
         } catch (error) {
           showAuthError(firebaseError(error).message);
         } finally {
+          authUpgradeInProgress = false;
           button.disabled = false;
           button.textContent = 'Đăng nhập';
         }
@@ -7161,17 +7183,44 @@ body.guest-mode #patientsEmpty {
         button.disabled = true;
         button.textContent = 'Đang mở cửa sổ Google...';
         hideAuthError();
+        authUpgradeInProgress = true;
 
         try {
-          await signInWithPopup(
-            firebaseAuth,
-            googleProvider
-          );
+          const currentUser = firebaseAuth.currentUser;
+
+          if (currentUser?.isAnonymous) {
+            try {
+              await linkWithPopup(currentUser, googleProvider);
+            } catch (linkError) {
+              const code = String(linkError?.code || '');
+              const credential =
+                GoogleAuthProvider.credentialFromError(linkError);
+
+              if (
+                credential &&
+                [
+                  'auth/credential-already-in-use',
+                  'auth/email-already-in-use',
+                  'auth/account-exists-with-different-credential'
+                ].includes(code)
+              ) {
+                await signInWithCredential(firebaseAuth, credential);
+              } else {
+                throw linkError;
+              }
+            }
+          } else {
+            await signInWithPopup(firebaseAuth, googleProvider);
+          }
+
+          closeLoginDialog();
         } catch (error) {
+          showAuthError(firebaseError(error).message);
+        } finally {
+          authUpgradeInProgress = false;
           button.disabled = false;
           button.innerHTML =
             '<span class="google-mark">G</span> Đăng nhập bằng Google';
-          showAuthError(firebaseError(error).message);
         }
       });
 
