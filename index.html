@@ -5014,6 +5014,111 @@ body.guest-mode #exportExcelBtn {
       }
     }
 
+
+    .book-records-wrap {
+      display: grid;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .book-record-table-wrap {
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow-x: auto;
+      background: #fff;
+      box-shadow: 0 12px 28px rgba(21, 87, 86, .07);
+    }
+
+    .dynamic-book-table {
+      min-width: 980px;
+      table-layout: auto;
+    }
+
+    .dynamic-book-table th {
+      white-space: nowrap;
+    }
+
+    .dynamic-book-table td {
+      vertical-align: middle;
+    }
+
+    .event-plain-cell {
+      min-width: 180px;
+      max-width: 280px;
+      color: var(--text);
+      font-weight: 700;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .empty-book-record {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      color: var(--muted);
+    }
+
+    @media (max-width: 760px) {
+      .book-records-wrap {
+        gap: 14px;
+      }
+
+      .book-record-table-wrap {
+        overflow: visible;
+        border-radius: 18px;
+      }
+
+      .dynamic-book-table {
+        min-width: 0;
+        width: 100%;
+      }
+
+      .dynamic-book-table thead {
+        display: none;
+      }
+
+      .dynamic-book-table,
+      .dynamic-book-table tbody,
+      .dynamic-book-table tr,
+      .dynamic-book-table td {
+        display: block;
+        width: 100%;
+      }
+
+      .dynamic-book-table tr {
+        padding: 14px;
+      }
+
+      .dynamic-book-table td {
+        display: grid;
+        grid-template-columns: minmax(110px, 38%) 1fr;
+        gap: 12px;
+        align-items: start;
+        padding: 12px 4px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .dynamic-book-table td:last-child {
+        border-bottom: 0;
+      }
+
+      .dynamic-book-table td::before {
+        content: attr(data-label);
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .03em;
+        text-transform: uppercase;
+      }
+
+      .event-plain-cell {
+        min-width: 0;
+        max-width: none;
+      }
+    }
+
 </style>
 </head>
 
@@ -5041,7 +5146,7 @@ body.guest-mode #exportExcelBtn {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.07.17.3</small>
+        <small>Phiên bản 2026.07.17.4</small>
       </div>
     </aside>
 
@@ -6650,12 +6755,9 @@ body.guest-mode #exportExcelBtn {
 
         await currentUser.getIdToken(true);
 
-        // Luôn đọc trực tiếp toàn bộ dữ liệu nguồn. Không dùng danh sách
-        // đang tìm kiếm hoặc lọc trên giao diện.
-        const entries = Array.isArray(patientEntries)
-          ? patientEntries
-          : await readPatientObjects();
-
+        // Luôn lấy trực tiếp toàn bộ dữ liệu nguồn, tuyệt đối không dùng
+        // danh sách đang tìm kiếm/lọc trên giao diện.
+        const entries = await readPatientObjects();
         const booksSnapshot = await get(ref(this.database, 'quyenHoSo'));
         const booksRoot = booksSnapshot.val() || {};
         const now = Date.now();
@@ -6666,49 +6768,109 @@ body.guest-mode #exportExcelBtn {
           0
         );
 
-        const publicRecords = {};
+        const expectedIds = new Set(entries.map(item => item.id));
+        const publicRootRef = ref(this.database, 'congKhai');
+        const publicBooksRef = ref(this.database, 'congKhai/hoSo');
 
-        entries.forEach(({ id, patient }) => {
-          publicRecords[id] = publicPatientFromSource(
-            patient,
-            booksRoot[id] || {}
-          );
+        // 1. Xóa cấu trúc thử nghiệm cũ nằm trực tiếp dưới congKhai/{id}.
+        const currentRootSnapshot = await get(publicRootRef);
+        const currentRootValue = currentRootSnapshot.val() || {};
+        const cleanupUpdates = {};
+
+        Object.keys(currentRootValue).forEach(key => {
+          if (key !== '_meta' && key !== 'hoSo') {
+            cleanupUpdates[key] = null;
+          }
         });
 
-        const publicPayload = {
-          _meta: {
-            schemaVersion: CONFIG.PUBLIC_SCHEMA_VERSION,
-            patientCount: entries.length,
-            sourceUpdatedAt,
-            updatedAt: now
-          },
-          hoSo: publicRecords
-        };
+        if (Object.keys(cleanupUpdates).length) {
+          await update(publicRootRef, cleanupUpdates);
+        }
 
-        // Ghi đè toàn bộ congKhai trong một lệnh nguyên tử.
-        // Cách này tự xóa cấu trúc cũ congKhai/{id}.
-        await set(ref(this.database, 'congKhai'), publicPayload);
+        // 2. Xóa các hồ sơ công khai đã không còn tồn tại trong dữ liệu chính.
+        const currentPublicSnapshot = await get(publicBooksRef);
+        const currentPublicValue = currentPublicSnapshot.val() || {};
+        const staleUpdates = {};
 
-        const verifiedSnapshot = await get(
-          ref(this.database, 'congKhai/hoSo')
-        );
+        Object.keys(currentPublicValue).forEach(id => {
+          if (!expectedIds.has(id)) {
+            staleUpdates[id] = null;
+          }
+        });
+
+        if (Object.keys(staleUpdates).length) {
+          await update(publicBooksRef, staleUpdates);
+        }
+
+        // 3. Ghi từng hồ sơ theo lô nhỏ. Cách này tránh việc một payload lớn
+        // làm toàn bộ thao tác thất bại và giúp xác định đúng hồ sơ gây lỗi.
+        const BATCH_SIZE = 20;
+        const failedRecords = [];
+
+        for (let start = 0; start < entries.length; start += BATCH_SIZE) {
+          const batch = entries.slice(start, start + BATCH_SIZE);
+          const batchUpdates = {};
+
+          batch.forEach(({ id, patient }) => {
+            batchUpdates[id] = publicPatientFromSource(
+              patient,
+              booksRoot[id] || {}
+            );
+          });
+
+          try {
+            await update(publicBooksRef, batchUpdates);
+          } catch (error) {
+            console.error('Không ghi được lô danh mục công khai:', error);
+
+            // Thử lại từng hồ sơ để xác định chính xác hồ sơ lỗi.
+            for (const { id, patient } of batch) {
+              try {
+                await set(
+                  ref(this.database, `congKhai/hoSo/${id}`),
+                  publicPatientFromSource(patient, booksRoot[id] || {})
+                );
+              } catch (recordError) {
+                console.error(
+                  `Không ghi được hồ sơ công khai ${id}:`,
+                  recordError
+                );
+                failedRecords.push({
+                  id,
+                  soHoSo: String(patient?.soHoSo || id),
+                  message:
+                    recordError?.message ||
+                    'Không xác định được nguyên nhân.'
+                });
+              }
+            }
+          }
+        }
+
+        if (failedRecords.length) {
+          const first = failedRecords[0];
+          throw new Error(
+            `Không đồng bộ được ${failedRecords.length} hồ sơ. ` +
+            `Hồ sơ đầu tiên: ${first.soHoSo}. ${first.message}`
+          );
+        }
+
+        // 4. Cập nhật metadata sau cùng, chỉ khi toàn bộ hồ sơ đã ghi xong.
+        await set(ref(this.database, 'congKhai/_meta'), {
+          schemaVersion: CONFIG.PUBLIC_SCHEMA_VERSION,
+          patientCount: entries.length,
+          sourceUpdatedAt,
+          updatedAt: now
+        });
+
+        // 5. Đọc lại và xác minh số lượng thật.
+        const verifiedSnapshot = await get(publicBooksRef);
         const verifiedValue = verifiedSnapshot.val() || {};
         const verifiedEntries = extractPublicCatalogEntries(verifiedValue);
 
         if (verifiedEntries.length !== entries.length) {
           throw new Error(
-            `Danh mục xem chỉ ghi được ${verifiedEntries.length}/${entries.length} hồ sơ.`
-          );
-        }
-
-        const metaSnapshot = await get(
-          ref(this.database, 'congKhai/_meta/patientCount')
-        );
-        const verifiedPatientCount = Number(metaSnapshot.val()) || 0;
-
-        if (verifiedPatientCount !== entries.length) {
-          throw new Error(
-            `Số lượng công khai không khớp: ${verifiedPatientCount}/${entries.length}.`
+            `Danh mục xem hiện có ${verifiedEntries.length}/${entries.length} hồ sơ.`
           );
         }
 
@@ -7681,6 +7843,7 @@ body.guest-mode #exportExcelBtn {
         } catch (error) {
           console.error(error);
           showToast(
+            error?.message ||
             'Chưa cập nhật được danh mục xem. Vui lòng tải lại trang và thử lại.',
             true
           );
@@ -8026,9 +8189,6 @@ body.guest-mode #exportExcelBtn {
       const canEdit = canEditRecords();
 
       const isPublicView = state.currentRole === 'public';
-      const detailHeaders = isPublicView
-        ? '<th>Quyển</th><th>Thời gian</th><th>Trạng thái</th><th>Nơi tử vong / Ngày hồi gia</th><th>Nguyên nhân tử vong</th><th>Vị trí lưu</th><th>Kiểm kê</th>'
-        : '<th>Quyển</th><th>Thời gian</th><th>Trạng thái</th><th>Nơi tử vong / Ngày hồi gia</th><th>Nguyên nhân tử vong</th><th>Vị trí lưu</th><th>Kiểm kê</th><th>Tệp</th><th>Ghi chú</th><th>Thao tác</th>';
       const detailColumnCount = isPublicView ? 7 : 10;
 
       $('#patientDetail').innerHTML = `
@@ -8055,13 +8215,10 @@ body.guest-mode #exportExcelBtn {
           </div>
         </section>
 
-        <div class="table-wrap">
-          <table class="book-table">
-            <thead><tr>${detailHeaders}</tr></thead>
-            <tbody>
-              ${books.length ? books.map(book => bookRowHtml(book, isPublicView)).join('') : `<tr><td colspan="${detailColumnCount}">Chưa lưu quyển hồ sơ.</td></tr>`}
-            </tbody>
-          </table>
+        <div class="book-records-wrap">
+          ${books.length
+            ? books.map(book => bookRecordTableHtml(book, isPublicView)).join('')
+            : `<div class="empty-book-record">Chưa lưu quyển hồ sơ.</div>`}
         </div>`;
 
       $('#openBookBtn')?.addEventListener('click', () => openBookDialog(patient['SỐ HỒ SƠ']));
@@ -8125,56 +8282,52 @@ body.guest-mode #exportExcelBtn {
         </div>`;
     }
 
-    function primaryEventCellHtml(book, status, publicView = false) {
-      if (status === CONFIG.STATUS.TU_VONG) {
-        if (publicView) return '—';
-
-        return `
-          <div class="event-column-value death">
-            <small>Nơi tử vong</small>
-            <strong>${escapeHtml(
-              book['NƠI TỬ VONG'] || 'Chưa cập nhật'
-            )}</strong>
-          </div>`;
-      }
-
-      if (status === CONFIG.STATUS.HOI_GIA) {
-        return `
-          <div class="event-column-value returned">
-            <small>Ngày hồi gia</small>
-            <strong>${escapeHtml(
-              formatDateVN(book['NGÀY HỒI GIA'])
-            )}</strong>
-          </div>`;
-      }
-
-      return '—';
-    }
-
-    function secondaryEventCellHtml(book, status, publicView = false) {
-      if (status !== CONFIG.STATUS.TU_VONG || publicView) {
-        return '—';
-      }
-
-      return `
-        <div class="event-column-value death">
-          <small>Nguyên nhân tử vong</small>
-          <strong>${escapeHtml(
-            book['NGUYÊN NHÂN TỬ VONG'] || 'Chưa cập nhật'
-          )}</strong>
-        </div>`;
-    }
-
-    function bookRowHtml(book, publicView = false) {
+    function bookDynamicStructure(book, publicView = false) {
       const status =
         normalizeRecordStatus(book['TRẠNG THÁI HIỆN TẠI']) ||
         'Chưa hoàn tất';
+
+      const base = [
+        { key: 'book', title: 'Quyển' },
+        { key: 'period', title: 'Thời gian' },
+        { key: 'status', title: 'Trạng thái' }
+      ];
+
+      // Người xem công khai không được nhận nơi/nguyên nhân tử vong.
+      // Với tài khoản đã đăng nhập, tiêu đề được tạo đúng theo trạng thái.
+      if (status === CONFIG.STATUS.TU_VONG && !publicView) {
+        base.push(
+          { key: 'deathPlace', title: 'Nơi tử vong' },
+          { key: 'deathCause', title: 'Nguyên nhân tử vong' }
+        );
+      } else if (status === CONFIG.STATUS.HOI_GIA) {
+        base.push({ key: 'returnDate', title: 'Ngày hồi gia' });
+      }
+
+      base.push(
+        { key: 'storage', title: 'Vị trí lưu' },
+        { key: 'inventory', title: 'Kiểm kê' }
+      );
+
+      if (!publicView) {
+        base.push(
+          { key: 'file', title: 'Tệp' },
+          { key: 'note', title: 'Ghi chú' },
+          { key: 'action', title: 'Thao tác' }
+        );
+      }
+
+      return { status, columns: base };
+    }
+
+    function bookCellHtml(columnKey, book, status, publicView = false) {
       const statusClass =
         status === CONFIG.STATUS.TU_VONG
           ? 'death'
           : status === CONFIG.STATUS.HOI_GIA
             ? 'open'
             : 'closed';
+
       const storageBox = book['THÙNG SỐ']
         ? `Thùng ${escapeHtml(book['THÙNG SỐ'])}`
         : 'Chưa cập nhật';
@@ -8182,71 +8335,146 @@ body.guest-mode #exportExcelBtn {
         ? `Vị trí ${escapeHtml(book['VỊ TRÍ SỐ'])}`
         : escapeHtml(book['MÃ SỐ LƯU TRỮ'] || 'Chưa cập nhật');
 
-      return `
-        <tr>
-          <td class="book-number-cell" data-label="Quyển số">
-            <strong>${escapeHtml(book['QUYỂN SỐ'])}</strong>
-          </td>
+      switch (columnKey) {
+        case 'book':
+          return `
+            <td class="book-number-cell" data-label="Quyển">
+              <strong>${escapeHtml(book['QUYỂN SỐ'])}</strong>
+            </td>`;
 
-          <td data-label="Thời gian">
-            <div class="book-period-cell">
-              <div class="book-period-line">
-                <span>Mở</span>
-                <strong>${escapeHtml(formatDateVN(book['NGÀY BẮT ĐẦU']))}</strong>
+        case 'period':
+          return `
+            <td data-label="Thời gian">
+              <div class="book-period-cell">
+                <div class="book-period-line">
+                  <span>Mở</span>
+                  <strong>${escapeHtml(
+                    formatDateVN(book['NGÀY BẮT ĐẦU'])
+                  )}</strong>
+                </div>
+                <div class="book-period-line">
+                  <span>Kết thúc</span>
+                  <strong>${escapeHtml(
+                    formatDateVN(book['NGÀY KẾT THÚC'])
+                  )}</strong>
+                </div>
               </div>
-              <div class="book-period-line">
-                <span>Kết thúc</span>
-                <strong>${escapeHtml(formatDateVN(book['NGÀY KẾT THÚC']))}</strong>
+            </td>`;
+
+        case 'status':
+          return `
+            <td class="book-status-cell" data-label="Trạng thái">
+              <span class="badge ${statusClass}">
+                ${escapeHtml(status)}
+              </span>
+              ${book['_LEGACY_STATUS'] === CONFIG.STATUS.LEGACY_DANG_KHAM
+                ? '<span class="legacy-status-note">Cần chỉnh sửa để hoàn tất hồ sơ.</span>'
+                : ''}
+            </td>`;
+
+        case 'deathPlace':
+          return `
+            <td class="event-plain-cell" data-label="Nơi tử vong">
+              ${escapeHtml(book['NƠI TỬ VONG'] || 'Chưa cập nhật')}
+            </td>`;
+
+        case 'deathCause':
+          return `
+            <td class="event-plain-cell" data-label="Nguyên nhân tử vong">
+              ${escapeHtml(
+                book['NGUYÊN NHÂN TỬ VONG'] || 'Chưa cập nhật'
+              )}
+            </td>`;
+
+        case 'returnDate':
+          return `
+            <td class="event-plain-cell" data-label="Ngày hồi gia">
+              ${escapeHtml(formatDateVN(book['NGÀY HỒI GIA']))}
+            </td>`;
+
+        case 'storage':
+          return `
+            <td data-label="Vị trí lưu">
+              <div class="storage-position-cell">
+                <div class="storage-position-line">
+                  <span>Thùng</span><strong>${storageBox}</strong>
+                </div>
+                <div class="storage-position-line">
+                  <span>Vị trí</span><strong>${storagePosition}</strong>
+                </div>
               </div>
-            </div>
-          </td>
+            </td>`;
 
-          <td class="book-status-cell" data-label="Trạng thái">
-            <span class="badge ${statusClass}">${escapeHtml(status)}</span>
-            ${book['_LEGACY_STATUS'] === CONFIG.STATUS.LEGACY_DANG_KHAM
-              ? '<span class="legacy-status-note">Cần chỉnh sửa để hoàn tất hồ sơ.</span>'
-              : ''}
-          </td>
+        case 'inventory':
+          return `
+            <td data-label="Kiểm kê" data-full="true">
+              ${documentInventoryCellHtml(book)}
+            </td>`;
 
-          <td class="event-info-cell" data-label="Nơi tử vong / Ngày hồi gia">
-            ${primaryEventCellHtml(book, status, publicView)}
-          </td>
-
-          <td class="event-info-cell" data-label="Nguyên nhân tử vong">
-            ${secondaryEventCellHtml(book, status, publicView)}
-          </td>
-
-          <td data-label="Vị trí lưu">
-            <div class="storage-position-cell">
-              <div class="storage-position-line">
-                <span>Thùng</span><strong>${storageBox}</strong>
-              </div>
-              <div class="storage-position-line">
-                <span>Vị trí</span><strong>${storagePosition}</strong>
-              </div>
-            </div>
-          </td>
-
-          <td data-label="Kiểm kê" data-full="true">
-            ${documentInventoryCellHtml(book)}
-          </td>
-
-          ${publicView ? '' : `
+        case 'file':
+          return `
             <td data-label="Tệp">
               ${book['FILE ĐÍNH KÈM']
-                ? `<a class="file-link" href="${escapeAttr(book['FILE ĐÍNH KÈM'])}" target="_blank" rel="noopener">📎 Mở tệp</a>`
+                ? `<a class="file-link"
+                     href="${escapeAttr(book['FILE ĐÍNH KÈM'])}"
+                     target="_blank"
+                     rel="noopener">📎 Mở tệp</a>`
                 : '—'}
-            </td>
+            </td>`;
+
+        case 'note':
+          return `
             <td class="book-note-cell" data-label="Ghi chú" data-full="true">
               ${escapeHtml(book['GHI CHÚ'] || '—')}
-            </td>
+            </td>`;
+
+        case 'action':
+          return `
             <td data-label="Thao tác">
               ${canEditRecords()
-                ? `<button class="btn small edit-action" data-action="edit-book" data-quyen-so="${escapeAttr(book['QUYỂN SỐ'])}">✎ Chỉnh sửa</button>`
+                ? `<button
+                     class="btn small edit-action"
+                     data-action="edit-book"
+                     data-quyen-so="${escapeAttr(book['QUYỂN SỐ'])}">
+                     ✎ Chỉnh sửa
+                   </button>`
                 : '—'}
-            </td>
-          `}
-        </tr>`;
+            </td>`;
+
+        default:
+          return '<td>—</td>';
+      }
+    }
+
+    function bookRecordTableHtml(book, publicView = false) {
+      const structure = bookDynamicStructure(book, publicView);
+
+      return `
+        <div class="table-wrap book-record-table-wrap">
+          <table class="book-table dynamic-book-table">
+            <thead>
+              <tr>
+                ${structure.columns
+                  .map(column => `<th>${escapeHtml(column.title)}</th>`)
+                  .join('')}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                ${structure.columns
+                  .map(column =>
+                    bookCellHtml(
+                      column.key,
+                      book,
+                      structure.status,
+                      publicView
+                    )
+                  )
+                  .join('')}
+              </tr>
+            </tbody>
+          </table>
+        </div>`;
     }
 
     function renderDeaths() {
