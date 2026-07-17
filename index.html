@@ -4969,6 +4969,51 @@ body.guest-mode #exportExcelBtn {
   }
 }
 
+
+    .event-column-value {
+      display: grid;
+      gap: 4px;
+      min-width: 150px;
+      max-width: 230px;
+      padding: 10px 12px;
+      border: 1px solid #cfe6e2;
+      border-radius: 12px;
+      background: #f8fcfb;
+      line-height: 1.35;
+    }
+
+    .event-column-value small {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .event-column-value strong {
+      color: var(--text);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .event-column-value.death {
+      border-color: #f3c9c2;
+      background: #fff8f6;
+    }
+
+    .event-column-value.returned {
+      border-color: #c7ead7;
+      background: #f5fcf8;
+    }
+
+    @media (max-width: 760px) {
+      .event-column-value {
+        min-width: 0;
+        max-width: none;
+        width: 100%;
+      }
+    }
+
 </style>
 </head>
 
@@ -4996,7 +5041,7 @@ body.guest-mode #exportExcelBtn {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.07.17.2</small>
+        <small>Phiên bản 2026.07.17.3</small>
       </div>
     </aside>
 
@@ -6593,7 +6638,9 @@ body.guest-mode #exportExcelBtn {
 
       async rebuildPublicCatalog(patientEntries = null) {
         if (this.isPublicSession()) {
-          throw new Error('Chỉ tài khoản có quyền chỉnh sửa mới được cập nhật danh mục xem.');
+          throw new Error(
+            'Chỉ tài khoản có quyền chỉnh sửa mới được cập nhật danh mục xem.'
+          );
         }
 
         const currentUser = this.auth.currentUser;
@@ -6601,54 +6648,46 @@ body.guest-mode #exportExcelBtn {
           throw new Error('Phiên chỉnh sửa đã hết hạn.');
         }
 
-        // Làm mới token trước khi ghi để tránh quyền cũ còn lưu từ phiên xem.
         await currentUser.getIdToken(true);
 
-        const entries = patientEntries || await readPatientObjects();
+        // Luôn đọc trực tiếp toàn bộ dữ liệu nguồn. Không dùng danh sách
+        // đang tìm kiếm hoặc lọc trên giao diện.
+        const entries = Array.isArray(patientEntries)
+          ? patientEntries
+          : await readPatientObjects();
+
         const booksSnapshot = await get(ref(this.database, 'quyenHoSo'));
         const booksRoot = booksSnapshot.val() || {};
-        const existingSnapshot = await get(ref(this.database, 'congKhai'));
-        const existingRoot = existingSnapshot.val() || {};
-        const existingItems = existingRoot.hoSo || {};
         const now = Date.now();
+
         const sourceUpdatedAt = entries.reduce(
           (maximum, item) =>
             Math.max(maximum, Number(item.patient?.updatedAt) || 0),
           0
         );
 
-        const updates = {};
-        const nextIds = new Set(entries.map(item => item.id));
-
-        // Xóa hồ sơ đã bị xóa khỏi nguồn chính.
-        Object.keys(existingItems).forEach(id => {
-          if (!nextIds.has(id)) {
-            updates[`congKhai/hoSo/${id}`] = null;
-          }
-        });
-
-        // Dọn cấu trúc thử nghiệm cũ từng lưu trực tiếp dưới congKhai/{id}.
-        Object.keys(existingRoot).forEach(key => {
-          if (key !== '_meta' && key !== 'hoSo') {
-            updates[`congKhai/${key}`] = null;
-          }
-        });
+        const publicRecords = {};
 
         entries.forEach(({ id, patient }) => {
-          updates[`congKhai/hoSo/${id}`] = publicPatientFromSource(
+          publicRecords[id] = publicPatientFromSource(
             patient,
             booksRoot[id] || {}
           );
         });
 
-        updates['congKhai/_meta/schemaVersion'] =
-          CONFIG.PUBLIC_SCHEMA_VERSION;
-        updates['congKhai/_meta/patientCount'] = entries.length;
-        updates['congKhai/_meta/sourceUpdatedAt'] = sourceUpdatedAt;
-        updates['congKhai/_meta/updatedAt'] = now;
+        const publicPayload = {
+          _meta: {
+            schemaVersion: CONFIG.PUBLIC_SCHEMA_VERSION,
+            patientCount: entries.length,
+            sourceUpdatedAt,
+            updatedAt: now
+          },
+          hoSo: publicRecords
+        };
 
-        // Một lần cập nhật đa đường dẫn: hoặc toàn bộ thành công, hoặc không thay đổi.
-        await update(ref(this.database), updates);
+        // Ghi đè toàn bộ congKhai trong một lệnh nguyên tử.
+        // Cách này tự xóa cấu trúc cũ congKhai/{id}.
+        await set(ref(this.database, 'congKhai'), publicPayload);
 
         const verifiedSnapshot = await get(
           ref(this.database, 'congKhai/hoSo')
@@ -6659,6 +6698,17 @@ body.guest-mode #exportExcelBtn {
         if (verifiedEntries.length !== entries.length) {
           throw new Error(
             `Danh mục xem chỉ ghi được ${verifiedEntries.length}/${entries.length} hồ sơ.`
+          );
+        }
+
+        const metaSnapshot = await get(
+          ref(this.database, 'congKhai/_meta/patientCount')
+        );
+        const verifiedPatientCount = Number(metaSnapshot.val()) || 0;
+
+        if (verifiedPatientCount !== entries.length) {
+          throw new Error(
+            `Số lượng công khai không khớp: ${verifiedPatientCount}/${entries.length}.`
           );
         }
 
@@ -7977,9 +8027,9 @@ body.guest-mode #exportExcelBtn {
 
       const isPublicView = state.currentRole === 'public';
       const detailHeaders = isPublicView
-        ? '<th>Quyển</th><th>Thời gian</th><th>Trạng thái</th><th>Thông tin phát sinh</th><th>Vị trí lưu</th><th>Kiểm kê</th>'
-        : '<th>Quyển</th><th>Thời gian</th><th>Trạng thái</th><th>Thông tin phát sinh</th><th>Vị trí lưu</th><th>Kiểm kê</th><th>Tệp</th><th>Ghi chú</th><th>Thao tác</th>';
-      const detailColumnCount = isPublicView ? 6 : 9;
+        ? '<th>Quyển</th><th>Thời gian</th><th>Trạng thái</th><th>Nơi tử vong / Ngày hồi gia</th><th>Nguyên nhân tử vong</th><th>Vị trí lưu</th><th>Kiểm kê</th>'
+        : '<th>Quyển</th><th>Thời gian</th><th>Trạng thái</th><th>Nơi tử vong / Ngày hồi gia</th><th>Nguyên nhân tử vong</th><th>Vị trí lưu</th><th>Kiểm kê</th><th>Tệp</th><th>Ghi chú</th><th>Thao tác</th>';
+      const detailColumnCount = isPublicView ? 7 : 10;
 
       $('#patientDetail').innerHTML = `
         <section class="detail-card">
@@ -8075,36 +8125,44 @@ body.guest-mode #exportExcelBtn {
         </div>`;
     }
 
-    function bookEventInfoHtml(book, status, publicView = false) {
+    function primaryEventCellHtml(book, status, publicView = false) {
       if (status === CONFIG.STATUS.TU_VONG) {
-        if (publicView) {
-          return '<span class="event-info-empty">Thông tin nghiệp vụ chi tiết chỉ hiển thị sau khi đăng nhập.</span>';
-        }
+        if (publicView) return '—';
 
         return `
-          <div class="event-info-grid">
-            <div class="event-info-item death">
-              <small>Nơi tử vong</small>
-              <strong>${escapeHtml(book['NƠI TỬ VONG'] || 'Chưa cập nhật')}</strong>
-            </div>
-            <div class="event-info-item death">
-              <small>Nguyên nhân tử vong</small>
-              <strong>${escapeHtml(book['NGUYÊN NHÂN TỬ VONG'] || 'Chưa cập nhật')}</strong>
-            </div>
+          <div class="event-column-value death">
+            <small>Nơi tử vong</small>
+            <strong>${escapeHtml(
+              book['NƠI TỬ VONG'] || 'Chưa cập nhật'
+            )}</strong>
           </div>`;
       }
 
       if (status === CONFIG.STATUS.HOI_GIA) {
         return `
-          <div class="event-info-grid">
-            <div class="event-info-item returned">
-              <small>Ngày đối tượng hồi gia</small>
-              <strong>${escapeHtml(formatDateVN(book['NGÀY HỒI GIA']))}</strong>
-            </div>
+          <div class="event-column-value returned">
+            <small>Ngày hồi gia</small>
+            <strong>${escapeHtml(
+              formatDateVN(book['NGÀY HỒI GIA'])
+            )}</strong>
           </div>`;
       }
 
-      return '<span class="event-info-empty">Không phát sinh thông tin bổ sung.</span>';
+      return '—';
+    }
+
+    function secondaryEventCellHtml(book, status, publicView = false) {
+      if (status !== CONFIG.STATUS.TU_VONG || publicView) {
+        return '—';
+      }
+
+      return `
+        <div class="event-column-value death">
+          <small>Nguyên nhân tử vong</small>
+          <strong>${escapeHtml(
+            book['NGUYÊN NHÂN TỬ VONG'] || 'Chưa cập nhật'
+          )}</strong>
+        </div>`;
     }
 
     function bookRowHtml(book, publicView = false) {
@@ -8150,8 +8208,12 @@ body.guest-mode #exportExcelBtn {
               : ''}
           </td>
 
-          <td class="event-info-cell" data-label="Thông tin phát sinh" data-full="true">
-            ${bookEventInfoHtml(book, status, publicView)}
+          <td class="event-info-cell" data-label="Nơi tử vong / Ngày hồi gia">
+            ${primaryEventCellHtml(book, status, publicView)}
+          </td>
+
+          <td class="event-info-cell" data-label="Nguyên nhân tử vong">
+            ${secondaryEventCellHtml(book, status, publicView)}
           </td>
 
           <td data-label="Vị trí lưu">
