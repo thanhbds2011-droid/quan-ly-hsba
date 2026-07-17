@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.07.17.01">
+  <meta name="version" content="2026.07.17.8">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -5411,7 +5411,7 @@ body.guest-mode #exportExcelBtn {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.07.17.7</small>
+        <small>Phiên bản 2026.07.17.8</small>
       </div>
     </aside>
 
@@ -5963,7 +5963,7 @@ body.guest-mode #exportExcelBtn {
 
       <div class="report-preview-note">
         Bản xem trước được giữ tạm trong phiên làm việc. Khi bấm
-        <strong>Xuất Excel</strong>, hệ thống dùng lại dữ liệu này và không đọc lại Firebase.
+        <strong>Xuất Excel</strong>, hệ thống dùng lại dữ liệu này và không tải lại dữ liệu.
       </div>
 
       <div class="modal-actions report-preview-actions">
@@ -6895,7 +6895,7 @@ body.guest-mode #exportExcelBtn {
         }, timeoutMs);
 
         if (!response.ok) {
-          throw new Error(`Dịch vụ file phản hồi HTTP ${response.status}.`);
+          recordError?.message || 'Tài khoản chưa được cấp quyền thực hiện thao tác này.'
         }
 
         let result;
@@ -8217,7 +8217,7 @@ body.guest-mode #exportExcelBtn {
             /permission[- ]denied/i.test(message)
           ) {
             message =
-              'Firebase từ chối quyền đọc/ghi. Hãy Publish Rules mới, ' +
+              'Tài khoản chưa được cấp quyền cập nhật dữ liệu. Vui lòng đăng xuất, đăng nhập lại hoặc liên hệ người quản trị, ' +
               'đăng xuất rồi đăng nhập lại tài khoản quản trị.';
           }
 
@@ -10247,7 +10247,7 @@ body.guest-mode #exportExcelBtn {
     }
     }
   </script>
-  <div class="build-version" aria-hidden="true">2026.07.17.1</div>
+  <div class="build-version" aria-hidden="true">2026.07.17.8</div>
 
 
 
