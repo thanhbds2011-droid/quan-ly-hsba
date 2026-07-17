@@ -5119,6 +5119,26 @@ body.guest-mode #exportExcelBtn {
       }
     }
 
+
+    .storage-simple-values {
+      display: grid;
+      gap: 6px;
+      min-width: 105px;
+      line-height: 1.35;
+    }
+
+    .storage-simple-values strong {
+      color: var(--text);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 760px) {
+      .storage-simple-values {
+        min-width: 0;
+      }
+    }
+
 </style>
 </head>
 
@@ -5146,7 +5166,7 @@ body.guest-mode #exportExcelBtn {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.07.17.4</small>
+        <small>Phiên bản 2026.07.17.5</small>
       </div>
     </aside>
 
@@ -6235,30 +6255,42 @@ body.guest-mode #exportExcelBtn {
     }
 
     async function readPublicCatalog() {
-      const merged = new Map();
+      const sortEntries = (entries) =>
+        entries.sort((a, b) => {
+          const updatedDifference =
+            (Number(b.patient.updatedAt) || 0) -
+            (Number(a.patient.updatedAt) || 0);
 
-      const addEntries = (value) => {
-        extractPublicCatalogEntries(value).forEach(entry => {
-          merged.set(entry.id, entry);
+          if (updatedDifference) return updatedDifference;
+
+          return String(a.patient.soHoSo || '')
+            .localeCompare(String(b.patient.soHoSo || ''), 'vi');
         });
-      };
 
-      // Cấu trúc chính thức.
+      // Chỉ dùng cấu trúc chính thức khi đã có dữ liệu.
+      // Không gộp thêm các hồ sơ thử nghiệm cũ nằm trực tiếp dưới congKhai.
       try {
         const nestedSnapshot = await get(
           ref(firebaseDatabase, 'congKhai/hoSo')
         );
-        addEntries(nestedSnapshot.val() || {});
+        const officialEntries = extractPublicCatalogEntries(
+          nestedSnapshot.val() || {}
+        );
+
+        if (officialEntries.length) {
+          return sortEntries(officialEntries);
+        }
       } catch (error) {
         console.warn('Không đọc được congKhai/hoSo:', error);
       }
 
-      // Tương thích cấu trúc cũ: congKhai/{patientId}.
+      // Chỉ dùng cấu trúc cũ như phương án tương thích khi hoSo chưa tồn tại.
       try {
         const rootSnapshot = await get(
           ref(firebaseDatabase, 'congKhai')
         );
         const rootValue = rootSnapshot.val() || {};
+        const legacyEntries = [];
 
         Object.entries(rootValue).forEach(([id, patient]) => {
           if (
@@ -6274,26 +6306,14 @@ body.guest-mode #exportExcelBtn {
             !String(patient.hoTen || '').trim()
           ) return;
 
-          if (!merged.has(id)) {
-            merged.set(id, { id, patient });
-          }
+          legacyEntries.push({ id, patient });
         });
 
-        if (!merged.size) addEntries(rootValue);
+        return sortEntries(legacyEntries);
       } catch (error) {
         console.warn('Không đọc được danh mục công khai:', error);
+        return [];
       }
-
-      return Array.from(merged.values()).sort((a, b) => {
-        const updatedDifference =
-          (Number(b.patient.updatedAt) || 0) -
-          (Number(a.patient.updatedAt) || 0);
-
-        if (updatedDifference) return updatedDifference;
-
-        return String(a.patient.soHoSo || '')
-          .localeCompare(String(b.patient.soHoSo || ''), 'vi');
-      });
     }
 
     async function readPublicDeaths() {
@@ -6758,8 +6778,39 @@ body.guest-mode #exportExcelBtn {
         // Luôn lấy trực tiếp toàn bộ dữ liệu nguồn, tuyệt đối không dùng
         // danh sách đang tìm kiếm/lọc trên giao diện.
         const entries = await readPatientObjects();
-        const booksSnapshot = await get(ref(this.database, 'quyenHoSo'));
-        const booksRoot = booksSnapshot.val() || {};
+        let booksRoot = {};
+
+        try {
+          const booksSnapshot = await get(
+            ref(this.database, 'quyenHoSo')
+          );
+          booksRoot = booksSnapshot.val() || {};
+        } catch (error) {
+          console.warn(
+            'Không đọc được toàn bộ quyenHoSo; chuyển sang đọc từng hồ sơ:',
+            error
+          );
+
+          const bookResults = await Promise.all(
+            entries.map(async ({ id, patient }) => {
+              try {
+                const snapshot = await get(
+                  ref(this.database, `quyenHoSo/${id}`)
+                );
+                return [id, snapshot.val() || {}];
+              } catch (recordError) {
+                const soHoSo = String(patient?.soHoSo || id);
+                throw new Error(
+                  `Không đọc được quyển của hồ sơ ${soHoSo}. ` +
+                  `${recordError?.message || 'Permission denied'}`
+                );
+              }
+            })
+          );
+
+          booksRoot = Object.fromEntries(bookResults);
+        }
+
         const now = Date.now();
 
         const sourceUpdatedAt = entries.reduce(
@@ -7842,11 +7893,20 @@ body.guest-mode #exportExcelBtn {
           );
         } catch (error) {
           console.error(error);
-          showToast(
+          let message =
             error?.message ||
-            'Chưa cập nhật được danh mục xem. Vui lòng tải lại trang và thử lại.',
-            true
-          );
+            'Chưa cập nhật được danh mục xem.';
+
+          if (
+            error?.code === 'PERMISSION_DENIED' ||
+            /permission[- ]denied/i.test(message)
+          ) {
+            message =
+              'Firebase từ chối quyền đọc/ghi. Hãy Publish Rules mới, ' +
+              'đăng xuất rồi đăng nhập lại tài khoản quản trị.';
+          }
+
+          showToast(message, true);
         } finally {
           button.disabled = false;
           button.textContent = oldText;
@@ -8395,13 +8455,9 @@ body.guest-mode #exportExcelBtn {
         case 'storage':
           return `
             <td data-label="Vị trí lưu">
-              <div class="storage-position-cell">
-                <div class="storage-position-line">
-                  <span>Thùng</span><strong>${storageBox}</strong>
-                </div>
-                <div class="storage-position-line">
-                  <span>Vị trí</span><strong>${storagePosition}</strong>
-                </div>
+              <div class="storage-simple-values">
+                <strong>${storageBox}</strong>
+                <strong>${storagePosition}</strong>
               </div>
             </td>`;
 
