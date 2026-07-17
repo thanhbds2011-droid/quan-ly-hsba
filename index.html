@@ -4996,7 +4996,7 @@ body.guest-mode #exportExcelBtn {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.07.17.1</small>
+        <small>Phiên bản 2026.07.17.2</small>
       </div>
     </aside>
 
@@ -5012,7 +5012,7 @@ body.guest-mode #exportExcelBtn {
           </div>
         </div>
 
-        <button id="openLoginBtn" class="auth-login-top-btn hidden" type="button">🔐 Đăng nhập chỉnh sửa</button>
+        <button id="openLoginBtn" class="auth-login-top-btn" type="button">🔐 Đăng nhập chỉnh sửa</button>
 
         <div id="authUserBar" class="auth-user-bar hidden">
           <div class="auth-user-summary">
@@ -5039,7 +5039,7 @@ body.guest-mode #exportExcelBtn {
             </div>
             <div class="page-actions">
               <button id="exportExcelBtn" class="btn export-excel-btn hidden" type="button">▣ Xuất Excel báo cáo</button>
-              <button id="addPatientBtn" class="btn primary">＋ Thêm hồ sơ</button>
+              <button id="addPatientBtn" class="btn primary hidden">＋ Thêm hồ sơ</button>
             </div>
           </div>
 
@@ -6085,36 +6085,53 @@ body.guest-mode #exportExcelBtn {
     }
 
     async function readPublicCatalog() {
-      // Đọc đồng thời cả cấu trúc chính thức và cấu trúc thử nghiệm cũ.
-      // Cấu trúc chính thức: congKhai/hoSo/{patientId}
-      // Cấu trúc cũ: congKhai/{patientId}
-      const [rootSnapshot, nestedSnapshot] = await Promise.all([
-        get(ref(firebaseDatabase, 'congKhai')),
-        get(ref(firebaseDatabase, 'congKhai/hoSo'))
-      ]);
-
-      const rootValue = rootSnapshot.val() || {};
-      const nestedValue = nestedSnapshot.val() || {};
       const merged = new Map();
 
-      // Lấy các hồ sơ từng được lưu trực tiếp dưới congKhai/{id}.
-      Object.entries(rootValue).forEach(([id, patient]) => {
-        if (id === '_meta' || id === 'hoSo' || id.startsWith('_')) return;
-        if (!patient || typeof patient !== 'object') return;
-        if (!String(patient.soHoSo || '').trim() && !String(patient.hoTen || '').trim()) return;
-        merged.set(id, { id, patient });
-      });
-
-      // Lấy cấu trúc chính thức; dữ liệu này được ưu tiên nếu trùng ID.
-      extractPublicCatalogEntries(nestedValue).forEach(entry => {
-        merged.set(entry.id, entry);
-      });
-
-      // Tương thích thêm nếu dữ liệu bị bọc trong data/items/danhSach.
-      if (!merged.size) {
-        extractPublicCatalogEntries(rootValue).forEach(entry => {
+      const addEntries = (value) => {
+        extractPublicCatalogEntries(value).forEach(entry => {
           merged.set(entry.id, entry);
         });
+      };
+
+      // Cấu trúc chính thức.
+      try {
+        const nestedSnapshot = await get(
+          ref(firebaseDatabase, 'congKhai/hoSo')
+        );
+        addEntries(nestedSnapshot.val() || {});
+      } catch (error) {
+        console.warn('Không đọc được congKhai/hoSo:', error);
+      }
+
+      // Tương thích cấu trúc cũ: congKhai/{patientId}.
+      try {
+        const rootSnapshot = await get(
+          ref(firebaseDatabase, 'congKhai')
+        );
+        const rootValue = rootSnapshot.val() || {};
+
+        Object.entries(rootValue).forEach(([id, patient]) => {
+          if (
+            id === '_meta' ||
+            id === 'hoSo' ||
+            id.startsWith('_') ||
+            !patient ||
+            typeof patient !== 'object'
+          ) return;
+
+          if (
+            !String(patient.soHoSo || '').trim() &&
+            !String(patient.hoTen || '').trim()
+          ) return;
+
+          if (!merged.has(id)) {
+            merged.set(id, { id, patient });
+          }
+        });
+
+        if (!merged.size) addEntries(rootValue);
+      } catch (error) {
+        console.warn('Không đọc được danh mục công khai:', error);
       }
 
       return Array.from(merged.values()).sort((a, b) => {
@@ -7309,12 +7326,42 @@ body.guest-mode #exportExcelBtn {
     const $ = (selector, root = document) => root.querySelector(selector);
     const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
-    document.addEventListener('DOMContentLoaded', init);
+    let hsbaInitStarted = false;
+
+    function startHsbaApp() {
+      if (hsbaInitStarted) return;
+      hsbaInitStarted = true;
+
+      init().catch(error => {
+        console.error('Không khởi động được ứng dụng:', error);
+        showPublicState();
+        applyRoleUi();
+        $('#loading')?.classList.add('hidden');
+        $('#connectionBadge')?.classList.add('offline');
+        if ($('#connectionBadge')) {
+          $('#connectionBadge').textContent = 'CHƯA KẾT NỐI';
+        }
+        showPublicConnectionError();
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', startHsbaApp, { once: true });
+    } else {
+      startHsbaApp();
+    }
 
     async function init() {
       bindEvents();
       bindAuthentication();
       setToday();
+
+      // Trạng thái mặc định luôn là chế độ xem công khai.
+      // Nhờ vậy người chưa đăng nhập vẫn thấy nút đăng nhập,
+      // đồng thời tuyệt đối không thấy nút thêm/sửa/xóa trong lúc Firebase đang tải.
+      state.currentRole = 'public';
+      showPublicState();
+      applyRoleUi();
 
       if (!NETWORK_ALLOWED) {
         $('#authGate').classList.add('hidden');
@@ -7397,6 +7444,14 @@ body.guest-mode #exportExcelBtn {
           renderPatients();
           renderDeaths();
           renderStats();
+
+          if (publicMode && state.patients.length === 0) {
+            $('#patientsEmpty')?.classList.remove('hidden');
+            if ($('#patientsEmpty')) {
+              $('#patientsEmpty').textContent =
+                'Danh mục xem hiện chưa có dữ liệu. Người quản trị cần đăng nhập và bấm “Cập nhật danh mục xem”.';
+            }
+          }
         } catch (error) {
           console.error(error);
 
