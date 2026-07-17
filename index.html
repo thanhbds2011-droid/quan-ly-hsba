@@ -10249,52 +10249,5 @@ body.guest-mode #exportExcelBtn {
   </script>
   <div class="build-version" aria-hidden="true">2026.07.17.8</div>
 
-
-
-  <script>
-    /*
-     * Ứng dụng hiện chỉ dùng index.html và hai file logo trong thư mục assets.
-     * Tự gỡ Service Worker/cache cũ để tránh giữ giao diện cũ.
-     */
-    window.addEventListener("load", async () => {
-      try {
-        let cleaned = false;
-
-        if ("serviceWorker" in navigator) {
-          const registrations =
-            await navigator.serviceWorker.getRegistrations();
-
-          if (registrations.length) {
-            const results = await Promise.all(
-              registrations.map(registration => registration.unregister())
-            );
-            cleaned = results.some(Boolean) || cleaned;
-          }
-        }
-
-        if ("caches" in window) {
-          const cacheNames = await caches.keys();
-
-          if (cacheNames.length) {
-            const results = await Promise.all(
-              cacheNames.map(cacheName => caches.delete(cacheName))
-            );
-            cleaned = results.some(Boolean) || cleaned;
-          }
-        }
-
-        // Tải lại đúng một lần sau khi loại bỏ bản PWA/cache cũ.
-        if (cleaned && sessionStorage.getItem("hsba_cache_cleaned") !== "1") {
-          sessionStorage.setItem("hsba_cache_cleaned", "1");
-          const url = new URL(window.location.href);
-          url.searchParams.set("v", "20260717-excel-public");
-          window.location.replace(url.toString());
-        }
-      } catch (error) {
-        console.warn("Không thể xóa bộ nhớ đệm cũ:", error);
-      }
-    });
-  </script>
-
 </body>
 </html>
