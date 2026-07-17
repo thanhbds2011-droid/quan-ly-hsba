@@ -5357,6 +5357,33 @@ body.guest-mode #exportExcelBtn {
       }
     }
 
+
+    .report-preview-head-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+
+    .report-preview-export-top {
+      min-height: 42px;
+      padding-inline: 18px;
+      white-space: nowrap;
+      box-shadow: 0 10px 22px rgba(18, 166, 166, .18);
+    }
+
+    @media (max-width: 760px) {
+      .report-preview-head-actions {
+        gap: 7px;
+      }
+
+      .report-preview-export-top {
+        min-height: 38px;
+        padding: 9px 12px;
+        font-size: 12px;
+      }
+    }
+
 </style>
 </head>
 
@@ -5384,7 +5411,7 @@ body.guest-mode #exportExcelBtn {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.07.17.6</small>
+        <small>Phiên bản 2026.07.17.7</small>
       </div>
     </aside>
 
@@ -5885,7 +5912,18 @@ body.guest-mode #exportExcelBtn {
             Kiểm tra dữ liệu trước khi quyết định xuất Excel.
           </p>
         </div>
-        <button type="button" class="icon-btn close-dialog" aria-label="Đóng">×</button>
+        <div class="report-preview-head-actions">
+          <button
+            id="reportPreviewExportBtn"
+            type="button"
+            class="btn primary report-preview-export-top">
+            ▣ Xuất Excel
+          </button>
+          <button
+            type="button"
+            class="icon-btn close-dialog"
+            aria-label="Đóng">×</button>
+        </div>
       </div>
 
       <div id="reportPreviewSummary" class="report-preview-summary"></div>
@@ -5930,9 +5968,6 @@ body.guest-mode #exportExcelBtn {
 
       <div class="modal-actions report-preview-actions">
         <button type="button" class="btn close-dialog">Đóng</button>
-        <button id="reportPreviewExportBtn" type="button" class="btn primary">
-          ▣ Xuất Excel
-        </button>
       </div>
     </div>
   </dialog>
