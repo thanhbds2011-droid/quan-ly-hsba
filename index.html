@@ -5139,6 +5139,224 @@ body.guest-mode #exportExcelBtn {
       }
     }
 
+
+    .report-preview-dialog {
+      width: min(1540px, 97vw);
+      max-width: none;
+      max-height: 94vh;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .report-preview-shell {
+      display: flex;
+      flex-direction: column;
+      max-height: 94vh;
+      background: #f2f8f7;
+    }
+
+    .report-preview-head {
+      flex: 0 0 auto;
+      padding: 18px 22px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .report-preview-summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      padding: 14px 22px 0;
+    }
+
+    .report-preview-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 34px;
+      padding: 7px 12px;
+      border: 1px solid #cce7e2;
+      border-radius: 999px;
+      background: #fff;
+      color: #28585e;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .report-preview-chip strong {
+      color: var(--primary);
+      font-size: 14px;
+    }
+
+    .report-preview-paper {
+      width: 1120px;
+      max-width: calc(100% - 44px);
+      min-height: 560px;
+      margin: 14px auto;
+      padding: 28px 30px 30px;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid #d7e7e4;
+      border-radius: 8px;
+      box-shadow: 0 16px 38px rgba(25, 74, 76, .12);
+    }
+
+    .report-preview-title-block {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .report-preview-title-block h2 {
+      margin: 0 0 8px;
+      color: #0d6f73;
+      font-size: 20px;
+      letter-spacing: .02em;
+    }
+
+    .report-preview-title-block p {
+      margin: 0 0 5px;
+      color: #425d65;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .report-preview-title-block small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .report-preview-table-scroll {
+      max-height: 47vh;
+      overflow: auto;
+      border: 1px solid #cfe2df;
+    }
+
+    .report-preview-table {
+      width: 100%;
+      min-width: 1600px;
+      border-collapse: collapse;
+      background: #fff;
+      font-size: 11px;
+    }
+
+    .report-preview-table th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      padding: 9px 7px;
+      border: 1px solid #b9d9d5;
+      background: #0d7f86;
+      color: #fff;
+      text-align: center;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .report-preview-table td {
+      padding: 8px 7px;
+      border: 1px solid #d7e7e4;
+      color: #263f47;
+      vertical-align: middle;
+      line-height: 1.35;
+    }
+
+    .report-preview-table tbody tr:nth-child(even) td {
+      background: #f4faf8;
+    }
+
+    .report-preview-table td.center {
+      text-align: center;
+    }
+
+    .report-preview-table td.status-death {
+      color: #b54132;
+      font-weight: 800;
+    }
+
+    .report-preview-table td.status-returned {
+      color: #1f8a5b;
+      font-weight: 800;
+    }
+
+    .report-preview-table td.status-finished {
+      color: #0d7f86;
+      font-weight: 800;
+    }
+
+    .report-preview-note {
+      flex: 0 0 auto;
+      margin: 0 22px 12px;
+      padding: 11px 13px;
+      border: 1px solid #cce7e2;
+      border-radius: 12px;
+      background: #eefaf7;
+      color: #42636a;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .report-preview-actions {
+      flex: 0 0 auto;
+      margin-top: 0;
+      padding: 14px 22px 18px;
+      background: #fff;
+      border-top: 1px solid var(--line);
+    }
+
+    @media (max-width: 760px) {
+      .report-preview-dialog {
+        width: 100vw;
+        max-width: 100vw;
+        max-height: 100dvh;
+        height: 100dvh;
+        border-radius: 0;
+      }
+
+      .report-preview-shell {
+        max-height: 100dvh;
+        height: 100dvh;
+      }
+
+      .report-preview-head {
+        padding: 14px 16px;
+      }
+
+      .report-preview-summary {
+        padding: 11px 14px 0;
+        gap: 7px;
+      }
+
+      .report-preview-chip {
+        min-height: 30px;
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+
+      .report-preview-paper {
+        width: calc(100% - 20px);
+        max-width: none;
+        min-height: 0;
+        margin: 10px;
+        padding: 18px 14px;
+      }
+
+      .report-preview-title-block h2 {
+        font-size: 16px;
+      }
+
+      .report-preview-table-scroll {
+        max-height: calc(100dvh - 360px);
+      }
+
+      .report-preview-note {
+        margin: 0 12px 10px;
+      }
+
+      .report-preview-actions {
+        padding: 12px 14px;
+      }
+    }
+
 </style>
 </head>
 
@@ -5166,7 +5384,7 @@ body.guest-mode #exportExcelBtn {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.07.17.5</small>
+        <small>Phiên bản 2026.07.17.6</small>
       </div>
     </aside>
 
@@ -5208,7 +5426,7 @@ body.guest-mode #exportExcelBtn {
               <p>Tra cứu theo số hồ sơ, họ tên, năm sinh hoặc giới tính</p>
             </div>
             <div class="page-actions">
-              <button id="exportExcelBtn" class="btn export-excel-btn hidden" type="button">▣ Xuất Excel báo cáo</button>
+              <button id="exportExcelBtn" class="btn export-excel-btn hidden" type="button">▣ Xem file báo cáo</button>
               <button id="addPatientBtn" class="btn primary hidden">＋ Thêm hồ sơ</button>
             </div>
           </div>
@@ -5655,6 +5873,68 @@ body.guest-mode #exportExcelBtn {
       </div>
       <div id="inventoryDetailContent" class="inventory-detail-content"></div>
     </form>
+  </dialog>
+
+
+  <dialog id="reportPreviewDialog" class="record-dialog report-preview-dialog">
+    <div class="report-preview-shell">
+      <div class="modal-head report-preview-head">
+        <div>
+          <h3>Xem file báo cáo</h3>
+          <p class="modal-subtitle">
+            Kiểm tra dữ liệu trước khi quyết định xuất Excel.
+          </p>
+        </div>
+        <button type="button" class="icon-btn close-dialog" aria-label="Đóng">×</button>
+      </div>
+
+      <div id="reportPreviewSummary" class="report-preview-summary"></div>
+
+      <section class="report-preview-paper">
+        <div class="report-preview-title-block">
+          <h2>BÁO CÁO DANH MỤC HỒ SƠ BỆNH ÁN LƯU TRỮ</h2>
+          <p id="reportPreviewScope">Phạm vi báo cáo: Tất cả hồ sơ</p>
+          <small id="reportPreviewGeneratedAt"></small>
+        </div>
+
+        <div class="report-preview-table-scroll">
+          <table class="report-preview-table">
+            <thead>
+              <tr>
+                <th>STT</th>
+                <th>Số hồ sơ</th>
+                <th>Họ và tên</th>
+                <th>Năm sinh</th>
+                <th>Giới tính</th>
+                <th>Quyển</th>
+                <th>Ngày mở</th>
+                <th>Ngày kết thúc</th>
+                <th>Trạng thái</th>
+                <th>Ngày hồi gia</th>
+                <th>Nơi tử vong</th>
+                <th>Nguyên nhân tử vong</th>
+                <th>Thùng</th>
+                <th>Vị trí</th>
+                <th>Tổng kiểm kê</th>
+              </tr>
+            </thead>
+            <tbody id="reportPreviewBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="report-preview-note">
+        Bản xem trước được giữ tạm trong phiên làm việc. Khi bấm
+        <strong>Xuất Excel</strong>, hệ thống dùng lại dữ liệu này và không đọc lại Firebase.
+      </div>
+
+      <div class="modal-actions report-preview-actions">
+        <button type="button" class="btn close-dialog">Đóng</button>
+        <button id="reportPreviewExportBtn" type="button" class="btn primary">
+          ▣ Xuất Excel
+        </button>
+      </div>
+    </div>
   </dialog>
 
   <section id="authGate" class="auth-gate hidden">
@@ -7995,7 +8275,8 @@ body.guest-mode #exportExcelBtn {
       $('#menuBtn').addEventListener('click', openSidebar);
       $('#overlay').addEventListener('click', closeSidebar);
       $('#addPatientBtn').addEventListener('click', () => openPatientDialog('add'));
-      $('#exportExcelBtn')?.addEventListener('click', exportExcelReport);
+      $('#exportExcelBtn')?.addEventListener('click', openReportPreview);
+      $('#reportPreviewExportBtn')?.addEventListener('click', exportExcelReport);
       $('#backBtn').addEventListener('click', () => switchView('patients'));
 
       $('#searchBtn').addEventListener('click', searchPatients);
@@ -9220,6 +9501,184 @@ body.guest-mode #exportExcelBtn {
     }
 
 
+
+    const reportPreviewCache = {
+      signature: '',
+      patients: [],
+      reportRows: [],
+      generatedAt: null
+    };
+
+    function currentReportPatients() {
+      return state.patients.length
+        ? [...state.patients]
+        : [...state.allPatients];
+    }
+
+    function reportDataSignature(patients) {
+      return JSON.stringify(
+        patients.map(patient => [
+          patient['_FIREBASE_ID'] || '',
+          patient['SỐ HỒ SƠ'] || '',
+          Number(patient['_UPDATED_AT']) || 0,
+          Number(patient['TỔNG SỐ QUYỂN']) || 0,
+          patient['TRẠNG THÁI MỚI NHẤT'] || ''
+        ])
+      );
+    }
+
+    async function prepareReportData(forceRefresh = false) {
+      const patients = currentReportPatients();
+
+      if (!patients.length) {
+        throw new Error('Không có dữ liệu phù hợp để xem báo cáo.');
+      }
+
+      const signature = reportDataSignature(patients);
+
+      if (
+        !forceRefresh &&
+        reportPreviewCache.signature === signature &&
+        reportPreviewCache.reportRows.length
+      ) {
+        return reportPreviewCache;
+      }
+
+      const reportRows = await collectExcelReportRows(patients);
+
+      reportPreviewCache.signature = signature;
+      reportPreviewCache.patients = patients;
+      reportPreviewCache.reportRows = reportRows;
+      reportPreviewCache.generatedAt = new Date();
+
+      return reportPreviewCache;
+    }
+
+    function reportScopeLabel() {
+      const labels = {
+        all: 'Tất cả hồ sơ',
+        finished: 'Hồ sơ hết quyển',
+        returned: 'Đối tượng hồi gia',
+        death: 'Đối tượng tử vong',
+        empty: 'Hồ sơ chưa lưu quyển'
+      };
+
+      return labels[state.activeStatusFilter || 'all'] || 'Tất cả hồ sơ';
+    }
+
+    function reportStatusClass(status) {
+      if (status === CONFIG.STATUS.TU_VONG) return 'status-death';
+      if (status === CONFIG.STATUS.HOI_GIA) return 'status-returned';
+      return 'status-finished';
+    }
+
+    function renderReportPreview(prepared) {
+      const patients = prepared.patients;
+      const reportRows = prepared.reportRows;
+      const bookRows = reportRows.filter(item => item.book);
+      const deathCount = bookRows.filter(item =>
+        normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
+        CONFIG.STATUS.TU_VONG
+      ).length;
+      const returnedCount = bookRows.filter(item =>
+        normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
+        CONFIG.STATUS.HOI_GIA
+      ).length;
+      const finishedCount = bookRows.filter(item =>
+        normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
+        CONFIG.STATUS.HET_QUYEN
+      ).length;
+
+      $('#reportPreviewSummary').innerHTML = `
+        <span class="report-preview-chip">Hồ sơ <strong>${patients.length}</strong></span>
+        <span class="report-preview-chip">Dòng quyển <strong>${bookRows.length}</strong></span>
+        <span class="report-preview-chip">Hết quyển <strong>${finishedCount}</strong></span>
+        <span class="report-preview-chip">Hồi gia <strong>${returnedCount}</strong></span>
+        <span class="report-preview-chip">Tử vong <strong>${deathCount}</strong></span>
+      `;
+
+      $('#reportPreviewScope').textContent =
+        `Phạm vi báo cáo: ${reportScopeLabel()}`;
+
+      $('#reportPreviewGeneratedAt').textContent =
+        `Dữ liệu chuẩn bị lúc ${new Intl.DateTimeFormat('vi-VN', {
+          dateStyle: 'full',
+          timeStyle: 'short'
+        }).format(prepared.generatedAt || new Date())}`;
+
+      $('#reportPreviewBody').innerHTML = reportRows.map((item, rowIndex) => {
+        const patient = item.patient;
+        const book = item.book;
+        const status = book
+          ? normalizeRecordStatus(book['TRẠNG THÁI HIỆN TẠI'])
+          : 'Chưa lưu quyển';
+
+        return `
+          <tr>
+            <td class="center">${rowIndex + 1}</td>
+            <td>${escapeHtml(patient['SỐ HỒ SƠ'])}</td>
+            <td>${escapeHtml(patient['HỌ VÀ TÊN'])}</td>
+            <td class="center">${escapeHtml(patient['NĂM SINH'])}</td>
+            <td class="center">${escapeHtml(patient['GIỚI TÍNH'] || '—')}</td>
+            <td class="center">${book ? escapeHtml(book['QUYỂN SỐ']) : '—'}</td>
+            <td class="center">${book ? escapeHtml(formatDateVN(book['NGÀY BẮT ĐẦU'])) : '—'}</td>
+            <td class="center">${book ? escapeHtml(formatDateVN(book['NGÀY KẾT THÚC'])) : '—'}</td>
+            <td class="${reportStatusClass(status)}">${escapeHtml(status)}</td>
+            <td class="center">${
+              book && status === CONFIG.STATUS.HOI_GIA
+                ? escapeHtml(formatDateVN(book['NGÀY HỒI GIA']))
+                : '—'
+            }</td>
+            <td>${
+              book && status === CONFIG.STATUS.TU_VONG
+                ? escapeHtml(book['NƠI TỬ VONG'] || '—')
+                : '—'
+            }</td>
+            <td>${
+              book && status === CONFIG.STATUS.TU_VONG
+                ? escapeHtml(book['NGUYÊN NHÂN TỬ VONG'] || '—')
+                : '—'
+            }</td>
+            <td class="center">${
+              book && book['THÙNG SỐ']
+                ? escapeHtml(book['THÙNG SỐ'])
+                : '—'
+            }</td>
+            <td class="center">${
+              book && book['VỊ TRÍ SỐ']
+                ? escapeHtml(book['VỊ TRÍ SỐ'])
+                : '—'
+            }</td>
+            <td class="center">${
+              book && book['TỔNG SỐ GIẤY TỜ'] !== ''
+                ? escapeHtml(book['TỔNG SỐ GIẤY TỜ'])
+                : '—'
+            }</td>
+          </tr>`;
+      }).join('');
+    }
+
+    async function openReportPreview() {
+      if (!requireEditPermission()) return;
+
+      const button = $('#exportExcelBtn');
+      const originalText = button.textContent;
+
+      button.disabled = true;
+      button.textContent = 'Đang chuẩn bị báo cáo...';
+
+      try {
+        await withLoading(async () => {
+          const prepared = await prepareReportData(false);
+          renderReportPreview(prepared);
+          $('#reportPreviewDialog').showModal();
+        });
+      } finally {
+        button.disabled = false;
+        button.textContent = originalText;
+      }
+    }
+
     let excelJsLoadingPromise = null;
 
     function loadExcelJs() {
@@ -9299,24 +9758,18 @@ body.guest-mode #exportExcelBtn {
     async function exportExcelReport() {
       if (!requireEditPermission()) return;
 
-      const exportButton = $('#exportExcelBtn');
+      const exportButton = $('#reportPreviewExportBtn');
       const originalText = exportButton.textContent;
-      const patients = state.patients.length
-        ? [...state.patients]
-        : [...state.allPatients];
-
-      if (!patients.length) {
-        showToast('Không có dữ liệu phù hợp để xuất báo cáo.', true);
-        return;
-      }
 
       exportButton.disabled = true;
       exportButton.textContent = 'Đang tạo Excel...';
 
       try {
         await withLoading(async () => {
+          const prepared = await prepareReportData(false);
+          const patients = prepared.patients;
+          const reportRows = prepared.reportRows;
           const ExcelJS = await loadExcelJs();
-          const reportRows = await collectExcelReportRows(patients);
           const workbook = new ExcelJS.Workbook();
 
           workbook.creator = 'Hệ thống quản lý HSBA';
@@ -9644,9 +10097,10 @@ body.guest-mode #exportExcelBtn {
           anchor.click();
           anchor.remove();
           URL.revokeObjectURL(url);
+          $('#reportPreviewDialog')?.close();
 
           showToast(
-            `Đã xuất ${patients.length} hồ sơ vào file Excel A4 nằm ngang.`
+            `Đã xuất ${patients.length} hồ sơ. Dữ liệu được dùng lại từ bản xem trước.`
           );
         });
       } finally {
