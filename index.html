@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.07.16.07">
+  <meta name="version" content="2026.07.17.01">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -4823,6 +4823,152 @@ body.guest-mode #patientsEmpty {
       display: flex;
     }
 
+
+/* ============================================================
+   BẢN 2026.07.17.1
+   - Người không đăng nhập được tra cứu danh mục công khai.
+   - Desktop và điện thoại có bố cục chi tiết quyển riêng.
+   - Xuất Excel A4 ngang chỉ dành cho tài khoản cập nhật.
+   ============================================================ */
+
+.page-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.export-excel-btn {
+  border-color: #b9ddd6;
+  background: linear-gradient(135deg, #f1fbf8, #ffffff);
+  color: #087d80;
+  box-shadow: 0 8px 20px rgba(18,166,166,.10);
+}
+
+.export-excel-btn:hover:not([disabled]) {
+  border-color: #7fcfc4;
+  background: #e8f8f5;
+}
+
+/* Ghi đè quy tắc cũ: khách vẫn được xem, tìm kiếm và lọc danh mục công khai. */
+body.guest-mode .search-filter-panel {
+  display: grid !important;
+}
+body.guest-mode #summary {
+  display: flex !important;
+}
+body.guest-mode #patientsList {
+  display: grid !important;
+}
+body.guest-mode #patientsEmpty.hidden {
+  display: none !important;
+}
+body.guest-mode #addPatientBtn,
+body.guest-mode #exportExcelBtn {
+  display: none !important;
+}
+
+/* Thông tin phát sinh được tách khỏi cột trạng thái để bảng desktop thoáng. */
+.event-info-cell {
+  min-width: 250px;
+  max-width: 390px;
+}
+
+.event-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(110px, 1fr));
+  gap: 8px;
+}
+
+.event-info-item {
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid #dcebe8;
+  border-radius: 11px;
+  background: #fbfefd;
+}
+
+.event-info-item.death {
+  border-color: #f0d0c9;
+  background: #fff6f4;
+}
+
+.event-info-item.returned {
+  border-color: #cfe8dc;
+  background: #f1fbf5;
+}
+
+.event-info-item small,
+.event-info-item strong {
+  display: block;
+}
+
+.event-info-item small {
+  color: #7b8d93;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+
+.event-info-item strong {
+  margin-top: 4px;
+  color: #24464e;
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.event-info-empty {
+  color: #91a0a5;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.book-table {
+  min-width: 1320px;
+}
+
+@media (min-width: 901px) {
+  .detail-card {
+    grid-template-columns: 78px minmax(0, 1fr) minmax(420px, auto);
+  }
+
+  .detail-action-group {
+    max-width: 620px;
+  }
+
+  .detail-action-group .btn {
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 760px) {
+  .page-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .page-actions .btn {
+    width: 100%;
+  }
+
+  .event-info-cell {
+    min-width: 0;
+    max-width: none;
+  }
+
+  .event-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .book-table {
+    min-width: 0;
+  }
+}
+
 </style>
 </head>
 
@@ -4850,7 +4996,7 @@ body.guest-mode #patientsEmpty {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.07.16.7</small>
+        <small>Phiên bản 2026.07.17.1</small>
       </div>
     </aside>
 
@@ -4891,7 +5037,10 @@ body.guest-mode #patientsEmpty {
               <h1>Danh sách hồ sơ</h1>
               <p>Tra cứu theo số hồ sơ, họ tên, năm sinh hoặc giới tính</p>
             </div>
-            <button id="addPatientBtn" class="btn primary">＋ Thêm hồ sơ</button>
+            <div class="page-actions">
+              <button id="exportExcelBtn" class="btn export-excel-btn hidden" type="button">▣ Xuất Excel báo cáo</button>
+              <button id="addPatientBtn" class="btn primary">＋ Thêm hồ sơ</button>
+            </div>
           </div>
 
           <section class="search-filter-panel">
@@ -5402,38 +5551,71 @@ body.guest-mode #patientsEmpty {
   </div>
 
   <script type="module">
-    import { initializeApp } from
-      "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+    const HSBA_RUNTIME_ALLOWED =
+      window.location.protocol === 'https:' &&
+      (
+        window.location.hostname.endsWith('.github.io') ||
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1'
+      );
 
-    import {
-      getAuth,
-      GoogleAuthProvider,
-      signInWithPopup,
-      signInWithEmailAndPassword,
-      onAuthStateChanged,
-      signOut,
-      setPersistence,
-      browserLocalPersistence
-    } from
-      "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+    if (!HSBA_RUNTIME_ALLOWED) {
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelector('#loading')?.classList.add('hidden');
+        document.querySelector('#authGate')?.classList.add('hidden');
+        document.querySelector('#connectionBadge')?.classList.add('offline');
+        if (document.querySelector('#connectionBadge')) {
+          document.querySelector('#connectionBadge').textContent = 'XEM THỬ GIAO DIỆN';
+        }
+        const empty = document.querySelector('#patientsEmpty');
+        if (empty) {
+          empty.classList.remove('hidden');
+          empty.innerHTML = `
+            <div class="guest-access-card">
+              <div class="guest-icon">🖥️</div>
+              <h3>Đang xem thử giao diện</h3>
+              <p>Dữ liệu trực tuyến chỉ được tải khi mở ứng dụng từ đường dẫn GitHub Pages chính thức.</p>
+            </div>`;
+        }
+      });
+    } else {
+      const {
+        initializeApp
+      } = await import(
+        'https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js'
+      );
 
-    import {
-      getDatabase,
-      ref,
-      get,
-      set,
-      update,
-      remove,
-      query,
-      orderByChild,
-      equalTo,
-      limitToLast,
-      push,
-      runTransaction,
-      onValue,
-      serverTimestamp
-    } from
-      "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+      const {
+        getAuth,
+        GoogleAuthProvider,
+        signInWithPopup,
+        signInWithEmailAndPassword,
+        onAuthStateChanged,
+        signOut,
+        setPersistence,
+        browserLocalPersistence
+      } = await import(
+        'https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js'
+      );
+
+      const {
+        getDatabase,
+        ref,
+        get,
+        set,
+        update,
+        remove,
+        query,
+        orderByChild,
+        equalTo,
+        limitToLast,
+        push,
+        runTransaction,
+        onValue,
+        serverTimestamp
+      } = await import(
+        'https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js'
+      );
 
     const CONFIG = Object.freeze({
       OWNER_EMAIL: 'thanhbds2011@gmail.com',
@@ -7292,6 +7474,7 @@ body.guest-mode #patientsEmpty {
       const canEdit = canEditRecords();
       const isGuest = state.currentRole === 'public' || !state.currentRole;
       $('#addPatientBtn')?.classList.toggle('hidden', !canEdit);
+      $('#exportExcelBtn')?.classList.toggle('hidden', !canEdit);
       $('#syncPublicBtn')?.classList.toggle('hidden', !canEdit);
       document.body.classList.toggle('read-only-mode', !canEdit);
       document.body.classList.toggle('guest-mode', isGuest);
@@ -7484,6 +7667,7 @@ body.guest-mode #patientsEmpty {
       $('#menuBtn').addEventListener('click', openSidebar);
       $('#overlay').addEventListener('click', closeSidebar);
       $('#addPatientBtn').addEventListener('click', () => openPatientDialog('add'));
+      $('#exportExcelBtn')?.addEventListener('click', exportExcelReport);
       $('#backBtn').addEventListener('click', () => switchView('patients'));
 
       $('#searchBtn').addEventListener('click', searchPatients);
@@ -7738,9 +7922,9 @@ body.guest-mode #patientsEmpty {
 
       const isPublicView = state.currentRole === 'public';
       const detailHeaders = isPublicView
-        ? '<th>Quyển</th><th>Thời gian</th><th>Trạng thái</th><th>Vị trí lưu</th><th>Kiểm kê</th>'
-        : '<th>Quyển</th><th>Thời gian</th><th>Trạng thái</th><th>Vị trí lưu</th><th>Kiểm kê</th><th>Tệp</th><th>Ghi chú</th><th>Thao tác</th>';
-      const detailColumnCount = isPublicView ? 5 : 8;
+        ? '<th>Quyển</th><th>Thời gian</th><th>Trạng thái</th><th>Thông tin phát sinh</th><th>Vị trí lưu</th><th>Kiểm kê</th>'
+        : '<th>Quyển</th><th>Thời gian</th><th>Trạng thái</th><th>Thông tin phát sinh</th><th>Vị trí lưu</th><th>Kiểm kê</th><th>Tệp</th><th>Ghi chú</th><th>Thao tác</th>';
+      const detailColumnCount = isPublicView ? 6 : 9;
 
       $('#patientDetail').innerHTML = `
         <section class="detail-card">
@@ -7836,55 +8020,114 @@ body.guest-mode #patientsEmpty {
         </div>`;
     }
 
+    function bookEventInfoHtml(book, status, publicView = false) {
+      if (status === CONFIG.STATUS.TU_VONG) {
+        if (publicView) {
+          return '<span class="event-info-empty">Thông tin nghiệp vụ chi tiết chỉ hiển thị sau khi đăng nhập.</span>';
+        }
+
+        return `
+          <div class="event-info-grid">
+            <div class="event-info-item death">
+              <small>Nơi tử vong</small>
+              <strong>${escapeHtml(book['NƠI TỬ VONG'] || 'Chưa cập nhật')}</strong>
+            </div>
+            <div class="event-info-item death">
+              <small>Nguyên nhân tử vong</small>
+              <strong>${escapeHtml(book['NGUYÊN NHÂN TỬ VONG'] || 'Chưa cập nhật')}</strong>
+            </div>
+          </div>`;
+      }
+
+      if (status === CONFIG.STATUS.HOI_GIA) {
+        return `
+          <div class="event-info-grid">
+            <div class="event-info-item returned">
+              <small>Ngày đối tượng hồi gia</small>
+              <strong>${escapeHtml(formatDateVN(book['NGÀY HỒI GIA']))}</strong>
+            </div>
+          </div>`;
+      }
+
+      return '<span class="event-info-empty">Không phát sinh thông tin bổ sung.</span>';
+    }
+
     function bookRowHtml(book, publicView = false) {
-      const status = normalizeRecordStatus(book['TRẠNG THÁI HIỆN TẠI']) || 'Chưa hoàn tất';
-      const statusClass = status === CONFIG.STATUS.TU_VONG ? 'death' : status === CONFIG.STATUS.HOI_GIA ? 'open' : 'closed';
-      const isDeathBook = status === CONFIG.STATUS.TU_VONG;
-      const storageBox = book['THÙNG SỐ'] ? `Thùng ${escapeHtml(book['THÙNG SỐ'])}` : 'Chưa cập nhật';
-      const storagePosition = book['VỊ TRÍ SỐ'] ? `Vị trí ${escapeHtml(book['VỊ TRÍ SỐ'])}` : escapeHtml(book['MÃ SỐ LƯU TRỮ'] || 'Chưa cập nhật');
+      const status =
+        normalizeRecordStatus(book['TRẠNG THÁI HIỆN TẠI']) ||
+        'Chưa hoàn tất';
+      const statusClass =
+        status === CONFIG.STATUS.TU_VONG
+          ? 'death'
+          : status === CONFIG.STATUS.HOI_GIA
+            ? 'open'
+            : 'closed';
+      const storageBox = book['THÙNG SỐ']
+        ? `Thùng ${escapeHtml(book['THÙNG SỐ'])}`
+        : 'Chưa cập nhật';
+      const storagePosition = book['VỊ TRÍ SỐ']
+        ? `Vị trí ${escapeHtml(book['VỊ TRÍ SỐ'])}`
+        : escapeHtml(book['MÃ SỐ LƯU TRỮ'] || 'Chưa cập nhật');
 
       return `
         <tr>
-          <td class="book-number-cell" data-label="Quyển số"><strong>${escapeHtml(book['QUYỂN SỐ'])}</strong></td>
+          <td class="book-number-cell" data-label="Quyển số">
+            <strong>${escapeHtml(book['QUYỂN SỐ'])}</strong>
+          </td>
+
           <td data-label="Thời gian">
             <div class="book-period-cell">
-              <div class="book-period-line"><span>Mở</span><strong>${escapeHtml(formatDateVN(book['NGÀY BẮT ĐẦU']))}</strong></div>
-              <div class="book-period-line"><span>Kết thúc</span><strong>${escapeHtml(formatDateVN(book['NGÀY KẾT THÚC']))}</strong></div>
+              <div class="book-period-line">
+                <span>Mở</span>
+                <strong>${escapeHtml(formatDateVN(book['NGÀY BẮT ĐẦU']))}</strong>
+              </div>
+              <div class="book-period-line">
+                <span>Kết thúc</span>
+                <strong>${escapeHtml(formatDateVN(book['NGÀY KẾT THÚC']))}</strong>
+              </div>
             </div>
           </td>
+
           <td class="book-status-cell" data-label="Trạng thái">
             <span class="badge ${statusClass}">${escapeHtml(status)}</span>
-            ${(isDeathBook || status === CONFIG.STATUS.HOI_GIA) ? `
-              <div class="status-detail-stack">
-                ${isDeathBook && book['NƠI TỬ VONG'] ? `
-                  <div class="status-detail-item">
-                    <small>Nơi tử vong</small>
-                    <strong>${escapeHtml(book['NƠI TỬ VONG'])}</strong>
-                  </div>` : ''}
-                ${isDeathBook && book['NGUYÊN NHÂN TỬ VONG'] ? `
-                  <div class="status-detail-item">
-                    <small>Nguyên nhân tử vong</small>
-                    <strong>${escapeHtml(book['NGUYÊN NHÂN TỬ VONG'])}</strong>
-                  </div>` : ''}
-                ${status === CONFIG.STATUS.HOI_GIA && book['NGÀY HỒI GIA'] ? `
-                  <div class="status-detail-item">
-                    <small>Ngày hồi gia</small>
-                    <strong>${escapeHtml(formatDateVN(book['NGÀY HỒI GIA']))}</strong>
-                  </div>` : ''}
-              </div>` : ''}
-            ${book['_LEGACY_STATUS'] === CONFIG.STATUS.LEGACY_DANG_KHAM ? '<span class="legacy-status-note">Cần chỉnh sửa để hoàn tất hồ sơ.</span>' : ''}
+            ${book['_LEGACY_STATUS'] === CONFIG.STATUS.LEGACY_DANG_KHAM
+              ? '<span class="legacy-status-note">Cần chỉnh sửa để hoàn tất hồ sơ.</span>'
+              : ''}
           </td>
+
+          <td class="event-info-cell" data-label="Thông tin phát sinh" data-full="true">
+            ${bookEventInfoHtml(book, status, publicView)}
+          </td>
+
           <td data-label="Vị trí lưu">
             <div class="storage-position-cell">
-              <div class="storage-position-line"><span>Thùng</span><strong>${storageBox}</strong></div>
-              <div class="storage-position-line"><span>Vị trí</span><strong>${storagePosition}</strong></div>
+              <div class="storage-position-line">
+                <span>Thùng</span><strong>${storageBox}</strong>
+              </div>
+              <div class="storage-position-line">
+                <span>Vị trí</span><strong>${storagePosition}</strong>
+              </div>
             </div>
           </td>
-          <td data-label="Kiểm kê" data-full="true">${documentInventoryCellHtml(book)}</td>
+
+          <td data-label="Kiểm kê" data-full="true">
+            ${documentInventoryCellHtml(book)}
+          </td>
+
           ${publicView ? '' : `
-            <td data-label="Tệp">${book['FILE ĐÍNH KÈM'] ? `<a class="file-link" href="${escapeAttr(book['FILE ĐÍNH KÈM'])}" target="_blank" rel="noopener">📎 Mở tệp</a>` : '—'}</td>
-            <td class="book-note-cell" data-label="Ghi chú" data-full="true">${escapeHtml(book['GHI CHÚ'] || '—')}</td>
-            <td data-label="Thao tác">${canEditRecords() ? `<button class="btn small edit-action" data-action="edit-book" data-quyen-so="${escapeAttr(book['QUYỂN SỐ'])}">✎ Chỉnh sửa</button>` : '—'}</td>
+            <td data-label="Tệp">
+              ${book['FILE ĐÍNH KÈM']
+                ? `<a class="file-link" href="${escapeAttr(book['FILE ĐÍNH KÈM'])}" target="_blank" rel="noopener">📎 Mở tệp</a>`
+                : '—'}
+            </td>
+            <td class="book-note-cell" data-label="Ghi chú" data-full="true">
+              ${escapeHtml(book['GHI CHÚ'] || '—')}
+            </td>
+            <td data-label="Thao tác">
+              ${canEditRecords()
+                ? `<button class="btn small edit-action" data-action="edit-book" data-quyen-so="${escapeAttr(book['QUYỂN SỐ'])}">✎ Chỉnh sửa</button>`
+                : '—'}
+            </td>
           `}
         </tr>`;
     }
@@ -8575,6 +8818,442 @@ body.guest-mode #patientsEmpty {
       $('#overlay').classList.remove('show');
     }
 
+
+    let excelJsLoadingPromise = null;
+
+    function loadExcelJs() {
+      if (window.ExcelJS) return Promise.resolve(window.ExcelJS);
+      if (excelJsLoadingPromise) return excelJsLoadingPromise;
+
+      excelJsLoadingPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src =
+          'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js';
+        script.async = true;
+        script.onload = () => {
+          if (window.ExcelJS) resolve(window.ExcelJS);
+          else reject(new Error('Không khởi tạo được thư viện xuất Excel.'));
+        };
+        script.onerror = () =>
+          reject(new Error('Không tải được chức năng xuất Excel.'));
+        document.head.appendChild(script);
+      }).catch(error => {
+        excelJsLoadingPromise = null;
+        throw error;
+      });
+
+      return excelJsLoadingPromise;
+    }
+
+    function parseExcelDate(value) {
+      const text = String(value || '').trim();
+      const match = text.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (!match) return '';
+      return new Date(
+        Number(match[1]),
+        Number(match[2]) - 1,
+        Number(match[3])
+      );
+    }
+
+    async function collectExcelReportRows(patients) {
+      const rows = [];
+
+      for (let index = 0; index < patients.length; index += 1) {
+        const patient = patients[index];
+        const soHoSo = patient['SỐ HỒ SƠ'];
+        const result = await api.get('layChiTietHoSo', { soHoSo });
+        const books = result.data || [];
+
+        if (!books.length) {
+          rows.push({
+            patient,
+            book: null
+          });
+          continue;
+        }
+
+        books.forEach(book => rows.push({ patient, book }));
+      }
+
+      return rows;
+    }
+
+    function excelSafeText(value) {
+      const text = String(value ?? '').trim();
+      if (/^[=+\-@]/.test(text)) return `'${text}`;
+      return text;
+    }
+
+    function excelFileName() {
+      const now = new Date();
+      const date = [
+        String(now.getDate()).padStart(2, '0'),
+        String(now.getMonth() + 1).padStart(2, '0'),
+        now.getFullYear()
+      ].join('-');
+      return `Bao_cao_HSBA_${date}.xlsx`;
+    }
+
+    async function exportExcelReport() {
+      if (!requireEditPermission()) return;
+
+      const exportButton = $('#exportExcelBtn');
+      const originalText = exportButton.textContent;
+      const patients = state.patients.length
+        ? [...state.patients]
+        : [...state.allPatients];
+
+      if (!patients.length) {
+        showToast('Không có dữ liệu phù hợp để xuất báo cáo.', true);
+        return;
+      }
+
+      exportButton.disabled = true;
+      exportButton.textContent = 'Đang tạo Excel...';
+
+      try {
+        await withLoading(async () => {
+          const ExcelJS = await loadExcelJs();
+          const reportRows = await collectExcelReportRows(patients);
+          const workbook = new ExcelJS.Workbook();
+
+          workbook.creator = 'Hệ thống quản lý HSBA';
+          workbook.lastModifiedBy =
+            firebaseAuth.currentUser?.email || CONFIG.OWNER_EMAIL;
+          workbook.created = new Date();
+          workbook.modified = new Date();
+
+          const sheet = workbook.addWorksheet('Báo cáo HSBA', {
+            views: [{ state: 'frozen', ySplit: 5 }],
+            pageSetup: {
+              paperSize: 9,
+              orientation: 'landscape',
+              fitToPage: true,
+              fitToWidth: 1,
+              fitToHeight: 0,
+              horizontalCentered: true,
+              verticalCentered: false,
+              margins: {
+                left: 0.25,
+                right: 0.25,
+                top: 0.5,
+                bottom: 0.5,
+                header: 0.2,
+                footer: 0.2
+              },
+              printTitlesRow: '1:5'
+            },
+            properties: {
+              defaultRowHeight: 20
+            }
+          });
+
+          sheet.headerFooter.oddFooter =
+            '&LHSBA Trung tâm&CTrang &P / &N&RNgày xuất: &D';
+
+          const totalColumns = 20;
+          sheet.mergeCells(1, 1, 1, totalColumns);
+          sheet.getCell('A1').value =
+            'BÁO CÁO DANH MỤC HỒ SƠ BỆNH ÁN LƯU TRỮ';
+          sheet.getCell('A1').font = {
+            name: 'Arial',
+            size: 16,
+            bold: true,
+            color: { argb: 'FF0D6F73' }
+          };
+          sheet.getCell('A1').alignment = {
+            horizontal: 'center',
+            vertical: 'middle'
+          };
+          sheet.getRow(1).height = 28;
+
+          sheet.mergeCells(2, 1, 2, totalColumns);
+          sheet.getCell('A2').value =
+            `Phạm vi báo cáo: ${state.activeStatusFilter === 'all'
+              ? 'Toàn bộ hồ sơ đang hiển thị'
+              : 'Theo bộ lọc hiện tại'} · ${patients.length} hồ sơ`;
+          sheet.getCell('A2').alignment = {
+            horizontal: 'center',
+            vertical: 'middle'
+          };
+          sheet.getCell('A2').font = {
+            name: 'Arial',
+            size: 10,
+            italic: true,
+            color: { argb: 'FF607780' }
+          };
+
+          sheet.mergeCells(3, 1, 3, totalColumns);
+          sheet.getCell('A3').value =
+            `Ngày xuất báo cáo: ${new Intl.DateTimeFormat('vi-VN', {
+              dateStyle: 'full',
+              timeStyle: 'short'
+            }).format(new Date())}`;
+          sheet.getCell('A3').alignment = {
+            horizontal: 'center',
+            vertical: 'middle'
+          };
+          sheet.getCell('A3').font = {
+            name: 'Arial',
+            size: 9,
+            color: { argb: 'FF70828E' }
+          };
+
+          const headers = [
+            'STT',
+            'Số hồ sơ',
+            'Họ và tên',
+            'Năm sinh',
+            'Giới tính',
+            'Quyển số',
+            'Ngày mở',
+            'Ngày kết thúc',
+            'Trạng thái',
+            'Ngày hồi gia',
+            'Nơi tử vong',
+            'Nguyên nhân tử vong',
+            'Thùng số',
+            'Vị trí số',
+            'Tờ chăm sóc',
+            'Tờ điều trị',
+            'Phiếu truyền dịch',
+            'Phiếu đánh giá té ngã',
+            'Phiếu đánh giá loét tì đè',
+            'Tổng kiểm kê'
+          ];
+
+          const headerRow = sheet.getRow(5);
+          headerRow.values = headers;
+          headerRow.height = 38;
+          headerRow.eachCell(cell => {
+            cell.font = {
+              name: 'Arial',
+              size: 9,
+              bold: true,
+              color: { argb: 'FFFFFFFF' }
+            };
+            cell.fill = {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: { argb: 'FF0D7F86' }
+            };
+            cell.alignment = {
+              horizontal: 'center',
+              vertical: 'middle',
+              wrapText: true
+            };
+            cell.border = {
+              top: { style: 'thin', color: { argb: 'FFB9D9D5' } },
+              left: { style: 'thin', color: { argb: 'FFB9D9D5' } },
+              bottom: { style: 'thin', color: { argb: 'FFB9D9D5' } },
+              right: { style: 'thin', color: { argb: 'FFB9D9D5' } }
+            };
+          });
+
+          reportRows.forEach((item, rowIndex) => {
+            const patient = item.patient;
+            const book = item.book;
+            const status = book
+              ? normalizeRecordStatus(book['TRẠNG THÁI HIỆN TẠI'])
+              : 'Chưa lưu quyển';
+
+            const row = sheet.addRow([
+              rowIndex + 1,
+              excelSafeText(patient['SỐ HỒ SƠ']),
+              excelSafeText(patient['HỌ VÀ TÊN']),
+              Number(patient['NĂM SINH']) || '',
+              excelSafeText(patient['GIỚI TÍNH'] || ''),
+              book ? Number(book['QUYỂN SỐ']) || '' : '',
+              book ? parseExcelDate(book['NGÀY BẮT ĐẦU']) : '',
+              book ? parseExcelDate(book['NGÀY KẾT THÚC']) : '',
+              status,
+              book && status === CONFIG.STATUS.HOI_GIA
+                ? parseExcelDate(book['NGÀY HỒI GIA'])
+                : '',
+              book && status === CONFIG.STATUS.TU_VONG
+                ? excelSafeText(book['NƠI TỬ VONG'])
+                : '',
+              book && status === CONFIG.STATUS.TU_VONG
+                ? excelSafeText(book['NGUYÊN NHÂN TỬ VONG'])
+                : '',
+              book ? Number(book['THÙNG SỐ']) || '' : '',
+              book ? Number(book['VỊ TRÍ SỐ']) || '' : '',
+              book ? Number(book['SỐ TỜ CHĂM SÓC']) || 0 : '',
+              book ? Number(book['SỐ TỜ ĐIỀU TRỊ']) || 0 : '',
+              book ? Number(book['SỐ PHIẾU TRUYỀN DỊCH']) || 0 : '',
+              book ? Number(book['SỐ PHIẾU ĐÁNH GIÁ TÉ NGÃ']) || 0 : '',
+              book ? Number(book['SỐ PHIẾU ĐÁNH GIÁ LOÉT TÌ ĐÈ']) || 0 : '',
+              book ? Number(book['TỔNG SỐ GIẤY TỜ']) || 0 : ''
+            ]);
+
+            row.height = 34;
+            row.eachCell({ includeEmpty: true }, (cell, columnNumber) => {
+              cell.font = { name: 'Arial', size: 9 };
+              cell.alignment = {
+                vertical: 'middle',
+                horizontal: [1, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20]
+                  .includes(columnNumber)
+                  ? 'center'
+                  : 'left',
+                wrapText: true
+              };
+              cell.border = {
+                top: { style: 'hair', color: { argb: 'FFD7E7E4' } },
+                left: { style: 'hair', color: { argb: 'FFD7E7E4' } },
+                bottom: { style: 'hair', color: { argb: 'FFD7E7E4' } },
+                right: { style: 'hair', color: { argb: 'FFD7E7E4' } }
+              };
+              if (rowIndex % 2 === 1) {
+                cell.fill = {
+                  type: 'pattern',
+                  pattern: 'solid',
+                  fgColor: { argb: 'FFF4FAF8' }
+                };
+              }
+            });
+
+            [7, 8, 10].forEach(columnNumber => {
+              row.getCell(columnNumber).numFmt = 'dd/mm/yyyy';
+            });
+
+            const statusCell = row.getCell(9);
+            if (status === CONFIG.STATUS.TU_VONG) {
+              statusCell.font = {
+                name: 'Arial',
+                size: 9,
+                bold: true,
+                color: { argb: 'FFB54132' }
+              };
+            } else if (status === CONFIG.STATUS.HOI_GIA) {
+              statusCell.font = {
+                name: 'Arial',
+                size: 9,
+                bold: true,
+                color: { argb: 'FF1F8A5B' }
+              };
+            } else {
+              statusCell.font = {
+                name: 'Arial',
+                size: 9,
+                bold: true,
+                color: { argb: 'FF0D7F86' }
+              };
+            }
+          });
+
+          const dataEndRow = Math.max(5, sheet.rowCount);
+          sheet.autoFilter = {
+            from: { row: 5, column: 1 },
+            to: { row: dataEndRow, column: totalColumns }
+          };
+
+          const widths = [
+            6, 13, 25, 10, 10, 9, 12, 12, 17, 12,
+            20, 30, 9, 9, 11, 11, 12, 13, 13, 12
+          ];
+          widths.forEach((width, index) => {
+            sheet.getColumn(index + 1).width = width;
+          });
+
+          const summaryRowNumber = sheet.rowCount + 2;
+          sheet.mergeCells(
+            summaryRowNumber,
+            1,
+            summaryRowNumber,
+            5
+          );
+          sheet.getCell(summaryRowNumber, 1).value = 'TỔNG HỢP';
+          sheet.getCell(summaryRowNumber, 1).font = {
+            name: 'Arial',
+            size: 10,
+            bold: true,
+            color: { argb: 'FFFFFFFF' }
+          };
+          sheet.getCell(summaryRowNumber, 1).fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FF0D7F86' }
+          };
+          sheet.getCell(summaryRowNumber, 1).alignment = {
+            horizontal: 'center',
+            vertical: 'middle'
+          };
+
+          const summaryLabels = [
+            ['Số hồ sơ xuất', patients.length],
+            ['Số dòng quyển', reportRows.filter(item => item.book).length],
+            ['Hết quyển', reportRows.filter(item =>
+              normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
+              CONFIG.STATUS.HET_QUYEN
+            ).length],
+            ['Hồi gia', reportRows.filter(item =>
+              normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
+              CONFIG.STATUS.HOI_GIA
+            ).length],
+            ['Tử vong', reportRows.filter(item =>
+              normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
+              CONFIG.STATUS.TU_VONG
+            ).length]
+          ];
+
+          summaryLabels.forEach((summary, index) => {
+            const column = 6 + index * 3;
+            sheet.mergeCells(
+              summaryRowNumber,
+              column,
+              summaryRowNumber,
+              column + 1
+            );
+            sheet.getCell(summaryRowNumber, column).value =
+              `${summary[0]}: ${summary[1]}`;
+            sheet.getCell(summaryRowNumber, column).alignment = {
+              horizontal: 'center',
+              vertical: 'middle'
+            };
+            sheet.getCell(summaryRowNumber, column).font = {
+              name: 'Arial',
+              size: 9,
+              bold: true,
+              color: { argb: 'FF29464E' }
+            };
+            sheet.getCell(summaryRowNumber, column).fill = {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: { argb: 'FFEAF8F5' }
+            };
+          });
+
+          sheet.pageSetup.printArea =
+            `A1:T${sheet.rowCount}`;
+
+          const buffer = await workbook.xlsx.writeBuffer();
+          const blob = new Blob(
+            [buffer],
+            {
+              type:
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            }
+          );
+          const url = URL.createObjectURL(blob);
+          const anchor = document.createElement('a');
+          anchor.href = url;
+          anchor.download = excelFileName();
+          document.body.appendChild(anchor);
+          anchor.click();
+          anchor.remove();
+          URL.revokeObjectURL(url);
+
+          showToast(
+            `Đã xuất ${patients.length} hồ sơ vào file Excel A4 nằm ngang.`
+          );
+        });
+      } finally {
+        exportButton.disabled = false;
+        exportButton.textContent = originalText;
+      }
+    }
+
     async function withLoading(callback, show = true) {
       if (show) $('#loading').classList.remove('hidden');
 
@@ -8676,8 +9355,9 @@ body.guest-mode #patientsEmpty {
     function escapeAttr(value) {
       return escapeHtml(value);
     }
+    }
   </script>
-  <div class="build-version" aria-hidden="true">2026.07.16.7</div>
+  <div class="build-version" aria-hidden="true">2026.07.17.1</div>
 
 
 
@@ -8717,7 +9397,7 @@ body.guest-mode #patientsEmpty {
         if (cleaned && sessionStorage.getItem("hsba_cache_cleaned") !== "1") {
           sessionStorage.setItem("hsba_cache_cleaned", "1");
           const url = new URL(window.location.href);
-          url.searchParams.set("v", "20260716-sw-fix");
+          url.searchParams.set("v", "20260717-excel-public");
           window.location.replace(url.toString());
         }
       } catch (error) {
