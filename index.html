@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.07.17.8">
+  <meta name="version" content="2026.07.19.2">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -5670,17 +5670,18 @@ body.guest-mode #exportExcelBtn {
       </div>
 
       <input type="hidden" name="mode" value="add">
+      <input type="hidden" name="originalSoHoSo" value="">
 
       <div class="form-grid two-columns patient-form-grid">
         <div class="form-field">
           <label for="patientSoHoSo">Số hồ sơ</label>
-          <input id="patientSoHoSo" name="soHoSo" required maxlength="50" autocomplete="off">
+          <input id="patientSoHoSo" name="soHoSo" required maxlength="13" autocomplete="off" inputmode="text" pattern="[A-Za-z]{2}\.[0-9]{2}\.[0-9]{2}\.[0-9]{4}" placeholder="VD: HA.11.11.1111" style="text-transform: uppercase;">
           <small id="patientNumberHelp" class="field-hint">Số hồ sơ phải duy nhất trên hệ thống.</small>
         </div>
 
         <div class="form-field">
           <label for="patientHoTen">Họ và tên</label>
-          <input id="patientHoTen" name="hoTen" required maxlength="150" autocomplete="off">
+          <input id="patientHoTen" name="hoTen" required maxlength="150" autocomplete="off" style="text-transform: uppercase;">
           <small class="field-hint">Nhập đầy đủ họ và tên theo hồ sơ giấy.</small>
         </div>
 
@@ -6151,6 +6152,34 @@ body.guest-mode #exportExcelBtn {
     const NETWORK_ALLOWED =
       window.location.protocol === 'https:' ||
       ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+    function uppercaseVietnamese(value) {
+      return String(value || '').trim().toLocaleUpperCase('vi-VN');
+    }
+
+    function formatMedicalRecordNumber(value) {
+      const compact = uppercaseVietnamese(value)
+        .replace(/[^A-Z0-9]/g, '')
+        .slice(0, 10);
+
+      if (!compact) return '';
+
+      const letters = compact.slice(0, 2).replace(/[^A-Z]/g, '');
+      const digits = compact.slice(2).replace(/\D/g, '').slice(0, 8);
+      const parts = [letters];
+
+      if (digits.length > 0) parts.push(digits.slice(0, 2));
+      if (digits.length > 2) parts.push(digits.slice(2, 4));
+      if (digits.length > 4) parts.push(digits.slice(4, 8));
+
+      return parts.filter(Boolean).join('.');
+    }
+
+    function isValidMedicalRecordNumber(value) {
+      return /^[A-Z]{2}\.\d{2}\.\d{2}\.\d{4}$/.test(
+        String(value || '').trim()
+      );
+    }
 
     function firebaseKey(value) {
       const raw = String(value || '')
@@ -6680,11 +6709,57 @@ body.guest-mode #exportExcelBtn {
     }
 
     async function readPatientObjects() {
-      const snapshot = await get(ref(firebaseDatabase, 'doiTuong'));
-      const value = snapshot.val() || {};
+      const [patientSnapshot, booksSnapshot] = await Promise.all([
+        get(ref(firebaseDatabase, 'doiTuong')),
+        get(ref(firebaseDatabase, 'quyenHoSo'))
+      ]);
+      const value = patientSnapshot.val() || {};
+      const booksRoot = booksSnapshot.val() || {};
 
       return Object.entries(value)
-        .map(([id, patient]) => ({ id, patient: patient || {} }))
+        .map(([id, sourcePatient]) => {
+          const patient = sourcePatient || {};
+          const bookMap = booksRoot[id] || {};
+          const books = Object.values(bookMap).filter(Boolean);
+          const normalizedBooks = books.map(book => ({
+            ...book,
+            normalizedStatus: normalizeRecordStatus(book.trangThai)
+          }));
+          const latest = [...normalizedBooks].sort((a, b) => {
+            const dateDifference = String(
+              b.ngayKetThuc || b.ngayBatDau || ''
+            ).localeCompare(String(a.ngayKetThuc || a.ngayBatDau || ''));
+            if (dateDifference) return dateDifference;
+            return Number(b.quyenSo || 0) - Number(a.quyenSo || 0);
+          })[0] || null;
+
+          return {
+            id,
+            patient: {
+              ...patient,
+              tongSoQuyen: books.length,
+              soQuyenHetQuyen: normalizedBooks.filter(
+                book => book.normalizedStatus === CONFIG.STATUS.HET_QUYEN
+              ).length,
+              soQuyenDaLuuKho: normalizedBooks.filter(
+                book => book.normalizedStatus === CONFIG.STATUS.HET_QUYEN
+              ).length,
+              soQuyenHoiGia: normalizedBooks.filter(
+                book => book.normalizedStatus === CONFIG.STATUS.HOI_GIA
+              ).length,
+              soQuyenTuVong: normalizedBooks.filter(
+                book => book.normalizedStatus === CONFIG.STATUS.TU_VONG
+              ).length,
+              soQuyenCoFile: books.filter(
+                book => String(book.fileDinhKem || '').trim()
+              ).length,
+              trangThaiHienTai:
+                latest?.normalizedStatus ||
+                normalizeRecordStatus(patient.trangThaiHienTai),
+              quyenHoSo: bookMap
+            }
+          };
+        })
         .sort((a, b) => {
           const updatedDifference =
             (Number(b.patient.updatedAt) || 0) -
@@ -7459,14 +7534,20 @@ body.guest-mode #exportExcelBtn {
       }
 
       async addPatient(payload) {
-        const soHoSo = String(payload.soHoSo || '').trim();
-        const hoTen = String(payload.hoTen || '').trim().toUpperCase();
+        const soHoSo = formatMedicalRecordNumber(payload.soHoSo);
+        const hoTen = uppercaseVietnamese(payload.hoTen);
         const namSinh = Number(payload.namSinh);
         const gioiTinh = String(payload.gioiTinh || '').trim();
         const currentYear = new Date().getFullYear();
 
         if (!soHoSo || !hoTen || !Number.isInteger(namSinh) || !['Nam', 'Nữ'].includes(gioiTinh)) {
           throw new Error('Vui lòng nhập đầy đủ số hồ sơ, họ tên, năm sinh và giới tính.');
+        }
+
+        if (!isValidMedicalRecordNumber(soHoSo)) {
+          throw new Error(
+            'Số hồ sơ phải đúng định dạng XX.XX.XX.XXXX, ví dụ HA.11.11.1111.'
+          );
         }
 
         if (namSinh < 1900 || namSinh > currentYear) {
@@ -7521,70 +7602,177 @@ body.guest-mode #exportExcelBtn {
       }
 
       async updatePatient(payload) {
-        const soHoSo = String(payload.soHoSo || '').trim();
-        const hoTen = String(payload.hoTen || '').trim().toUpperCase();
+        const originalSoHoSo = formatMedicalRecordNumber(
+          payload.originalSoHoSo || payload.soHoSo
+        );
+        const soHoSo = formatMedicalRecordNumber(payload.soHoSo);
+        const hoTen = uppercaseVietnamese(payload.hoTen);
         const namSinh = Number(payload.namSinh);
         const gioiTinh = String(payload.gioiTinh || '').trim();
         const currentYear = new Date().getFullYear();
+        const isAdmin = state.currentRole === 'admin';
+        const isEditor = state.currentRole === 'editor';
 
-        if (!soHoSo || !hoTen || !Number.isInteger(namSinh) || !['Nam', 'Nữ'].includes(gioiTinh)) {
+        if (!isAdmin && !isEditor) {
+          throw new Error('Tài khoản hiện tại không có quyền chỉnh sửa hồ sơ.');
+        }
+
+        if (!originalSoHoSo || !soHoSo || !hoTen || !Number.isInteger(namSinh) || !['Nam', 'Nữ'].includes(gioiTinh)) {
           throw new Error('Vui lòng nhập đầy đủ thông tin hồ sơ.');
+        }
+
+        if (!isValidMedicalRecordNumber(soHoSo)) {
+          throw new Error(
+            'Số hồ sơ phải đúng định dạng XX.XX.XX.XXXX, ví dụ HA.11.11.1111.'
+          );
         }
 
         if (namSinh < 1900 || namSinh > currentYear) {
           throw new Error('Năm sinh không hợp lệ.');
         }
 
-        const id = firebaseKey(soHoSo);
-        const lockToken = await this.acquirePatientLock(id, 'SUA_THONG_TIN');
+        if (!isAdmin && soHoSo !== originalSoHoSo) {
+          throw new Error('Chỉ tài khoản quản trị được thay đổi số hồ sơ.');
+        }
+
+        const oldId = firebaseKey(originalSoHoSo);
+        const newId = firebaseKey(soHoSo);
+        const oldLockToken = await this.acquirePatientLock(oldId, 'SUA_THONG_TIN');
+        let newLockToken = '';
 
         try {
-          const patientSnapshot = await get(ref(this.database, `doiTuong/${id}`));
-          if (!patientSnapshot.exists()) throw new Error('Không tìm thấy hồ sơ.');
+          const [patientSnapshot, booksSnapshot, deathSnapshot] = await Promise.all([
+            get(ref(this.database, `doiTuong/${oldId}`)),
+            get(ref(this.database, `quyenHoSo/${oldId}`)),
+            get(ref(this.database, `hoSoTuVong/${oldId}`))
+          ]);
 
-          const deathSnapshot = await get(ref(this.database, `hoSoTuVong/${id}`));
-          const logKey = push(ref(this.database, 'nhatKy')).key;
-          const updates = {
-            [`doiTuong/${id}/hoTen`]: hoTen,
-            [`doiTuong/${id}/hoTenTimKiem`]: normalize(hoTen),
-            [`doiTuong/${id}/namSinh`]: namSinh,
-            [`doiTuong/${id}/gioiTinh`]: gioiTinh,
-            [`doiTuong/${id}/updatedAt`]: serverTimestamp(),
-            [`congKhai/hoSo/${id}/hoTen`]: hoTen,
-            [`congKhai/hoSo/${id}/hoTenTimKiem`]: normalize(hoTen),
-            [`congKhai/hoSo/${id}/namSinh`]: namSinh,
-            [`congKhai/hoSo/${id}/gioiTinh`]: gioiTinh,
-            [`congKhai/hoSo/${id}/updatedAt`]: Date.now(),
-            [`congKhai/_meta/schemaVersion`]: CONFIG.PUBLIC_SCHEMA_VERSION,
-            [`congKhai/_meta/sourceUpdatedAt`]: Date.now(),
-            [`congKhai/_meta/updatedAt`]: Date.now(),
-            [`nhatKy/${logKey}`]: this.makeLog('CHỈNH SỬA THÔNG TIN HỒ SƠ', {
-              soHoSo, hoTen, namSinh, gioiTinh
-            }),
-            [`khoaThaoTac/${id}`]: null
+          if (!patientSnapshot.exists()) {
+            throw new Error('Không tìm thấy hồ sơ.');
+          }
+
+          const bookMap = booksSnapshot.val() || {};
+          const bookCount = Object.values(bookMap).filter(Boolean).length;
+
+          if (isEditor && bookCount === 0) {
+            throw new Error(
+              'Hồ sơ chưa có quyển. Tài khoản cập nhật phải xóa hồ sơ nhập sai và tạo lại.'
+            );
+          }
+
+          if (oldId !== newId) {
+            const duplicateSnapshot = await get(ref(this.database, `doiTuong/${newId}`));
+            if (duplicateSnapshot.exists()) {
+              throw new Error(`Số hồ sơ ${soHoSo} đã tồn tại trong hệ thống.`);
+            }
+            newLockToken = await this.acquirePatientLock(newId, 'DOI_SO_HO_SO');
+          }
+
+          const now = Date.now();
+          const oldPatient = patientSnapshot.val() || {};
+          const updatedPatient = {
+            ...oldPatient,
+            soHoSo,
+            hoTen,
+            hoTenTimKiem: normalize(hoTen),
+            namSinh,
+            gioiTinh,
+            updatedAt: now,
+            updatedBy: this.auth.currentUser.email || ''
           };
 
-          if (deathSnapshot.exists()) {
-            updates[`hoSoTuVong/${id}/hoTen`] = hoTen;
-            updates[`hoSoTuVong/${id}/namSinh`] = namSinh;
-            updates[`hoSoTuVong/${id}/gioiTinh`] = gioiTinh;
-            updates[`hoSoTuVong/${id}/updatedAt`] = serverTimestamp();
+          const updatedBooks = {};
+          Object.entries(bookMap).forEach(([bookId, book]) => {
+            if (!book) return;
+            updatedBooks[bookId] = {
+              ...book,
+              soHoSo,
+              updatedAt: Number(book.updatedAt) || now,
+              updatedBy: this.auth.currentUser.email || ''
+            };
+          });
+
+          const oldDeath = deathSnapshot.val() || null;
+          const updatedDeath = oldDeath
+            ? {
+                ...oldDeath,
+                soHoSo,
+                hoTen,
+                namSinh,
+                gioiTinh,
+                updatedAt: now
+              }
+            : null;
+
+          const logKey = push(ref(this.database, 'nhatKy')).key;
+          const updates = {
+            [`doiTuong/${newId}`]: updatedPatient,
+            [`congKhai/hoSo/${newId}`]: publicPatientFromSource(
+              updatedPatient,
+              updatedBooks
+            ),
+            [`congKhai/_meta/schemaVersion`]: CONFIG.PUBLIC_SCHEMA_VERSION,
+            [`congKhai/_meta/sourceUpdatedAt`]: now,
+            [`congKhai/_meta/updatedAt`]: now,
+            [`nhatKy/${logKey}`]: this.makeLog(
+              oldId !== newId
+                ? 'ĐỔI SỐ VÀ CHỈNH SỬA HỒ SƠ'
+                : 'CHỈNH SỬA THÔNG TIN HỒ SƠ',
+              {
+                soHoSoCu: originalSoHoSo,
+                soHoSoMoi: soHoSo,
+                hoTen,
+                namSinh,
+                gioiTinh
+              }
+            ),
+            [`khoaThaoTac/${oldId}`]: null
+          };
+
+          if (bookCount > 0) {
+            updates[`quyenHoSo/${newId}`] = updatedBooks;
+          }
+
+          if (updatedDeath) {
+            updates[`hoSoTuVong/${newId}`] = updatedDeath;
+          }
+
+          if (oldId !== newId) {
+            updates[`doiTuong/${oldId}`] = null;
+            updates[`quyenHoSo/${oldId}`] = null;
+            updates[`hoSoTuVong/${oldId}`] = null;
+            updates[`congKhai/hoSo/${oldId}`] = null;
+            updates[`khoaThaoTac/${newId}`] = null;
           }
 
           await update(ref(this.database), updates);
-          const updated = { ...patientSnapshot.val(), hoTen, namSinh, gioiTinh, updatedAt: Date.now() };
-          return { success: true, message: 'Đã cập nhật thông tin hồ sơ.', data: patientToUi(id, updated) };
+
+          return {
+            success: true,
+            message:
+              oldId !== newId
+                ? `Đã đổi số hồ sơ từ ${originalSoHoSo} thành ${soHoSo}.`
+                : 'Đã cập nhật thông tin hồ sơ.',
+            data: patientToUi(newId, updatedPatient),
+            oldSoHoSo: originalSoHoSo,
+            newSoHoSo: soHoSo
+          };
         } catch (error) {
-          await this.releasePatientLock(id, lockToken);
+          await this.releasePatientLock(oldId, oldLockToken);
+          if (newLockToken) {
+            await this.releasePatientLock(newId, newLockToken);
+          }
           throw error;
         }
       }
 
       async deletePatient(payload) {
-        const soHoSo = String(payload.soHoSo || '').trim();
+        const soHoSo = formatMedicalRecordNumber(payload.soHoSo);
         const lyDoXoa = String(payload.lyDoXoa || '').trim();
+        const isAdmin = state.currentRole === 'admin';
+        const isEditor = state.currentRole === 'editor';
 
-        if (!['admin', 'editor'].includes(state.currentRole)) {
+        if (!isAdmin && !isEditor) {
           throw new Error('Tài khoản chỉ xem không được phép xóa hồ sơ.');
         }
 
@@ -7597,43 +7785,62 @@ body.guest-mode #exportExcelBtn {
         }
 
         const id = firebaseKey(soHoSo);
-        const [patientSnapshot, booksSnapshot] = await Promise.all([
-          get(ref(this.database, `doiTuong/${id}`)),
-          get(ref(this.database, `quyenHoSo/${id}`))
-        ]);
+        const lockToken = await this.acquirePatientLock(id, 'XOA_HO_SO');
 
-        if (!patientSnapshot.exists()) {
-          throw new Error('Hồ sơ không còn tồn tại trên hệ thống.');
+        try {
+          const [patientSnapshot, booksSnapshot] = await Promise.all([
+            get(ref(this.database, `doiTuong/${id}`)),
+            get(ref(this.database, `quyenHoSo/${id}`))
+          ]);
+
+          if (!patientSnapshot.exists()) {
+            throw new Error('Hồ sơ không còn tồn tại trên hệ thống.');
+          }
+
+          const bookMap = booksSnapshot.val() || {};
+          const bookCount = Object.values(bookMap).filter(Boolean).length;
+
+          if (isEditor && bookCount > 0) {
+            throw new Error(
+              'Tài khoản cập nhật không được xóa hồ sơ đã có quyển. Hãy chỉnh sửa thông tin hồ sơ.'
+            );
+          }
+
+          const patient = patientSnapshot.val() || {};
+          const logKey = push(ref(this.database, 'nhatKy')).key;
+          const updates = {
+            [`doiTuong/${id}`]: null,
+            [`quyenHoSo/${id}`]: null,
+            [`hoSoTuVong/${id}`]: null,
+            [`congKhai/hoSo/${id}`]: null,
+            [`khoaThaoTac/${id}`]: null,
+            [`nhatKy/${logKey}`]: this.makeLog(
+              bookCount > 0 ? 'QUẢN TRỊ XÓA TOÀN BỘ HỒ SƠ' : 'XÓA HỒ SƠ NHẬP NHẦM',
+              {
+                soHoSo,
+                hoTen: patient.hoTen || '',
+                namSinh: patient.namSinh || '',
+                gioiTinh: patient.gioiTinh || '',
+                soQuyenDaXoa: bookCount,
+                lyDoXoa
+              }
+            )
+          };
+
+          await update(ref(this.database), updates);
+          await this.updatePublicMeta(-1, Date.now());
+
+          return {
+            success: true,
+            message:
+              bookCount > 0
+                ? `Quản trị đã xóa hồ sơ ${soHoSo} và ${bookCount} quyển liên quan.`
+                : `Đã xóa hồ sơ ${soHoSo}.`
+          };
+        } catch (error) {
+          await this.releasePatientLock(id, lockToken);
+          throw error;
         }
-
-        const bookMap = booksSnapshot.val() || {};
-        const bookCount = Object.values(bookMap).filter(Boolean).length;
-
-        if (bookCount > 0) {
-          throw new Error('Không thể xóa vì hồ sơ đã có quyển lưu trữ. Hãy chỉnh sửa thông tin thay vì xóa.');
-        }
-
-        const patient = patientSnapshot.val() || {};
-        const logKey = push(ref(this.database, 'nhatKy')).key;
-        const updates = {
-          [`doiTuong/${id}`]: null,
-          [`congKhai/hoSo/${id}`]: null,
-          [`nhatKy/${logKey}`]: this.makeLog('XÓA HỒ SƠ NHẬP NHẦM', {
-            soHoSo,
-            hoTen: patient.hoTen || '',
-            namSinh: patient.namSinh || '',
-            gioiTinh: patient.gioiTinh || '',
-            lyDoXoa
-          })
-        };
-
-        await update(ref(this.database), updates);
-        await this.updatePublicMeta(-1, Date.now());
-
-        return {
-          success: true,
-          message: `Đã xóa hồ sơ ${soHoSo}.`
-        };
       }
 
       summarizeBooks(bookMap) {
@@ -8377,6 +8584,22 @@ body.guest-mode #exportExcelBtn {
       INVENTORY_FIELDS.forEach(field => {
         $(`#bookForm [name="${field.key}"]`)?.addEventListener('input', updateDocumentInventoryPreview);
       });
+      const recordNumberInput = $('#patientSoHoSo');
+      recordNumberInput?.addEventListener('input', () => {
+        const cursorAtEnd = recordNumberInput.selectionStart === recordNumberInput.value.length;
+        recordNumberInput.value = formatMedicalRecordNumber(recordNumberInput.value);
+        if (cursorAtEnd) {
+          const end = recordNumberInput.value.length;
+          recordNumberInput.setSelectionRange(end, end);
+        }
+      });
+      recordNumberInput?.addEventListener('blur', () => {
+        recordNumberInput.value = formatMedicalRecordNumber(recordNumberInput.value);
+      });
+
+      $('#patientHoTen')?.addEventListener('blur', event => {
+        event.currentTarget.value = uppercaseVietnamese(event.currentTarget.value);
+      });
       $('#patientForm').addEventListener('submit', submitPatient);
       $('#bookForm').addEventListener('submit', submitBook);
       $('#deletePatientForm').addEventListener('submit', submitDeletePatient);
@@ -8584,8 +8807,10 @@ body.guest-mode #exportExcelBtn {
           </div>
           <div class="detail-action">
             ${canEdit ? `<div class="detail-action-group">
-              <button id="editPatientBtn" class="btn secondary-action">✎ Chỉnh sửa thông tin</button>
-              ${canDeleteRecords() ? `<button id="deletePatientBtn" class="btn danger-action" ${books.length ? 'disabled title="Chỉ xóa được hồ sơ chưa có quyển lưu trữ"' : ''}>🗑 Xóa hồ sơ</button>` : ''}
+              ${(state.currentRole === 'admin' || books.length > 0)
+                ? '<button id="editPatientBtn" class="btn secondary-action">✎ Chỉnh sửa thông tin</button>'
+                : ''}
+              ${canDeleteRecords() ? `<button id="deletePatientBtn" class="btn danger-action" ${state.currentRole === 'editor' && books.length ? 'disabled title="Tài khoản cập nhật không được xóa hồ sơ đã có quyển"' : ''}>🗑 Xóa hồ sơ</button>` : ''}
               <button id="openBookBtn" class="btn primary" ${isDeath ? 'disabled title="Hồ sơ tử vong không mở thêm quyển mới"' : ''}>＋ Lưu hồ sơ</button>
             </div>` : `<span class="readonly-label">👁 ${isPublicView ? 'Xem công khai' : 'Chế độ chỉ xem'}</span>`}
           </div>
@@ -9183,13 +9408,31 @@ body.guest-mode #exportExcelBtn {
       form.reset();
       form.elements.mode.value = mode;
       const isEdit = mode === 'edit';
+      const isAdmin = state.currentRole === 'admin';
+
+      if (isEdit && state.currentRole === 'editor' && state.currentBooks.length === 0) {
+        showToast(
+          'Hồ sơ chưa có quyển. Tài khoản cập nhật phải xóa hồ sơ nhập sai và tạo lại.',
+          true
+        );
+        return;
+      }
+
       $('#patientDialogTitle').textContent = isEdit ? 'Chỉnh sửa thông tin hồ sơ' : 'Thêm hồ sơ';
       $('#patientSubmitBtn').textContent = isEdit ? 'Cập nhật hồ sơ' : 'Lưu hồ sơ';
-      form.elements.soHoSo.readOnly = isEdit;
-      $('#patientNumberHelp').textContent = isEdit ? 'Số hồ sơ được khóa để bảo đảm liên kết dữ liệu các quyển.' : 'Số hồ sơ phải duy nhất trên hệ thống.';
+      form.elements.soHoSo.readOnly = isEdit && !isAdmin;
+      form.elements.originalSoHoSo.value =
+        isEdit && patient ? formatMedicalRecordNumber(patient['SỐ HỒ SƠ']) : '';
+
+      $('#patientNumberHelp').textContent = isEdit
+        ? (isAdmin
+            ? 'Quản trị được thay đổi số hồ sơ; hệ thống sẽ chuyển toàn bộ quyển và dữ liệu liên quan sang số mới.'
+            : 'Số hồ sơ được khóa. Chỉ tài khoản quản trị được thay đổi số hồ sơ.')
+        : 'Số hồ sơ theo định dạng XX.XX.XX.XXXX. Có thể nhập liền, hệ thống tự thêm dấu chấm và chuyển IN HOA.';
+
       if (isEdit && patient) {
-        form.elements.soHoSo.value = patient['SỐ HỒ SƠ'] || '';
-        form.elements.hoTen.value = patient['HỌ VÀ TÊN'] || '';
+        form.elements.soHoSo.value = formatMedicalRecordNumber(patient['SỐ HỒ SƠ']);
+        form.elements.hoTen.value = uppercaseVietnamese(patient['HỌ VÀ TÊN']);
         form.elements.namSinh.value = patient['NĂM SINH'] || '';
         form.elements.gioiTinh.value = patient['GIỚI TÍNH'] || '';
       }
@@ -9325,8 +9568,11 @@ body.guest-mode #exportExcelBtn {
         return;
       }
 
-      if (state.currentBooks.length > 0) {
-        showToast('Chỉ xóa được hồ sơ chưa có quyển lưu trữ.', true);
+      if (state.currentRole === 'editor' && state.currentBooks.length > 0) {
+        showToast(
+          'Tài khoản cập nhật không được xóa hồ sơ đã có quyển. Hãy chỉnh sửa thông tin hồ sơ.',
+          true
+        );
         return;
       }
 
@@ -9348,15 +9594,31 @@ body.guest-mode #exportExcelBtn {
       submitButton.disabled = true;
       submitButton.textContent = 'Đang lưu...';
       const data = Object.fromEntries(new FormData(form).entries());
+      data.soHoSo = formatMedicalRecordNumber(data.soHoSo);
+      data.hoTen = uppercaseVietnamese(data.hoTen);
+      data.originalSoHoSo = formatMedicalRecordNumber(
+        data.originalSoHoSo || data.soHoSo
+      );
+      form.elements.soHoSo.value = data.soHoSo;
+      form.elements.hoTen.value = data.hoTen;
 
       try {
         await withLoading(async () => {
           const action = data.mode === 'edit' ? 'capNhatDoiTuong' : 'themDoiTuong';
           const result = await api.post(action, data);
-          const existingIndex = state.allPatients.findIndex(item => normalize(item['SỐ HỒ SƠ']) === normalize(result.data['SỐ HỒ SƠ']));
-          if (existingIndex >= 0) state.allPatients[existingIndex] = result.data;
-          else state.allPatients.unshift(result.data);
-          if (state.currentPatient && normalize(state.currentPatient['SỐ HỒ SƠ']) === normalize(result.data['SỐ HỒ SƠ'])) {
+          const oldNumber = normalize(result.oldSoHoSo || data.originalSoHoSo);
+          const newNumber = normalize(result.data['SỐ HỒ SƠ']);
+
+          state.allPatients = state.allPatients.filter(item => {
+            const itemNumber = normalize(item['SỐ HỒ SƠ']);
+            return itemNumber !== oldNumber && itemNumber !== newNumber;
+          });
+          state.allPatients.unshift(result.data);
+
+          if (
+            state.currentPatient &&
+            normalize(state.currentPatient['SỐ HỒ SƠ']) === oldNumber
+          ) {
             state.currentPatient = result.data;
           }
           searchPatients();
