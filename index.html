@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.07.19.3">
+  <meta name="version" content="2026.07.19.4">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -5384,6 +5384,142 @@ body.guest-mode #exportExcelBtn {
       }
     }
 
+
+
+/* ===== 2026.07.19.4: SỬA TRÀN VIỀN VÀ ĐỒNG ĐỀU BỘ LỌC TRÊN IPHONE ===== */
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+@media (max-width: 720px) {
+  .layout,
+  .main-area,
+  .main,
+  .view,
+  .search-filter-panel,
+  .cards,
+  .patient-card,
+  .summary {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .main {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  /* Không cuộn ngang các chỉ số; chia đều thành 2 cột. */
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    overflow: visible;
+    margin: 10px 0 14px;
+    padding: 0;
+  }
+
+  .summary .chip {
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 6px;
+    text-align: center;
+    white-space: normal;
+    line-height: 1.25;
+  }
+
+  .mobile-filter-trigger {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .filter-dialog {
+    width: calc(100vw - 16px);
+    max-width: calc(100vw - 16px);
+    max-height: calc(100dvh - 18px);
+    margin: auto;
+    overflow: auto;
+  }
+
+  .filter-dialog form {
+    width: 100%;
+    max-width: 100%;
+    padding: 18px 12px 14px;
+  }
+
+  .advanced-filter-list {
+    gap: 9px;
+  }
+
+  /* Các lựa chọn bộ lọc có cùng chiều cao và cùng vị trí số đếm. */
+  .advanced-filter-item {
+    width: 100%;
+    min-width: 0;
+    min-height: 94px;
+    margin: 0;
+    padding: 12px 12px;
+    align-items: center;
+  }
+
+  .advanced-filter-main {
+    min-width: 0;
+    grid-template-columns: 20px 34px minmax(0, 1fr);
+  }
+
+  .advanced-filter-main > span:last-child {
+    min-width: 0;
+  }
+
+  .advanced-filter-main strong,
+  .advanced-filter-main small {
+    overflow-wrap: anywhere;
+  }
+
+  .advanced-filter-item > b {
+    width: 38px;
+    min-width: 38px;
+    height: 34px;
+    flex: 0 0 38px;
+    padding: 0 6px;
+  }
+
+  .modal-actions {
+    display: grid;
+    grid-template-columns: minmax(108px, .8fr) minmax(0, 1.7fr);
+    gap: 9px;
+  }
+
+  .modal-actions .btn {
+    width: 100%;
+    min-width: 0;
+    min-height: 50px;
+    margin: 0;
+  }
+
+  .patient-card {
+    overflow: hidden;
+  }
+
+  .patient-card > div:nth-child(2),
+  .patient-info-grid,
+  .patient-info-item {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 380px) {
+  .summary {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 </head>
 
@@ -8644,10 +8780,24 @@ body.guest-mode #exportExcelBtn {
     }
 
     function renderFilterControls() {
-      const counts = { all: state.allPatients.length, finished: 0, returned: 0, death: 0, empty: 0 };
+      // Bộ lọc vẫn lọc theo HỒ SƠ, nhưng số hiển thị của các trạng thái kết thúc
+      // phải là tổng SỐ QUYỂN thực tế. Một hồ sơ có thể có nhiều quyển.
+      const counts = {
+        all: state.allPatients.length,
+        finished: 0,
+        returned: 0,
+        death: 0,
+        empty: 0
+      };
+
       state.allPatients.forEach(patient => {
-        const group = getPatientStatusGroup(patient);
-        counts[group] = (counts[group] || 0) + 1;
+        counts.finished += Number(patient['_SỐ QUYỂN HẾT QUYỂN']) || 0;
+        counts.returned += Number(patient['_SỐ QUYỂN HỒI GIA']) || 0;
+        counts.death += Number(patient['_SỐ QUYỂN TỬ VONG']) || 0;
+
+        if ((Number(patient['TỔNG SỐ QUYỂN']) || 0) === 0) {
+          counts.empty += 1;
+        }
       });
 
       $$('[data-filter-count]').forEach(element => {
