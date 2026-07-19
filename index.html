@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.07.19.6">
+  <meta name="version" content="2026.07.19.7">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -5523,7 +5523,7 @@ html, body {
 
 
 /* ============================================================
-   2026.07.19.6 - THANH ĐẦU IPHONE ỔN ĐỊNH
+   2026.07.19.7 - THANH ĐẦU IPHONE ỔN ĐỊNH
    Chỉ điều chỉnh bố cục; không thay đổi luồng đăng nhập.
    ============================================================ */
 @media (max-width: 760px) {
@@ -5665,6 +5665,242 @@ html, body {
     flex-basis: 36px;
   }
 }
+
+
+/* ===== 2026.07.19.7: CHỈ TỐI ƯU DASHBOARD TRÊN ĐIỆN THOẠI ===== */
+@media (max-width: 760px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  #dashboardView,
+  #dashboardView .dashboard-stats,
+  #dashboardView .dashboard-kpi-grid,
+  #dashboardView .dashboard-panels,
+  #dashboardView .dashboard-alerts,
+  #dashboardView .dashboard-panel,
+  #dashboardView .inventory-stats-panel,
+  #dashboardView .storage-inventory-panel {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  #dashboardView {
+    overflow-x: clip;
+  }
+
+  #dashboardView .dashboard-stats {
+    gap: 14px;
+  }
+
+  #dashboardView .dashboard-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  #dashboardView .dashboard-kpi {
+    min-width: 0;
+    min-height: 126px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 15px;
+    border-radius: 17px;
+  }
+
+  #dashboardView .dashboard-kpi:nth-child(5) {
+    grid-column: 1 / -1;
+  }
+
+  #dashboardView .dashboard-kpi > div:first-child {
+    min-width: 0;
+  }
+
+  #dashboardView .dashboard-kpi-label,
+  #dashboardView .dashboard-kpi-note,
+  #dashboardView .dashboard-panel-title,
+  #dashboardView .dashboard-panel-subtitle,
+  #dashboardView .dashboard-alert strong,
+  #dashboardView .dashboard-alert p,
+  #dashboardView .inventory-stats-head h3,
+  #dashboardView .inventory-stats-head p,
+  #dashboardView .inventory-stat-card span,
+  #dashboardView .inventory-stat-note,
+  #dashboardView .storage-inventory-head h3,
+  #dashboardView .storage-inventory-head p {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  #dashboardView .dashboard-kpi-label {
+    font-size: 12px;
+    line-height: 1.3;
+  }
+
+  #dashboardView .dashboard-kpi-value {
+    margin-top: 7px;
+    font-size: 32px;
+  }
+
+  #dashboardView .dashboard-kpi-note {
+    display: block;
+    margin-top: 8px;
+    font-size: 10.5px;
+    line-height: 1.35;
+  }
+
+  #dashboardView .dashboard-kpi-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    font-size: 18px;
+  }
+
+  #dashboardView .dashboard-panels,
+  #dashboardView .dashboard-alerts {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  #dashboardView .dashboard-panel,
+  #dashboardView .inventory-stats-panel,
+  #dashboardView .storage-inventory-panel {
+    overflow: hidden;
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  #dashboardView .dashboard-panel-head,
+  #dashboardView .inventory-stats-head,
+  #dashboardView .storage-inventory-head {
+    min-width: 0;
+  }
+
+  #dashboardView .dashboard-panel-head > div,
+  #dashboardView .inventory-stats-head > div,
+  #dashboardView .storage-inventory-head > div {
+    min-width: 0;
+  }
+
+  #dashboardView .dashboard-panel-badge,
+  #dashboardView .inventory-completion-badge {
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.35;
+  }
+
+  #dashboardView .scan-overview {
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 13px;
+  }
+
+  #dashboardView .scan-ring {
+    width: 92px;
+    height: 92px;
+  }
+
+  #dashboardView .scan-details,
+  #dashboardView .scan-detail-row,
+  #dashboardView .status-bars,
+  #dashboardView .status-bar-item,
+  #dashboardView .management-metrics,
+  #dashboardView .management-metric {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  #dashboardView .scan-detail-row,
+  #dashboardView .status-bar-head {
+    align-items: flex-start;
+  }
+
+  #dashboardView .scan-detail-row span,
+  #dashboardView .scan-detail-row strong,
+  #dashboardView .status-bar-head span,
+  #dashboardView .status-bar-head strong {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  #dashboardView .management-metrics {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #dashboardView .management-metric {
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+  }
+
+  #dashboardView .management-metric > div:nth-child(2) {
+    min-width: 0;
+  }
+
+  #dashboardView .dashboard-alert {
+    width: 100%;
+    min-width: 0;
+    padding: 16px;
+  }
+
+  #dashboardView .dashboard-alert > div:last-child {
+    min-width: 0;
+  }
+
+  #dashboardView .inventory-stat-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  #dashboardView .inventory-stat-card {
+    width: 100%;
+    min-width: 0;
+  }
+
+  #dashboardView .storage-inventory-toolbar,
+  #dashboardView .storage-inventory-toolbar input {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  #dashboardView .storage-table-wrap {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  #dashboardView .storage-table {
+    width: max-content;
+    min-width: 760px;
+  }
+}
+
+@media (max-width: 390px) {
+  #dashboardView .dashboard-kpi-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #dashboardView .dashboard-kpi:nth-child(5) {
+    grid-column: auto;
+  }
+
+  #dashboardView .scan-overview {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+  }
+
+  #dashboardView .scan-details {
+    width: 100%;
+  }
+}
+
 </style>
 </head>
 
@@ -5692,7 +5928,7 @@ html, body {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.07.19.6</small>
+        <small>Phiên bản 2026.07.19.7</small>
       </div>
     </aside>
 
@@ -10627,195 +10863,4 @@ html, body {
             bold: true,
             color: { argb: 'FFFFFFFF' }
           };
-          sheet.getCell(summaryRowNumber, 1).fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FF0D7F86' }
-          };
-          sheet.getCell(summaryRowNumber, 1).alignment = {
-            horizontal: 'center',
-            vertical: 'middle'
-          };
-
-          const summaryLabels = [
-            ['Số hồ sơ xuất', patients.length],
-            ['Số dòng quyển', reportRows.filter(item => item.book).length],
-            ['Hết quyển', reportRows.filter(item =>
-              normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
-              CONFIG.STATUS.HET_QUYEN
-            ).length],
-            ['Hồi gia', reportRows.filter(item =>
-              normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
-              CONFIG.STATUS.HOI_GIA
-            ).length],
-            ['Tử vong', reportRows.filter(item =>
-              normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
-              CONFIG.STATUS.TU_VONG
-            ).length]
-          ];
-
-          summaryLabels.forEach((summary, index) => {
-            const column = 6 + index * 3;
-            sheet.mergeCells(
-              summaryRowNumber,
-              column,
-              summaryRowNumber,
-              column + 1
-            );
-            sheet.getCell(summaryRowNumber, column).value =
-              `${summary[0]}: ${summary[1]}`;
-            sheet.getCell(summaryRowNumber, column).alignment = {
-              horizontal: 'center',
-              vertical: 'middle'
-            };
-            sheet.getCell(summaryRowNumber, column).font = {
-              name: 'Arial',
-              size: 9,
-              bold: true,
-              color: { argb: 'FF29464E' }
-            };
-            sheet.getCell(summaryRowNumber, column).fill = {
-              type: 'pattern',
-              pattern: 'solid',
-              fgColor: { argb: 'FFEAF8F5' }
-            };
-          });
-
-          sheet.pageSetup.printArea =
-            `A1:T${sheet.rowCount}`;
-
-          const buffer = await workbook.xlsx.writeBuffer();
-          const blob = new Blob(
-            [buffer],
-            {
-              type:
-                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            }
-          );
-          const url = URL.createObjectURL(blob);
-          const anchor = document.createElement('a');
-          anchor.href = url;
-          anchor.download = excelFileName();
-          document.body.appendChild(anchor);
-          anchor.click();
-          anchor.remove();
-          URL.revokeObjectURL(url);
-          $('#reportPreviewDialog')?.close();
-
-          showToast(
-            `Đã xuất ${patients.length} hồ sơ. Dữ liệu được dùng lại từ bản xem trước.`
-          );
-        });
-      } finally {
-        exportButton.disabled = false;
-        exportButton.textContent = originalText;
-      }
-    }
-
-    async function withLoading(callback, show = true) {
-      if (show) $('#loading').classList.remove('hidden');
-
-      try {
-        return await callback();
-      } catch (error) {
-        console.error(error);
-        showToast(error.message || 'Có lỗi xảy ra.', true);
-      } finally {
-        if (show) $('#loading').classList.add('hidden');
-      }
-    }
-
-    function showToast(message, error = false) {
-      const toast = $('#toast');
-      toast.textContent = message;
-      toast.classList.toggle('error', error);
-      toast.classList.add('show');
-
-      clearTimeout(showToast.timer);
-      showToast.timer = setTimeout(() => {
-        toast.classList.remove('show');
-      }, 3800);
-    }
-
-    function resolveUploadMimeType(file) {
-      const rawType = String(file?.type || '').trim().toLowerCase();
-
-      if (rawType === 'image/jpg') return 'image/jpeg';
-
-      const allowedDirectTypes = new Set([
-        'application/pdf',
-        'image/jpeg',
-        'image/png',
-        'image/webp',
-        'image/heic',
-        'image/heif'
-      ]);
-
-      if (allowedDirectTypes.has(rawType)) return rawType;
-
-      const fileName = String(file?.name || '').trim().toLowerCase();
-      const extension = fileName.includes('.')
-        ? fileName.split('.').pop()
-        : '';
-
-      const mimeByExtension = {
-        pdf: 'application/pdf',
-        jpg: 'image/jpeg',
-        jpeg: 'image/jpeg',
-        png: 'image/png',
-        webp: 'image/webp',
-        heic: 'image/heic',
-        heif: 'image/heif'
-      };
-
-      return mimeByExtension[extension] || rawType;
-    }
-
-    function fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-
-        reader.onload = () => {
-          const value = String(reader.result || '');
-          resolve(value.includes(',') ? value.split(',')[1] : value);
-        };
-
-        reader.onerror = () => reject(new Error('Không đọc được file.'));
-        reader.readAsDataURL(file);
-      });
-    }
-
-    function normalize(value) {
-      return String(value || '').trim().toUpperCase();
-    }
-
-    function initials(name) {
-      const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
-
-      if (!parts.length) return 'HS';
-      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-
-      return (
-        parts[parts.length - 2][0] +
-        parts[parts.length - 1][0]
-      ).toUpperCase();
-    }
-
-    function escapeHtml(value) {
-      return String(value ?? '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
-    }
-
-    function escapeAttr(value) {
-      return escapeHtml(value);
-    }
-    }
-  </script>
-  <div class="build-version" aria-hidden="true">2026.07.17.8</div>
-
-</body>
-</html>
+          sheet.getCell(summar
