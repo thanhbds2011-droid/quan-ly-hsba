@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.07.19.2">
+  <meta name="version" content="2026.07.19.3">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -8684,15 +8684,26 @@ body.guest-mode #exportExcelBtn {
     }
 
     function renderPatients() {
-      const finishedCount = state.patients.filter(x => getPatientStatusGroup(x) === 'finished').length;
-      const returnCount = state.patients.filter(x => getPatientStatusGroup(x) === 'returned').length;
-      const deathCount = state.patients.filter(x => getPatientStatusGroup(x) === 'death').length;
+      // Thống kê trạng thái theo SỐ QUYỂN thực tế, không đếm theo số hồ sơ.
+      // Một hồ sơ có thể có nhiều quyển nên dùng các trường tổng hợp từ quyenHoSo.
+      const finishedCount = state.patients.reduce(
+        (sum, patient) => sum + (Number(patient['_SỐ QUYỂN HẾT QUYỂN']) || 0),
+        0
+      );
+      const returnCount = state.patients.reduce(
+        (sum, patient) => sum + (Number(patient['_SỐ QUYỂN HỒI GIA']) || 0),
+        0
+      );
+      const deathCount = state.patients.reduce(
+        (sum, patient) => sum + (Number(patient['_SỐ QUYỂN TỬ VONG']) || 0),
+        0
+      );
 
       $('#summary').innerHTML = `
         <span class="chip">👥 ${state.patients.length} hồ sơ</span>
-        <span class="chip">✓ ${finishedCount} hết quyển</span>
-        <span class="chip">⌂ ${returnCount} hồi gia</span>
-        <span class="chip">🗂️ ${deathCount} tử vong</span>
+        <span class="chip">✓ ${finishedCount} quyển hết quyển</span>
+        <span class="chip">⌂ ${returnCount} quyển hồi gia</span>
+        <span class="chip">🗂️ ${deathCount} quyển tử vong</span>
       `;
 
       if (!state.patients.length) {
