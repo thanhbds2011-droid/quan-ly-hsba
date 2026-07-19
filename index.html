@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.07.19.5">
+  <meta name="version" content="2026.07.19.6">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -5386,7 +5386,7 @@ body.guest-mode #exportExcelBtn {
 
 
 
-/* ===== 2026.07.19.5: SỬA TRÀN VIỀN VÀ ĐỒNG ĐỀU BỘ LỌC TRÊN IPHONE ===== */
+/* ===== 2026.07.19.4: SỬA TRÀN VIỀN VÀ ĐỒNG ĐỀU BỘ LỌC TRÊN IPHONE ===== */
 html, body {
   width: 100%;
   max-width: 100%;
@@ -5523,35 +5523,37 @@ html, body {
 
 
 /* ============================================================
-   2026.07.19.5 - CÂN ĐỐI THANH ĐẦU TRÊN ĐIỆN THOẠI
-   Giữ nút đồng bộ và đăng xuất luôn nằm trong khung màn hình.
+   2026.07.19.6 - THANH ĐẦU IPHONE ỔN ĐỊNH
+   Chỉ điều chỉnh bố cục; không thay đổi luồng đăng nhập.
    ============================================================ */
 @media (max-width: 760px) {
   .topbar {
     width: 100%;
     min-width: 0;
-    gap: 6px;
-    padding-left: max(8px, env(safe-area-inset-left));
-    padding-right: max(8px, env(safe-area-inset-right));
-    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-left: max(10px, env(safe-area-inset-left));
+    padding-right: max(10px, env(safe-area-inset-right));
+    overflow: visible;
   }
 
   .topbar-left {
     flex: 1 1 auto;
     min-width: 0;
-    gap: 6px;
-    overflow: hidden;
+    gap: 8px;
   }
 
   .top-heading {
     flex: 1 1 auto;
     min-width: 0;
-    overflow: hidden;
   }
 
   .top-title {
     display: block;
     min-width: 0;
+    max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -5559,65 +5561,108 @@ html, body {
     letter-spacing: 0;
   }
 
-  .top-subtitle {
-    display: none !important;
-  }
+  .top-subtitle { display: none !important; }
 
   .menu-btn {
-    width: 34px;
-    min-width: 34px;
-    height: 34px;
-    flex: 0 0 34px;
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
     padding: 0;
+  }
+
+  #openLoginBtn.auth-login-top-btn {
+    position: relative;
+    z-index: 35;
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    min-height: 42px;
+    flex: 0 0 42px;
+    padding: 0;
+    font-size: 0;
+    pointer-events: auto;
+    touch-action: manipulation;
+  }
+
+  #openLoginBtn.auth-login-top-btn::before {
+    content: "🔐";
+    font-size: 19px;
+    line-height: 1;
   }
 
   .auth-user-bar {
     flex: 0 0 auto;
     min-width: 0;
-    gap: 5px;
+    max-width: 86px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
   }
 
-  /* Trên điện thoại ẩn thẻ email để dành chỗ cho hai nút thao tác. */
-  .auth-user-summary {
-    display: none !important;
-  }
+  .auth-user-summary { display: none !important; }
 
   .auth-sync-public-btn,
   .auth-logout-btn {
-    width: 34px;
-    min-width: 34px;
-    height: 34px;
-    min-height: 34px;
-    flex: 0 0 34px;
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    min-height: 38px;
+    flex: 0 0 38px;
     padding: 0;
-    border-radius: 10px;
+    border-radius: 11px;
+    font-size: 0;
+    pointer-events: auto;
+    touch-action: manipulation;
   }
 
-  .auth-sync-public-btn::before,
+  .auth-sync-public-btn::before {
+    content: "↻";
+    font-size: 20px;
+    line-height: 1;
+  }
+
   .auth-logout-btn::before {
+    content: "↪";
+    font-size: 20px;
     line-height: 1;
   }
 }
 
 @media (max-width: 390px) {
   .topbar {
-    gap: 4px;
-    padding-left: max(6px, env(safe-area-inset-left));
-    padding-right: max(6px, env(safe-area-inset-right));
+    gap: 6px;
+    padding-left: max(7px, env(safe-area-inset-left));
+    padding-right: max(7px, env(safe-area-inset-right));
   }
 
-  .top-title {
-    font-size: 12px;
-  }
+  .top-title { font-size: 12px; }
 
-  .menu-btn,
-  .auth-sync-public-btn,
-  .auth-logout-btn {
+  .menu-btn {
     width: 32px;
     min-width: 32px;
     height: 32px;
-    min-height: 32px;
     flex-basis: 32px;
+  }
+
+  #openLoginBtn.auth-login-top-btn {
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    min-height: 38px;
+    flex-basis: 38px;
+  }
+
+  .auth-user-bar { max-width: 78px; gap: 4px; }
+
+  .auth-sync-public-btn,
+  .auth-logout-btn {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    min-height: 36px;
+    flex-basis: 36px;
   }
 }
 </style>
@@ -5647,7 +5692,7 @@ html, body {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.07.17.8</small>
+        <small>Phiên bản 2026.07.19.6</small>
       </div>
     </aside>
 
@@ -10587,4 +10632,190 @@ html, body {
             pattern: 'solid',
             fgColor: { argb: 'FF0D7F86' }
           };
-          sheet.getCell(summaryRowNu
+          sheet.getCell(summaryRowNumber, 1).alignment = {
+            horizontal: 'center',
+            vertical: 'middle'
+          };
+
+          const summaryLabels = [
+            ['Số hồ sơ xuất', patients.length],
+            ['Số dòng quyển', reportRows.filter(item => item.book).length],
+            ['Hết quyển', reportRows.filter(item =>
+              normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
+              CONFIG.STATUS.HET_QUYEN
+            ).length],
+            ['Hồi gia', reportRows.filter(item =>
+              normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
+              CONFIG.STATUS.HOI_GIA
+            ).length],
+            ['Tử vong', reportRows.filter(item =>
+              normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
+              CONFIG.STATUS.TU_VONG
+            ).length]
+          ];
+
+          summaryLabels.forEach((summary, index) => {
+            const column = 6 + index * 3;
+            sheet.mergeCells(
+              summaryRowNumber,
+              column,
+              summaryRowNumber,
+              column + 1
+            );
+            sheet.getCell(summaryRowNumber, column).value =
+              `${summary[0]}: ${summary[1]}`;
+            sheet.getCell(summaryRowNumber, column).alignment = {
+              horizontal: 'center',
+              vertical: 'middle'
+            };
+            sheet.getCell(summaryRowNumber, column).font = {
+              name: 'Arial',
+              size: 9,
+              bold: true,
+              color: { argb: 'FF29464E' }
+            };
+            sheet.getCell(summaryRowNumber, column).fill = {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: { argb: 'FFEAF8F5' }
+            };
+          });
+
+          sheet.pageSetup.printArea =
+            `A1:T${sheet.rowCount}`;
+
+          const buffer = await workbook.xlsx.writeBuffer();
+          const blob = new Blob(
+            [buffer],
+            {
+              type:
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            }
+          );
+          const url = URL.createObjectURL(blob);
+          const anchor = document.createElement('a');
+          anchor.href = url;
+          anchor.download = excelFileName();
+          document.body.appendChild(anchor);
+          anchor.click();
+          anchor.remove();
+          URL.revokeObjectURL(url);
+          $('#reportPreviewDialog')?.close();
+
+          showToast(
+            `Đã xuất ${patients.length} hồ sơ. Dữ liệu được dùng lại từ bản xem trước.`
+          );
+        });
+      } finally {
+        exportButton.disabled = false;
+        exportButton.textContent = originalText;
+      }
+    }
+
+    async function withLoading(callback, show = true) {
+      if (show) $('#loading').classList.remove('hidden');
+
+      try {
+        return await callback();
+      } catch (error) {
+        console.error(error);
+        showToast(error.message || 'Có lỗi xảy ra.', true);
+      } finally {
+        if (show) $('#loading').classList.add('hidden');
+      }
+    }
+
+    function showToast(message, error = false) {
+      const toast = $('#toast');
+      toast.textContent = message;
+      toast.classList.toggle('error', error);
+      toast.classList.add('show');
+
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3800);
+    }
+
+    function resolveUploadMimeType(file) {
+      const rawType = String(file?.type || '').trim().toLowerCase();
+
+      if (rawType === 'image/jpg') return 'image/jpeg';
+
+      const allowedDirectTypes = new Set([
+        'application/pdf',
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+        'image/heic',
+        'image/heif'
+      ]);
+
+      if (allowedDirectTypes.has(rawType)) return rawType;
+
+      const fileName = String(file?.name || '').trim().toLowerCase();
+      const extension = fileName.includes('.')
+        ? fileName.split('.').pop()
+        : '';
+
+      const mimeByExtension = {
+        pdf: 'application/pdf',
+        jpg: 'image/jpeg',
+        jpeg: 'image/jpeg',
+        png: 'image/png',
+        webp: 'image/webp',
+        heic: 'image/heic',
+        heif: 'image/heif'
+      };
+
+      return mimeByExtension[extension] || rawType;
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          const value = String(reader.result || '');
+          resolve(value.includes(',') ? value.split(',')[1] : value);
+        };
+
+        reader.onerror = () => reject(new Error('Không đọc được file.'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function normalize(value) {
+      return String(value || '').trim().toUpperCase();
+    }
+
+    function initials(name) {
+      const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+
+      if (!parts.length) return 'HS';
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+
+      return (
+        parts[parts.length - 2][0] +
+        parts[parts.length - 1][0]
+      ).toUpperCase();
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value);
+    }
+    }
+  </script>
+  <div class="build-version" aria-hidden="true">2026.07.17.8</div>
+
+</body>
+</html>
