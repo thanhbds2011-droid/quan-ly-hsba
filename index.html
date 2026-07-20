@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.07.19.8">
+  <meta name="version" content="2026.07.20.1">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -5903,6 +5903,11 @@ html, body {
 
 
 
+/* ===== 2026.07.20.1: ĐĂNG NHẬP KHÔNG ÉP TẢI LẠI TRANG =====
+   - Giữ phiên Google/Email ổn định giữa nhiều domain GitHub Pages.
+   - onAuthStateChanged tự đọc phân quyền và cập nhật giao diện.
+   ============================================================ */
+
 /* ===== 2026.07.19.8: BẢO ĐẢM NÚT ĐĂNG NHẬP HOẠT ĐỘNG TRÊN IOS ===== */
 #openLoginBtn {
   -webkit-appearance: none;
@@ -5970,7 +5975,7 @@ html, body {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.07.19.8</small>
+        <small>Phiên bản 2026.07.20.1</small>
       </div>
     </aside>
 
@@ -8921,18 +8926,22 @@ html, body {
         authUpgradeInProgress = true;
 
         try {
-          await signInWithEmailAndPassword(
+          // Đặt cờ trước khi đăng nhập để onAuthStateChanged nhận đúng yêu cầu
+          // đồng bộ danh mục công khai, không cần tải lại toàn bộ trang.
+          sessionStorage.setItem('hsba_force_public_sync', '1');
+
+          const credential = await signInWithEmailAndPassword(
             firebaseAuth,
             email,
             password
           );
 
-          // Tải lại trang sau khi chuyển từ phiên xem sang tài khoản thật.
-          // Việc này giúp Firebase nạp token mới ổn định trước khi đồng bộ
-          // danh mục xem công khai.
-          sessionStorage.setItem('hsba_force_public_sync', '1');
-          window.location.reload();
+          // Làm mới token rồi để onAuthStateChanged tự đọc phân quyền
+          // và cập nhật giao diện. Không dùng window.location.reload().
+          await credential.user.getIdToken(true);
+          closeLoginDialog();
         } catch (error) {
+          sessionStorage.removeItem('hsba_force_public_sync');
           showAuthError(firebaseError(error).message);
         } finally {
           authUpgradeInProgress = false;
@@ -8956,11 +8965,21 @@ html, body {
             await signOut(firebaseAuth);
           }
 
-          await signInWithPopup(firebaseAuth, googleProvider);
-
+          // Đặt cờ trước khi mở Google để onAuthStateChanged xử lý ngay
+          // khi Firebase trả về tài khoản đã đăng nhập.
           sessionStorage.setItem('hsba_force_public_sync', '1');
-          window.location.reload();
+
+          const result = await signInWithPopup(
+            firebaseAuth,
+            googleProvider
+          );
+
+          // Chờ token sẵn sàng rồi đóng hộp đăng nhập.
+          // onAuthStateChanged sẽ tự đọc phanQuyen/{UID} và mở giao diện.
+          await result.user.getIdToken(true);
+          closeLoginDialog();
         } catch (error) {
+          sessionStorage.removeItem('hsba_force_public_sync');
           showAuthError(firebaseError(error).message);
         } finally {
           authUpgradeInProgress = false;
@@ -11116,7 +11135,7 @@ html, body {
     }
     }
   </script>
-  <div class="build-version" aria-hidden="true">2026.07.17.8</div>
+  <div class="build-version" aria-hidden="true">2026.07.20.1</div>
 
 </body>
 </html>
