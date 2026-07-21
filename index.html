@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.07.20.1">
+  <meta name="version" content="2026.07.21.1">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -5903,7 +5903,7 @@ html, body {
 
 
 
-/* ===== 2026.07.20.1: ĐĂNG NHẬP KHÔNG ÉP TẢI LẠI TRANG =====
+/* ===== 2026.07.20.2: ĐĂNG NHẬP KHÔNG ÉP TẢI LẠI TRANG =====
    - Giữ phiên Google/Email ổn định giữa nhiều domain GitHub Pages.
    - onAuthStateChanged tự đọc phân quyền và cập nhật giao diện.
    ============================================================ */
@@ -5975,7 +5975,7 @@ html, body {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.07.20.1</small>
+        <small>Phiên bản 2026.07.21.1</small>
       </div>
     </aside>
 
@@ -6669,6 +6669,10 @@ html, body {
 
     const CONFIG = Object.freeze({
       OWNER_EMAIL: 'thanhbds2011@gmail.com',
+
+      // Dán URL Web App của Apps Script đồng bộ nhân sự sau khi Deploy.
+      PERSONNEL_ACCESS_URL:
+        'https://script.google.com/macros/s/AKfycbxfLR5-08rHVWGwg8a3Zkafg9JN3lUHuGOtOngr0bjaosjKnGJ-fSZ-esaFoJBbUDQBEQ/exec',
 
       DRIVE_UPLOAD_URL:
         'https://script.google.com/macros/s/AKfycbwTuGwnLDDDE7sUi2Isy4W_TwvboLaC-Qo7g5QqueSSS0Z_Mo8UxaTBq8eGaI6ax9Mz/exec',
@@ -8837,11 +8841,20 @@ html, body {
         return { active: true, role: 'admin', email };
       }
 
-      const snapshot = await get(
-        ref(firebaseDatabase, `phanQuyen/${user.uid}`)
-      );
-      const permission = snapshot.val() || {};
-      const role = String(permission.role || '').trim().toLowerCase();
+      let permission = await readRealtimePermission(user.uid);
+      let role = String(permission.role || '').trim().toLowerCase();
+
+      // Tài khoản mới: Sheet đã cấp trước theo email nhưng chưa có UID Google.
+      // Gọi Apps Script để xác thực token, nối email với UID Google thật và
+      // tự tạo phanQuyen/{UID}. Không tạo UID rỗng Provider trong Authentication.
+      if (
+        permission.active !== true ||
+        !['admin', 'editor', 'viewer'].includes(role)
+      ) {
+        await claimPersonnelAccess(user);
+        permission = await readRealtimePermission(user.uid);
+        role = String(permission.role || '').trim().toLowerCase();
+      }
 
       if (
         permission.active !== true ||
@@ -8857,6 +8870,56 @@ html, body {
         role,
         email: permission.email || email
       };
+    }
+
+    async function readRealtimePermission(uid) {
+      const snapshot = await get(
+        ref(firebaseDatabase, `phanQuyen/${uid}`)
+      );
+      return snapshot.val() || {};
+    }
+
+    async function claimPersonnelAccess(user) {
+      const endpoint = String(CONFIG.PERSONNEL_ACCESS_URL || '').trim();
+      if (
+        !endpoint.startsWith('https://script.google.com/macros/s/') ||
+        !endpoint.endsWith('/exec')
+      ) {
+        throw new Error(
+          'Hệ thống chưa cấu hình dịch vụ cấp quyền tự động.'
+        );
+      }
+
+      const idToken = await user.getIdToken(true);
+      const body = new URLSearchParams({
+        action: 'claimAccess',
+        idToken
+      });
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+        body: body.toString(),
+        redirect: 'follow'
+      });
+
+      const text = await response.text();
+      let result = {};
+      try {
+        result = JSON.parse(text || '{}');
+      } catch (_) {
+        throw new Error('Dịch vụ cấp quyền tự động phản hồi không hợp lệ.');
+      }
+
+      if (!response.ok || result.success !== true) {
+        throw new Error(
+          result.message || 'Tài khoản chưa được cấp quyền sử dụng hệ thống.'
+        );
+      }
+
+      return result;
     }
 
     function canEditRecords() {
@@ -11135,7 +11198,7 @@ html, body {
     }
     }
   </script>
-  <div class="build-version" aria-hidden="true">2026.07.20.1</div>
+  <div class="build-version" aria-hidden="true">2026.07.20.2</div>
 
 </body>
 </html>
