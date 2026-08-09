@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#12a6a6">
+  <meta name="theme-color" content="#d95f8d">
   <meta name="description" content="Ứng dụng quản lý hồ sơ bệnh án">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.08.09.1">
+  <meta name="version" content="2026.08.09.2">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -5948,6 +5948,195 @@ html, body {
   }
 }
 
+
+
+    /* ============================================================
+       HSBA 2026.08.09.2 - GIAO DIỆN HỒNG PHẤN CHUYÊN NGHIỆP
+       Chỉ thay đổi lớp trình bày; không thay đổi nghiệp vụ/Firebase.
+       ============================================================ */
+    :root {
+      --primary: #d95f8d;
+      --primary-2: #ef8fb1;
+      --primary-3: #a73f69;
+      --primary-soft: #fff0f6;
+      --accent: #f3a6bd;
+      --accent-soft: #fff3f7;
+      --text: #352934;
+      --muted: #806f79;
+      --line: #f0dce5;
+      --surface: #ffffff;
+      --bg: #fff8fb;
+      --shadow: 0 16px 38px rgba(169,63,105,.12);
+      --shadow-soft: 0 8px 24px rgba(169,63,105,.08);
+    }
+
+    html { background: var(--bg); }
+
+    body {
+      background:
+        radial-gradient(circle at 10% 0%, rgba(239,143,177,.18), transparent 31rem),
+        radial-gradient(circle at 96% 9%, rgba(244,191,209,.20), transparent 28rem),
+        linear-gradient(180deg, #fffdfd 0%, #fff8fb 48%, #fffafd 100%);
+    }
+
+    .sidebar {
+      background: rgba(255,252,254,.975);
+      border-right-color: #f0dce5;
+    }
+
+    .brand-icon {
+      background: linear-gradient(145deg, #d95f8d, #ef8fb1);
+      box-shadow: 0 10px 24px rgba(169,63,105,.22);
+    }
+
+    .nav-btn:hover {
+      background: #fff3f7;
+      border-color: #f3d8e3;
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(135deg, #fff0f6, #fff8fb);
+      border-color: #efccda;
+      color: #a73f69;
+      box-shadow: inset 3px 0 0 #d95f8d;
+    }
+
+    .rule {
+      border-color: #f2d6df;
+      background: linear-gradient(145deg, #fff8f3, #fff2f7);
+      color: #73525f;
+    }
+
+    .topbar {
+      background: rgba(255,252,254,.93);
+      border-bottom-color: rgba(240,220,229,.94);
+      box-shadow: 0 4px 16px rgba(126,58,86,.035);
+    }
+
+    .main::before {
+      background: linear-gradient(90deg, #d95f8d, #f2a0bb) !important;
+    }
+
+    .search-card,
+    .filters-card,
+    .patient-card,
+    .detail-card,
+    .stats-card,
+    .report-card,
+    .modal-card {
+      border-color: #f0dce5;
+    }
+
+    .patient-card {
+      background: linear-gradient(135deg, rgba(255,255,255,.99), rgba(255,249,252,.98));
+      box-shadow: 0 12px 30px rgba(169,63,105,.075);
+    }
+
+    .patient-card::before {
+      background: linear-gradient(180deg, #d95f8d, #f1a2bc) !important;
+    }
+
+    .patient-card:hover {
+      border-color: #eabed0 !important;
+      box-shadow: 0 18px 38px rgba(169,63,105,.13) !important;
+    }
+
+    .chip,
+    .badge:not(.death):not(.danger) {
+      border-color: #efd5e0;
+    }
+
+    .btn.primary,
+    .primary-action,
+    #addPatientBtn {
+      background: linear-gradient(135deg, #d95f8d, #e978a0) !important;
+      border-color: #d95f8d !important;
+      color: #fff !important;
+      box-shadow: 0 10px 22px rgba(217,95,141,.20);
+    }
+
+    .btn.primary:hover,
+    .primary-action:hover,
+    #addPatientBtn:hover {
+      filter: brightness(.985);
+      box-shadow: 0 13px 27px rgba(217,95,141,.27);
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #df7ca0 !important;
+      box-shadow: 0 0 0 3px rgba(217,95,141,.12) !important;
+    }
+
+    .filter-btn.active,
+    .status-filter.active {
+      border-color: #e4a8bf !important;
+      background: linear-gradient(135deg, #fff0f6, #fff8fb) !important;
+      color: #a73f69 !important;
+    }
+
+    /* Avatar giới tính dạng vector: chuyên nghiệp, không dùng ảnh ngoài. */
+    .avatar.gender-avatar,
+    .detail-avatar.gender-avatar {
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border: 1px solid rgba(255,255,255,.78);
+    }
+
+    .avatar.gender-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      box-shadow: 0 9px 20px rgba(77,91,125,.11);
+    }
+
+    .detail-avatar.gender-avatar {
+      width: 68px;
+      height: 68px;
+      border-radius: 22px;
+      box-shadow: 0 12px 26px rgba(117,66,98,.16);
+    }
+
+    .gender-avatar svg {
+      width: 76%;
+      height: 76%;
+      display: block;
+    }
+
+    .gender-avatar.male {
+      background: linear-gradient(145deg, #e9f3ff, #d9eaff) !important;
+      color: #3f6f9f !important;
+      border-color: #cfdef1;
+    }
+
+    .gender-avatar.female {
+      background: linear-gradient(145deg, #fff0f6, #fbd9e7) !important;
+      color: #c44f7c !important;
+      border-color: #f0c3d5;
+    }
+
+    .gender-avatar.unknown {
+      background: linear-gradient(145deg, #f3eff7, #e8e1f0) !important;
+      color: #74667f !important;
+      border-color: #ddd3e6;
+    }
+
+    @media (max-width: 720px) {
+      .avatar.gender-avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: 17px;
+      }
+      .detail-avatar.gender-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 20px;
+      }
+    }
+
 </style>
 </head>
 
@@ -9418,7 +9607,7 @@ html, body {
 
         return `
           <article class="patient-card">
-            <div class="avatar">${escapeHtml(initials(patient['HỌ VÀ TÊN']))}</div>
+            ${genderAvatarHtml(patient['GIỚI TÍNH'])}
             <div>
               <h3>${escapeHtml(patient['HỌ VÀ TÊN'])}</h3>
               <div class="patient-info-grid">
@@ -9478,7 +9667,7 @@ html, body {
 
       $('#patientDetail').innerHTML = `
         <section class="detail-card">
-          <div class="detail-avatar">${escapeHtml(initials(patient['HỌ VÀ TÊN']))}</div>
+          ${genderAvatarHtml(patient['GIỚI TÍNH'], true)}
           <div>
             <h2>${escapeHtml(patient['HỌ VÀ TÊN'])}</h2>
             <div class="patient-meta-inline">
@@ -11181,6 +11370,44 @@ html, body {
       ).toUpperCase();
     }
 
+
+    function genderAvatarHtml(gender, detail = false) {
+      const normalizedGender = normalize(gender);
+      const isFemale = normalizedGender === 'NỮ';
+      const isMale = normalizedGender === 'NAM';
+      const type = isFemale ? 'female' : (isMale ? 'male' : 'unknown');
+      const label = isFemale ? 'Nữ' : (isMale ? 'Nam' : 'Chưa cập nhật giới tính');
+      const baseClass = detail ? 'detail-avatar' : 'avatar';
+
+      const femaleSvg = `
+        <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <path d="M18 27c0-10 5.8-17 14-17s14 7 14 17v5H18z" fill="currentColor" opacity=".25"/>
+          <circle cx="32" cy="25" r="9.5" fill="currentColor" opacity=".94"/>
+          <path d="M16 54c1.8-10.7 7.8-16 16-16s14.2 5.3 16 16" fill="currentColor" opacity=".94"/>
+          <path d="M21.5 22.5c1-7.8 5.2-11.7 10.5-11.7 5.4 0 9.6 4 10.5 11.7-3-3.2-6.5-4.8-10.5-4.8s-7.5 1.6-10.5 4.8z" fill="currentColor"/>
+          <path d="M23 42.5 32 50l9-7.5" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity=".92"/>
+        </svg>`;
+
+      const maleSvg = `
+        <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <circle cx="32" cy="24" r="10" fill="currentColor" opacity=".94"/>
+          <path d="M15.5 54c2-10.8 8-16.2 16.5-16.2S46.5 43.2 48.5 54" fill="currentColor" opacity=".94"/>
+          <path d="M22.5 18.3c2.3-5.8 6-8.7 11.2-8.2 4.7.4 8 3.2 9.8 8.2-3.6-1.2-7.1-1.8-10.7-1.8-3.6 0-7 .6-10.3 1.8z" fill="currentColor"/>
+          <path d="M24 42.5 32 48l8-5.5" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity=".92"/>
+        </svg>`;
+
+      const unknownSvg = `
+        <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <circle cx="32" cy="23" r="10" fill="currentColor" opacity=".88"/>
+          <path d="M15.5 54c2-10.7 8.1-16 16.5-16s14.5 5.3 16.5 16" fill="currentColor" opacity=".88"/>
+          <circle cx="49" cy="16" r="9" fill="#fff" opacity=".96"/>
+          <text x="49" y="20" text-anchor="middle" font-size="13" font-weight="800" fill="currentColor">?</text>
+        </svg>`;
+
+      const svg = isFemale ? femaleSvg : (isMale ? maleSvg : unknownSvg);
+      return `<div class="${baseClass} gender-avatar ${type}" role="img" aria-label="${label}" title="${label}">${svg}</div>`;
+    }
+
     function escapeHtml(value) {
       return String(value ?? '')
         .replaceAll('&', '&amp;')
@@ -11195,7 +11422,7 @@ html, body {
     }
     }
   </script>
-  <div class="build-version" aria-hidden="true">2026.07.20.2</div>
+  <div class="build-version" aria-hidden="true">2026.08.09.2</div>
 
 </body>
 </html>
