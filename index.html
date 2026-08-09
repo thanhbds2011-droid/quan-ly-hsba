@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.07.21.1">
+  <meta name="version" content="2026.08.09.1">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -5975,7 +5975,7 @@ html, body {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.07.21.1</small>
+        <small>Phiên bản 2026.08.09.1</small>
       </div>
     </aside>
 
@@ -8841,20 +8841,17 @@ html, body {
         return { active: true, role: 'admin', email };
       }
 
-      let permission = await readRealtimePermission(user.uid);
-      let role = String(permission.role || '').trim().toLowerCase();
+      // Google Sheet/accessAccounts là nguồn phân quyền gốc.
+      // Mỗi lần người dùng đăng nhập, luôn gọi dịch vụ claimAccess để:
+      // 1) đối chiếu Email hiện tại với accessAccounts;
+      // 2) liên kết UID thật vào linkedUid/authReady;
+      // 3) cập nhật role/active mới nhất vào phanQuyen/{UID}.
+      // Cách này xử lý cả dữ liệu chuyển tiếp: phanQuyen đã tồn tại nhưng
+      // accessAccounts chưa có linkedUid, hoặc role trên Sheet vừa thay đổi.
+      await claimPersonnelAccess(user);
 
-      // Tài khoản mới: Sheet đã cấp trước theo email nhưng chưa có UID Google.
-      // Gọi Apps Script để xác thực token, nối email với UID Google thật và
-      // tự tạo phanQuyen/{UID}. Không tạo UID rỗng Provider trong Authentication.
-      if (
-        permission.active !== true ||
-        !['admin', 'editor', 'viewer'].includes(role)
-      ) {
-        await claimPersonnelAccess(user);
-        permission = await readRealtimePermission(user.uid);
-        role = String(permission.role || '').trim().toLowerCase();
-      }
+      const permission = await readRealtimePermission(user.uid);
+      const role = String(permission.role || '').trim().toLowerCase();
 
       if (
         permission.active !== true ||
