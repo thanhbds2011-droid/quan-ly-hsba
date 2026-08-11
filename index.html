@@ -7728,7 +7728,17 @@ html, body {
         }, timeoutMs);
 
         if (!response.ok) {
-          recordError?.message || 'Tài khoản chưa được cấp quyền thực hiện thao tác này.'
+          let message =
+            `Dịch vụ lưu trữ phản hồi lỗi HTTP ${response.status}.`;
+
+          try {
+            const errorResult = await response.json();
+            message = errorResult?.message || message;
+          } catch (_) {
+            // Giữ thông báo HTTP ở trên nếu phản hồi lỗi không phải JSON.
+          }
+
+          throw new Error(message);
         }
 
         let result;
@@ -7738,8 +7748,10 @@ html, body {
           throw new Error('Dịch vụ file trả về dữ liệu không hợp lệ.');
         }
 
-        if (!result.success) {
-          throw new Error(result.message || 'Không thực hiện được thao tác file.');
+        if (!result || result.success !== true) {
+          throw new Error(
+            result?.message || 'Không thực hiện được thao tác file.'
+          );
         }
 
         return result;
@@ -8081,6 +8093,10 @@ html, body {
 
       async syncPublicCatalogIfNeeded(patientEntries = []) {
         if (this.isPublicSession()) return;
+
+        // Chỉ admin/editor mới có quyền ghi congKhai. Viewer chỉ đọc dữ liệu,
+        // không được tự kích hoạt quy trình rebuild danh mục công khai.
+        if (!['admin', 'editor'].includes(state.currentRole)) return;
 
         const metaSnapshot = await get(
           ref(this.database, 'congKhai/_meta')
@@ -8951,27 +8967,6 @@ html, body {
             state.currentRole = access.role;
             showLoggedInState(user, access.role);
 
-            const forcePublicSync =
-              sessionStorage.getItem('hsba_force_public_sync') === '1';
-
-            if (
-              forcePublicSync &&
-              ['admin', 'editor'].includes(state.currentRole)
-            ) {
-              try {
-                await api.rebuildPublicCatalog();
-                sessionStorage.removeItem('hsba_force_public_sync');
-              } catch (publicSyncError) {
-                console.error(
-                  'Không khởi tạo được danh mục xem:',
-                  publicSyncError
-                );
-                showToast(
-                  'Đã đăng nhập nhưng chưa cập nhật được danh mục xem. Hãy bấm “Cập nhật danh mục xem”.',
-                  true
-                );
-              }
-            }
           }
 
           applyRoleUi();
@@ -9176,10 +9171,6 @@ html, body {
         authUpgradeInProgress = true;
 
         try {
-          // Đặt cờ trước khi đăng nhập để onAuthStateChanged nhận đúng yêu cầu
-          // đồng bộ danh mục công khai, không cần tải lại toàn bộ trang.
-          sessionStorage.setItem('hsba_force_public_sync', '1');
-
           const credential = await signInWithEmailAndPassword(
             firebaseAuth,
             email,
@@ -9191,7 +9182,6 @@ html, body {
           await credential.user.getIdToken(true);
           closeLoginDialog();
         } catch (error) {
-          sessionStorage.removeItem('hsba_force_public_sync');
           showAuthError(firebaseError(error).message);
         } finally {
           authUpgradeInProgress = false;
@@ -9215,10 +9205,6 @@ html, body {
             await signOut(firebaseAuth);
           }
 
-          // Đặt cờ trước khi mở Google để onAuthStateChanged xử lý ngay
-          // khi Firebase trả về tài khoản đã đăng nhập.
-          sessionStorage.setItem('hsba_force_public_sync', '1');
-
           const result = await signInWithPopup(
             firebaseAuth,
             googleProvider
@@ -9229,7 +9215,6 @@ html, body {
           await result.user.getIdToken(true);
           closeLoginDialog();
         } catch (error) {
-          sessionStorage.removeItem('hsba_force_public_sync');
           showAuthError(firebaseError(error).message);
         } finally {
           authUpgradeInProgress = false;
