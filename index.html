@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.08.09.2">
+  <meta name="version" content="2026.08.11.4">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -7466,58 +7466,93 @@ html, body {
       );
     }
 
-    async function readPatientObjects() {
-      const [patientSnapshot, booksSnapshot] = await Promise.all([
-        get(ref(firebaseDatabase, 'doiTuong')),
-        get(ref(firebaseDatabase, 'quyenHoSo'))
-      ]);
+    const firebaseDataCache = {
+      uid: '',
+      booksRoot: null,
+      storageStats: null
+    };
+
+    function resetPrivateDataCache() {
+      firebaseDataCache.uid = '';
+      firebaseDataCache.booksRoot = null;
+      firebaseDataCache.storageStats = null;
+    }
+
+    function ensurePrivateDataCacheOwner() {
+      const uid = String(firebaseAuth.currentUser?.uid || '');
+
+      if (!uid) {
+        throw new Error('Phiên chỉnh sửa đã hết hạn. Vui lòng đăng nhập lại.');
+      }
+
+      if (firebaseDataCache.uid !== uid) {
+        firebaseDataCache.uid = uid;
+        firebaseDataCache.booksRoot = null;
+        firebaseDataCache.storageStats = null;
+      }
+
+      return uid;
+    }
+
+    function invalidateStorageCache() {
+      firebaseDataCache.storageStats = null;
+      state.storageStatsLoaded = false;
+    }
+
+    async function readBooksRootCached(forceRefresh = false) {
+      ensurePrivateDataCacheOwner();
+
+      if (!forceRefresh && firebaseDataCache.booksRoot !== null) {
+        return firebaseDataCache.booksRoot;
+      }
+
+      const snapshot = await get(ref(firebaseDatabase, 'quyenHoSo'));
+      firebaseDataCache.booksRoot = snapshot.val() || {};
+      invalidateStorageCache();
+
+      return firebaseDataCache.booksRoot;
+    }
+
+    function cachedBooksForPatient(patientId) {
+      ensurePrivateDataCacheOwner();
+
+      if (firebaseDataCache.booksRoot === null) return null;
+      return firebaseDataCache.booksRoot[patientId] || {};
+    }
+
+    function patchBooksRootCache(oldPatientId, newPatientId, bookMap) {
+      if (firebaseDataCache.booksRoot !== null) {
+        const nextRoot = { ...firebaseDataCache.booksRoot };
+
+        if (oldPatientId) {
+          delete nextRoot[oldPatientId];
+        }
+
+        if (
+          newPatientId &&
+          bookMap &&
+          Object.values(bookMap).some(Boolean)
+        ) {
+          nextRoot[newPatientId] = bookMap;
+        }
+
+        firebaseDataCache.booksRoot = nextRoot;
+      }
+
+      invalidateStorageCache();
+    }
+
+    async function readPatientSummaries() {
+      const patientSnapshot = await get(
+        ref(firebaseDatabase, 'doiTuong')
+      );
       const value = patientSnapshot.val() || {};
-      const booksRoot = booksSnapshot.val() || {};
 
       return Object.entries(value)
-        .map(([id, sourcePatient]) => {
-          const patient = sourcePatient || {};
-          const bookMap = booksRoot[id] || {};
-          const books = Object.values(bookMap).filter(Boolean);
-          const normalizedBooks = books.map(book => ({
-            ...book,
-            normalizedStatus: normalizeRecordStatus(book.trangThai)
-          }));
-          const latest = [...normalizedBooks].sort((a, b) => {
-            const dateDifference = String(
-              b.ngayKetThuc || b.ngayBatDau || ''
-            ).localeCompare(String(a.ngayKetThuc || a.ngayBatDau || ''));
-            if (dateDifference) return dateDifference;
-            return Number(b.quyenSo || 0) - Number(a.quyenSo || 0);
-          })[0] || null;
-
-          return {
-            id,
-            patient: {
-              ...patient,
-              tongSoQuyen: books.length,
-              soQuyenHetQuyen: normalizedBooks.filter(
-                book => book.normalizedStatus === CONFIG.STATUS.HET_QUYEN
-              ).length,
-              soQuyenDaLuuKho: normalizedBooks.filter(
-                book => book.normalizedStatus === CONFIG.STATUS.HET_QUYEN
-              ).length,
-              soQuyenHoiGia: normalizedBooks.filter(
-                book => book.normalizedStatus === CONFIG.STATUS.HOI_GIA
-              ).length,
-              soQuyenTuVong: normalizedBooks.filter(
-                book => book.normalizedStatus === CONFIG.STATUS.TU_VONG
-              ).length,
-              soQuyenCoFile: books.filter(
-                book => String(book.fileDinhKem || '').trim()
-              ).length,
-              trangThaiHienTai:
-                latest?.normalizedStatus ||
-                normalizeRecordStatus(patient.trangThaiHienTai),
-              quyenHoSo: bookMap
-            }
-          };
-        })
+        .map(([id, sourcePatient]) => ({
+          id,
+          patient: sourcePatient || {}
+        }))
         .sort((a, b) => {
           const updatedDifference =
             (Number(b.patient.updatedAt) || 0) -
@@ -7646,8 +7681,16 @@ html, body {
     }
 
     async function readStorageStatistics() {
-      const snapshot = await get(ref(firebaseDatabase, 'quyenHoSo'));
-      return calculateStorageStatistics(snapshot.val() || {});
+      ensurePrivateDataCacheOwner();
+
+      if (firebaseDataCache.storageStats !== null) {
+        return firebaseDataCache.storageStats;
+      }
+
+      const booksRoot = await readBooksRootCached();
+      firebaseDataCache.storageStats = calculateStorageStatistics(booksRoot);
+
+      return firebaseDataCache.storageStats;
     }
 
     async function readPublicStorageStatistics() {
@@ -7928,6 +7971,12 @@ html, body {
           );
         }
 
+        if (!['admin', 'editor'].includes(state.currentRole)) {
+          throw new Error(
+            'Tài khoản hiện tại không có quyền cập nhật danh mục xem.'
+          );
+        }
+
         const currentUser = this.auth.currentUser;
         if (!currentUser) {
           throw new Error('Phiên chỉnh sửa đã hết hạn.');
@@ -7935,41 +7984,12 @@ html, body {
 
         await currentUser.getIdToken(true);
 
-        // Luôn lấy trực tiếp toàn bộ dữ liệu nguồn, tuyệt đối không dùng
-        // danh sách đang tìm kiếm/lọc trên giao diện.
-        const entries = await readPatientObjects();
-        let booksRoot = {};
-
-        try {
-          const booksSnapshot = await get(
-            ref(this.database, 'quyenHoSo')
-          );
-          booksRoot = booksSnapshot.val() || {};
-        } catch (error) {
-          console.warn(
-            'Không đọc được toàn bộ quyenHoSo; chuyển sang đọc từng hồ sơ:',
-            error
-          );
-
-          const bookResults = await Promise.all(
-            entries.map(async ({ id, patient }) => {
-              try {
-                const snapshot = await get(
-                  ref(this.database, `quyenHoSo/${id}`)
-                );
-                return [id, snapshot.val() || {}];
-              } catch (recordError) {
-                const soHoSo = String(patient?.soHoSo || id);
-                throw new Error(
-                  `Không đọc được quyển của hồ sơ ${soHoSo}. ` +
-                  `${recordError?.message || 'Permission denied'}`
-                );
-              }
-            })
-          );
-
-          booksRoot = Object.fromEntries(bookResults);
-        }
+        // Giai đoạn 4: danh sách hồ sơ lấy từ node doiTuong tóm tắt;
+        // chỉ đọc toàn bộ quyenHoSo một lần khi thực sự phải rebuild.
+        const entries = Array.isArray(patientEntries)
+          ? patientEntries
+          : await readPatientSummaries();
+        const booksRoot = await readBooksRootCached(true);
 
         const now = Date.now();
 
@@ -8094,26 +8114,20 @@ html, body {
       async syncPublicCatalogIfNeeded(patientEntries = []) {
         if (this.isPublicSession()) return;
 
-        // Chỉ admin/editor mới có quyền ghi congKhai. Viewer chỉ đọc dữ liệu,
-        // không được tự kích hoạt quy trình rebuild danh mục công khai.
+        // Chỉ admin/editor mới có quyền ghi congKhai.
         if (!['admin', 'editor'].includes(state.currentRole)) return;
 
         const metaSnapshot = await get(
           ref(this.database, 'congKhai/_meta')
         );
         const meta = metaSnapshot.val() || {};
-        const publicEntries = await readPublicCatalog();
-        const sourceUpdatedAt = patientEntries.reduce(
-          (maximum, item) =>
-            Math.max(maximum, Number(item.patient?.updatedAt) || 0),
-          0
-        );
-
+        // Không tải toàn bộ congKhai/hoSo chỉ để kiểm tra đồng bộ.
+        // Các thao tác thêm/sửa/xóa hiện đã cập nhật dữ liệu chính và congKhai
+        // trong cùng luồng ghi; vì vậy bootstrap chỉ kiểm tra schema + số lượng.
+        // Nút “Cập nhật danh mục xem” vẫn là cơ chế sửa chữa thủ công khi cần.
         const needsSync =
           Number(meta.schemaVersion) !== CONFIG.PUBLIC_SCHEMA_VERSION ||
-          Number(meta.patientCount) !== patientEntries.length ||
-          publicEntries.length !== patientEntries.length ||
-          Number(meta.sourceUpdatedAt) < sourceUpdatedAt;
+          Number(meta.patientCount) !== patientEntries.length;
 
         if (needsSync) {
           await this.rebuildPublicCatalog(patientEntries);
@@ -8202,11 +8216,12 @@ html, body {
       }
 
       async bootstrap() {
-        const patientEntries = this.isPublicSession()
+        const publicSession = this.isPublicSession();
+        const patientEntries = publicSession
           ? await readPublicCatalog()
-          : await readPatientObjects();
+          : await readPatientSummaries();
 
-        if (!this.isPublicSession()) {
+        if (!publicSession) {
           try {
             await this.syncPublicCatalogIfNeeded(patientEntries);
           } catch (syncError) {
@@ -8252,13 +8267,22 @@ html, body {
         }
 
         const patient = patientSnapshot.val() || {};
-        const booksSnapshot = publicSession
-          ? null
-          : await get(ref(this.database, `quyenHoSo/${id}`));
+        let value = {};
 
-        const value = publicSession
-          ? patient.quyenHoSo || {}
-          : booksSnapshot.val() || {};
+        if (publicSession) {
+          value = patient.quyenHoSo || {};
+        } else {
+          const cachedBookMap = cachedBooksForPatient(id);
+
+          if (cachedBookMap !== null) {
+            value = cachedBookMap;
+          } else {
+            const booksSnapshot = await get(
+              ref(this.database, `quyenHoSo/${id}`)
+            );
+            value = booksSnapshot.val() || {};
+          }
+        }
 
         const books = Object.values(value)
           .map(book => bookToUi(patient, book))
@@ -8287,7 +8311,7 @@ html, body {
       async getStats() {
         const patientEntries = this.isPublicSession()
           ? await readPublicCatalog()
-          : await readPatientObjects();
+          : await readPatientSummaries();
 
         return {
           success: true,
@@ -8521,6 +8545,12 @@ html, body {
 
           await update(ref(this.database), updates);
 
+          patchBooksRootCache(
+            oldId,
+            newId,
+            bookCount > 0 ? updatedBooks : null
+          );
+
           return {
             success: true,
             message:
@@ -8603,6 +8633,7 @@ html, body {
 
           await update(ref(this.database), updates);
           await this.updatePublicMeta(-1, Date.now());
+          patchBooksRootCache(id, null, null);
 
           return {
             success: true,
@@ -8843,6 +8874,8 @@ html, body {
           }
 
           await update(ref(this.database), updates);
+          patchBooksRootCache(id, id, nextBookMap);
+
           return {
             success: true,
             message: mode === 'edit' ? `Đã cập nhật quyển ${quyenSo}.` : `Đã lưu quyển ${quyenSo}.`,
@@ -8959,9 +8992,11 @@ html, body {
 
         try {
           if (publicMode) {
+            resetPrivateDataCache();
             state.currentRole = 'public';
             showPublicState();
           } else {
+            ensurePrivateDataCacheOwner();
             const access = await resolveUserAccess(user);
             accessResolved = true;
             state.currentRole = access.role;
@@ -10578,10 +10613,16 @@ html, body {
 
     async function refreshPatientSummariesSilently() {
       try {
-        const result = await api.get('bootstrap');
+        const patientEntries = isPublicSession()
+          ? await readPublicCatalog()
+          : await readPatientSummaries();
 
-        state.allPatients = result.data.patients || [];
-        state.stats = result.data.stats || {};
+        state.allPatients = patientEntries.map(({ id, patient }) =>
+          patientToUi(id, patient)
+        );
+        state.stats = calculateStats(
+          patientEntries.map(item => item.patient)
+        );
 
         searchPatients();
         renderStats();
@@ -10876,23 +10917,36 @@ html, body {
 
     async function collectExcelReportRows(patients) {
       const rows = [];
+      const booksRoot = await readBooksRootCached();
 
-      for (let index = 0; index < patients.length; index += 1) {
-        const patient = patients[index];
-        const soHoSo = patient['SỐ HỒ SƠ'];
-        const result = await api.get('layChiTietHoSo', { soHoSo });
-        const books = result.data || [];
+      patients.forEach(patient => {
+        const patientId =
+          patient['_FIREBASE_ID'] ||
+          firebaseKey(patient['SỐ HỒ SƠ']);
+        const rawPatient = {
+          soHoSo: patient['SỐ HỒ SƠ'] || '',
+          hoTen: patient['HỌ VÀ TÊN'] || '',
+          namSinh: patient['NĂM SINH'] || '',
+          gioiTinh: patient['GIỚI TÍNH'] || ''
+        };
+        const books = Object.values(booksRoot[patientId] || {})
+          .filter(Boolean)
+          .map(book => bookToUi(rawPatient, book))
+          .sort(
+            (a, b) =>
+              Number(a['QUYỂN SỐ']) - Number(b['QUYỂN SỐ'])
+          );
 
         if (!books.length) {
           rows.push({
             patient,
             book: null
           });
-          continue;
+          return;
         }
 
         books.forEach(book => rows.push({ patient, book }));
-      }
+      });
 
       return rows;
     }
