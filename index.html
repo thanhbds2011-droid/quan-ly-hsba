@@ -6791,12 +6791,13 @@ html, body {
 
   <script type="module">
     const HSBA_RUNTIME_ALLOWED =
-      window.location.protocol === 'https:' &&
-      (
-        window.location.hostname.endsWith('.github.io') ||
-        window.location.hostname === 'localhost' ||
-        window.location.hostname === '127.0.0.1'
-      );
+  window.location.protocol === 'https:' &&
+  (
+    window.location.hostname.endsWith('.github.io') ||
+    window.location.hostname === 'quan-ly-hsba.vercel.app' ||
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1'
+  );
 
     if (!HSBA_RUNTIME_ALLOWED) {
       document.addEventListener('DOMContentLoaded', () => {
