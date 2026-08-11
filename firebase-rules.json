@@ -15,7 +15,17 @@
     },
     "congKhai": {
       ".read": true,
-      ".write": "auth != null && auth.token.email != null && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && (root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin' || root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor')))"
+      ".write": "auth != null && auth.token.email != null && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && (root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin' || root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor')))",
+      "hoSo": {
+        ".indexOn": [
+          "soHoSo",
+          "hoTenTimKiem",
+          "namSinh",
+          "gioiTinh",
+          "trangThaiHienTai",
+          "updatedAt"
+        ]
+      }
     },
     "doiTuong": {
       ".read": "auth != null && (auth.token.email == 'thanhbds2011@gmail.com' || root.child('phanQuyen').child(auth.uid).child('active').val() == true)",
