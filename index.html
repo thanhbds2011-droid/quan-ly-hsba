@@ -6473,7 +6473,7 @@ html, body {
 
         <div class="form-field">
           <label for="patientHoTen">Họ và tên</label>
-          <input id="patientHoTen" name="hoTen" required maxlength="150" autocomplete="off" style="text-transform: uppercase;">
+          <input id="patientHoTen" name="hoTen" required maxlength="150" autocomplete="off">
           <small class="field-hint">Nhập đầy đủ họ và tên theo hồ sơ giấy.</small>
         </div>
 
@@ -6962,6 +6962,19 @@ html, body {
       return String(value || '').trim().toLocaleUpperCase('vi-VN');
     }
 
+    function formatVietnamesePersonName(value) {
+      const normalized = String(value || '')
+        .trim()
+        .replace(/\s+/g, ' ')
+        .toLocaleLowerCase('vi-VN');
+
+      return normalized.replace(
+        /(^|[\s'-])(\p{L})/gu,
+        (_, separator, letter) =>
+          separator + letter.toLocaleUpperCase('vi-VN')
+      );
+    }
+
     function formatMedicalRecordNumber(value) {
       const compact = uppercaseVietnamese(value)
         .replace(/[^A-Z0-9]/g, '')
@@ -7186,7 +7199,7 @@ html, body {
       return {
         '_FIREBASE_ID': id,
         'SỐ HỒ SƠ': patient.soHoSo || '',
-        'HỌ VÀ TÊN': patient.hoTen || '',
+        'HỌ VÀ TÊN': formatVietnamesePersonName(patient.hoTen || ''),
         'NĂM SINH': patient.namSinh || '',
         'GIỚI TÍNH': patient.gioiTinh || '',
         'TỔNG SỐ QUYỂN': Number(patient.tongSoQuyen) || 0,
@@ -7206,7 +7219,7 @@ html, body {
       const storage = parseStorageLocation(book);
       return {
         'SỐ HỒ SƠ': patient.soHoSo || '',
-        'HỌ VÀ TÊN': patient.hoTen || '',
+        'HỌ VÀ TÊN': formatVietnamesePersonName(patient.hoTen || ''),
         'NĂM SINH': patient.namSinh || '',
         'GIỚI TÍNH': patient.gioiTinh || '',
         'FILE ĐÍNH KÈM': book.fileDinhKem || '',
@@ -7236,7 +7249,7 @@ html, body {
       const storage = parseStorageLocation(item);
       return {
         'SỐ HỒ SƠ': item.soHoSo || '',
-        'HỌ VÀ TÊN': item.hoTen || '',
+        'HỌ VÀ TÊN': formatVietnamesePersonName(item.hoTen || ''),
         'NĂM SINH': item.namSinh || '',
         'GIỚI TÍNH': item.gioiTinh || '',
         'QUYỂN SỐ': Number(item.quyenSo) || 0,
@@ -7347,7 +7360,7 @@ html, body {
 
       return {
         soHoSo: String(patient.soHoSo || ''),
-        hoTen: String(patient.hoTen || ''),
+        hoTen: formatVietnamesePersonName(patient.hoTen || ''),
         hoTenTimKiem: String(
           patient.hoTenTimKiem || normalize(patient.hoTen || '')
         ),
@@ -8567,7 +8580,7 @@ html, body {
 
       async addPatient(payload) {
         const soHoSo = formatMedicalRecordNumber(payload.soHoSo);
-        const hoTen = uppercaseVietnamese(payload.hoTen);
+        const hoTen = formatVietnamesePersonName(payload.hoTen);
         const namSinh = Number(payload.namSinh);
         const gioiTinh = String(payload.gioiTinh || '').trim();
         const currentYear = new Date().getFullYear();
@@ -8638,7 +8651,7 @@ html, body {
           payload.originalSoHoSo || payload.soHoSo
         );
         const soHoSo = formatMedicalRecordNumber(payload.soHoSo);
-        const hoTen = uppercaseVietnamese(payload.hoTen);
+        const hoTen = formatVietnamesePersonName(payload.hoTen);
         const namSinh = Number(payload.namSinh);
         const gioiTinh = String(payload.gioiTinh || '').trim();
         const currentYear = new Date().getFullYear();
@@ -9727,7 +9740,7 @@ html, body {
       });
 
       $('#patientHoTen')?.addEventListener('blur', event => {
-        event.currentTarget.value = uppercaseVietnamese(event.currentTarget.value);
+        event.currentTarget.value = formatVietnamesePersonName(event.currentTarget.value);
       });
       $('#patientForm').addEventListener('submit', submitPatient);
       $('#bookForm').addEventListener('submit', submitBook);
@@ -10712,7 +10725,7 @@ html, body {
 
       if (isEdit && patient) {
         form.elements.soHoSo.value = formatMedicalRecordNumber(patient['SỐ HỒ SƠ']);
-        form.elements.hoTen.value = uppercaseVietnamese(patient['HỌ VÀ TÊN']);
+        form.elements.hoTen.value = formatVietnamesePersonName(patient['HỌ VÀ TÊN']);
         form.elements.namSinh.value = patient['NĂM SINH'] || '';
         form.elements.gioiTinh.value = patient['GIỚI TÍNH'] || '';
       }
@@ -10875,7 +10888,7 @@ html, body {
       submitButton.textContent = 'Đang lưu...';
       const data = Object.fromEntries(new FormData(form).entries());
       data.soHoSo = formatMedicalRecordNumber(data.soHoSo);
-      data.hoTen = uppercaseVietnamese(data.hoTen);
+      data.hoTen = formatVietnamesePersonName(data.hoTen);
       data.originalSoHoSo = formatMedicalRecordNumber(
         data.originalSoHoSo || data.soHoSo
       );
