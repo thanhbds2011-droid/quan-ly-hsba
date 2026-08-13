@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.08.13.2">
+  <meta name="version" content="2026.08.13.4">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -6174,7 +6174,7 @@ html, body {
 
 
 
-/* ===== 2026.08.13.1: QUẢN TRỊ TÀI KHOẢN HSBA ===== */
+/* ===== 2026.08.13.4: QUẢN TRỊ TÀI KHOẢN HSBA - ADMIN TOÀN QUYỀN ===== */
 .nav-count-badge {
   margin-left: auto;
   min-width: 22px;
@@ -6497,7 +6497,7 @@ html, body {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.08.13.1</small>
+        <small>Phiên bản 2026.08.13.4</small>
       </div>
     </aside>
 
@@ -6697,7 +6697,7 @@ html, body {
             <div class="account-admin-title">
               <div>
                 <span class="account-admin-kicker">YÊU CẦU TRUY CẬP</span>
-                <h2>Đang chờ duyệt</h2>
+                <h2>Chưa được cấp quyền</h2>
               </div>
               <span id="pendingAccountCount" class="account-count-pill">0</span>
             </div>
@@ -9071,8 +9071,14 @@ html, body {
             [`khoaThaoTac/${oldId}`]: null
           };
 
+          // Không ghi cả nhánh cha quyenHoSo/{patientId} vì Rules chỉ cấp
+          // quyền ghi tại từng quyenHoSo/{patientId}/{bookId}. Ghi từng quyển
+          // cũng giữ nguyên cơ chế khóa chống chỉnh sửa đồng thời.
           if (bookCount > 0) {
-            updates[`quyenHoSo/${newId}`] = updatedBooks;
+            Object.entries(updatedBooks).forEach(([bookId, book]) => {
+              if (!book) return;
+              updates[`quyenHoSo/${newId}/${bookId}`] = book;
+            });
           }
 
           if (updatedDeath) {
@@ -9081,7 +9087,10 @@ html, body {
 
           if (oldId !== newId) {
             updates[`doiTuong/${oldId}`] = null;
-            updates[`quyenHoSo/${oldId}`] = null;
+            Object.entries(bookMap).forEach(([bookId, book]) => {
+              if (!book) return;
+              updates[`quyenHoSo/${oldId}/${bookId}`] = null;
+            });
             updates[`hoSoTuVong/${oldId}`] = null;
             updates[`congKhai/hoSo/${oldId}`] = null;
             updates[`khoaThaoTac/${newId}`] = null;
@@ -9158,7 +9167,6 @@ html, body {
           const logKey = push(ref(this.database, 'nhatKy')).key;
           const updates = {
             [`doiTuong/${id}`]: null,
-            [`quyenHoSo/${id}`]: null,
             [`hoSoTuVong/${id}`]: null,
             [`congKhai/hoSo/${id}`]: null,
             [`khoaThaoTac/${id}`]: null,
@@ -9174,6 +9182,15 @@ html, body {
               }
             )
           };
+
+          // Rules chỉ cho phép ghi/xóa tại từng bookId. Vì vậy:
+          // - Admin: có quyển thì xóa lần lượt toàn bộ quyển rồi xóa hồ sơ.
+          // - Nhập liệu: đã có quyển đã bị chặn ở trên; chưa có quyển thì
+          //   không phát sinh write vào nhánh quyenHoSo nên vẫn xóa được.
+          Object.entries(bookMap).forEach(([bookId, book]) => {
+            if (!book) return;
+            updates[`quyenHoSo/${id}/${bookId}`] = null;
+          });
 
           await update(ref(this.database), updates);
           await this.updatePublicMeta(-1, Date.now());
@@ -11480,37 +11497,44 @@ html, body {
       if (state.currentRole !== 'admin') return;
 
       const pending = state.accountAdmin.requests.filter(item => item.status === 'pending');
+      const unapproved = state.accountAdmin.requests.filter(item => item.status !== 'approved');
       const active = state.accountAdmin.permissions.filter(item => item.active === true);
 
-      $('#pendingAccountCount').textContent = String(pending.length);
+      $('#pendingAccountCount').textContent = String(unapproved.length);
       $('#activeAccountCount').textContent = String(active.length);
       $('#pendingAccountBadge').textContent = String(pending.length);
       $('#pendingAccountBadge').classList.toggle('hidden', pending.length === 0);
 
-      $('#accountRequestsList').innerHTML = pending.length
-        ? pending.map(request => `
+      $('#accountRequestsList').innerHTML = unapproved.length
+        ? unapproved.map(request => {
+            const isPending = request.status === 'pending';
+            const statusText = isPending ? 'Đang chờ duyệt' : 'Đã từ chối';
+            return `
             <article class="account-admin-card" data-request-uid="${escapeAttr(request.uid)}">
               <div class="account-admin-main">
                 <div class="account-avatar">${escapeHtml((request.displayName || request.email || '?').trim().charAt(0).toUpperCase() || '?')}</div>
                 <div class="account-admin-info">
                   <strong>${escapeHtml(request.displayName || 'Chưa có tên hiển thị')}</strong>
                   <span>${escapeHtml(request.email || '')}</span>
-                  <small>Gửi yêu cầu: ${escapeHtml(accountTimeLabel(request.requestedAt))}</small>
+                  <small>${escapeHtml(statusText)} · Gửi yêu cầu: ${escapeHtml(accountTimeLabel(request.requestedAt))}</small>
                 </div>
               </div>
               <div class="account-admin-actions">
                 <select class="account-role-select" aria-label="Vai trò cấp cho tài khoản">
                   ${accountRoleOptions('editor')}
                 </select>
-                <button class="btn primary small" type="button" data-account-action="approve">Duyệt</button>
-                <button class="btn small" type="button" data-account-action="reject">Từ chối</button>
+                <button class="btn primary small" type="button" data-account-action="approve">${isPending ? 'Duyệt' : 'Duyệt lại'}</button>
+                ${isPending ? '<button class="btn small" type="button" data-account-action="reject">Từ chối</button>' : ''}
+                <button class="btn small danger-outline" type="button" data-account-action="delete-request" title="Xóa yêu cầu truy cập HSBA">Xóa yêu cầu</button>
               </div>
-            </article>`).join('')
-        : '<div class="account-admin-empty">Không có yêu cầu nào đang chờ duyệt.</div>';
+            </article>`;
+          }).join('')
+        : '<div class="account-admin-empty">Không có tài khoản nào đang chờ duyệt hoặc đã bị từ chối.</div>';
 
       $('#accountPermissionsList').innerHTML = state.accountAdmin.permissions.length
         ? state.accountAdmin.permissions.map(account => {
-            const isCurrentAdmin = account.uid === firebaseAuth.currentUser?.uid;
+            const isCurrentAccount = account.uid === firebaseAuth.currentUser?.uid;
+            const accountNote = isCurrentAccount ? ' · Tài khoản đang đăng nhập' : '';
             return `
               <article class="account-admin-card" data-permission-uid="${escapeAttr(account.uid)}">
                 <div class="account-admin-main">
@@ -11518,17 +11542,18 @@ html, body {
                   <div class="account-admin-info">
                     <strong>${escapeHtml(account.displayName || account.email || 'Tài khoản')}</strong>
                     <span>${escapeHtml(account.email || '')}</span>
-                    <small>${account.active === true ? 'Đang hoạt động' : 'Đã khóa'} · ${escapeHtml(roleLabel(account.role))}</small>
+                    <small>${account.active === true ? 'Đang hoạt động' : 'Đã khóa'} · ${escapeHtml(roleLabel(account.role))}${escapeHtml(accountNote)}</small>
                   </div>
                 </div>
                 <div class="account-admin-actions">
-                  <select class="account-role-select" ${isCurrentAdmin ? 'disabled title="Không tự đổi vai trò tài khoản quản trị đang đăng nhập"' : ''}>
+                  <select class="account-role-select" aria-label="Vai trò tài khoản ${escapeAttr(account.email || '')}">
                     ${accountRoleOptions(String(account.role || 'editor'))}
                   </select>
-                  <button class="btn small" type="button" data-account-action="save-role" ${isCurrentAdmin ? 'disabled' : ''}>Lưu quyền</button>
-                  <button class="btn small ${account.active === true ? 'danger-outline' : 'primary'}" type="button" data-account-action="toggle-active" ${isCurrentAdmin ? 'disabled title="Không tự khóa tài khoản quản trị đang đăng nhập"' : ''}>
+                  <button class="btn small" type="button" data-account-action="save-role">Lưu quyền</button>
+                  <button class="btn small ${account.active === true ? 'danger-outline' : 'primary'}" type="button" data-account-action="toggle-active">
                     ${account.active === true ? 'Khóa' : 'Mở khóa'}
                   </button>
+                  <button class="btn small danger-outline" type="button" data-account-action="delete-account" title="Xóa quyền và yêu cầu đăng ký HSBA">Xóa tài khoản</button>
                 </div>
               </article>`;
           }).join('')
@@ -11540,7 +11565,9 @@ html, body {
       if (!['admin', 'editor', 'viewer'].includes(role)) throw new Error('Vai trò không hợp lệ.');
 
       const request = state.accountAdmin.requests.find(item => item.uid === uid);
-      if (!request || request.status !== 'pending') throw new Error('Yêu cầu không còn ở trạng thái chờ duyệt.');
+      if (!request || !['pending', 'rejected'].includes(String(request.status || ''))) {
+        throw new Error('Yêu cầu không còn ở trạng thái có thể duyệt.');
+      }
 
       const existing = state.accountAdmin.permissions.find(item => item.uid === uid) || {};
       const now = Date.now();
@@ -11602,22 +11629,88 @@ html, body {
       if (state.currentRole !== 'admin') throw new Error('Chỉ quản trị viên mới được thay đổi quyền.');
       const account = state.accountAdmin.permissions.find(item => item.uid === uid);
       if (!account) throw new Error('Không tìm thấy tài khoản cần cập nhật.');
-      if (uid === firebaseAuth.currentUser?.uid) throw new Error('Không tự thay đổi hoặc khóa tài khoản quản trị đang đăng nhập.');
 
       const nextRole = String(patch.role || account.role || '').trim().toLowerCase();
       if (!['admin', 'editor', 'viewer'].includes(nextRole)) throw new Error('Vai trò không hợp lệ.');
 
+      const nextActive = patch.active === undefined
+        ? account.active === true
+        : patch.active === true;
+      const isCurrentAccount = uid === firebaseAuth.currentUser?.uid;
+
+      if (isCurrentAccount && (nextRole !== 'admin' || nextActive !== true)) {
+        const confirmed = window.confirm(
+          'Bạn đang thay đổi chính tài khoản quản trị đang đăng nhập. Sau thao tác này bạn có thể mất quyền quản trị HSBA ngay lập tức. Tiếp tục?'
+        );
+        if (!confirmed) return false;
+      }
+
       await update(ref(firebaseDatabase, `phanQuyen/${uid}`), {
         role: nextRole,
-        active: patch.active === undefined ? account.active === true : patch.active === true,
+        active: nextActive,
         updatedAt: Date.now(),
         approvedByUid: firebaseAuth.currentUser?.uid || '',
         approvedByEmail: firebaseAuth.currentUser?.email || ''
       });
 
+      if (isCurrentAccount) {
+        showToast('Đã cập nhật quyền tài khoản đang đăng nhập. Hệ thống sẽ tải lại để áp dụng quyền mới.');
+        setTimeout(() => window.location.reload(), 500);
+        return true;
+      }
+
       state.accountAdmin.loaded = false;
       await refreshAccountAdministration(true);
       showToast('Đã cập nhật quyền tài khoản.');
+      return true;
+    }
+
+    async function deleteHsbaAccessRequest(uid) {
+      if (state.currentRole !== 'admin') throw new Error('Chỉ quản trị viên mới được xóa yêu cầu tài khoản.');
+      const request = state.accountAdmin.requests.find(item => item.uid === uid);
+      if (!request) throw new Error('Không tìm thấy yêu cầu cần xóa.');
+
+      const confirmed = window.confirm(
+        `Xóa yêu cầu truy cập HSBA của ${request.email || 'tài khoản này'}?\n\nNgười dùng có thể đăng nhập Google lại để gửi một yêu cầu mới.`
+      );
+      if (!confirmed) return false;
+
+      await remove(ref(firebaseDatabase, `${CONFIG.ACCESS_REQUEST_PATH}/${uid}`));
+      state.accountAdmin.loaded = false;
+      await refreshAccountAdministration(true);
+      showToast(`Đã xóa yêu cầu của ${request.email || 'tài khoản'}.`);
+      return true;
+    }
+
+    async function deleteHsbaAccount(uid) {
+      if (state.currentRole !== 'admin') throw new Error('Chỉ quản trị viên mới được xóa tài khoản HSBA.');
+      const account = state.accountAdmin.permissions.find(item => item.uid === uid);
+      if (!account) throw new Error('Không tìm thấy tài khoản cần xóa.');
+
+      const isCurrentAccount = uid === firebaseAuth.currentUser?.uid;
+      const selfWarning = isCurrentAccount
+        ? '\n\nĐây là chính tài khoản đang đăng nhập. Sau thao tác, quyền hiện tại có thể thay đổi ngay.'
+        : '';
+      const confirmed = window.confirm(
+        `Xóa tài khoản HSBA của ${account.email || 'người dùng này'}?\n\nThao tác sẽ xóa quyền HSBA và yêu cầu đăng ký HSBA của UID này. Tài khoản Google/Firebase Authentication và quyền ở các ứng dụng khác KHÔNG bị xóa.${selfWarning}`
+      );
+      if (!confirmed) return false;
+
+      await update(ref(firebaseDatabase), {
+        [`phanQuyen/${uid}`]: null,
+        [`${CONFIG.ACCESS_REQUEST_PATH}/${uid}`]: null
+      });
+
+      if (isCurrentAccount) {
+        showToast('Đã xóa quyền HSBA của tài khoản đang đăng nhập. Hệ thống sẽ tải lại.');
+        setTimeout(() => window.location.reload(), 500);
+        return true;
+      }
+
+      state.accountAdmin.loaded = false;
+      await refreshAccountAdministration(true);
+      showToast(`Đã xóa tài khoản HSBA của ${account.email || 'người dùng'}.`);
+      return true;
     }
 
     async function handleAccountRequestAction(event) {
@@ -11635,6 +11728,8 @@ html, body {
             await approveHsbaAccess(uid, role);
           } else if (button.dataset.accountAction === 'reject') {
             await rejectHsbaAccess(uid);
+          } else if (button.dataset.accountAction === 'delete-request') {
+            await deleteHsbaAccessRequest(uid);
           }
         });
       } catch (error) {
@@ -11662,6 +11757,8 @@ html, body {
             await updateHsbaPermission(uid, { role });
           } else if (button.dataset.accountAction === 'toggle-active') {
             await updateHsbaPermission(uid, { role, active: account.active !== true });
+          } else if (button.dataset.accountAction === 'delete-account') {
+            await deleteHsbaAccount(uid);
           }
         });
       } catch (error) {
@@ -12495,7 +12592,7 @@ html, body {
     }
     }
   </script>
-  <div class="build-version" aria-hidden="true">2026.08.13.1</div>
+  <div class="build-version" aria-hidden="true">2026.08.13.4</div>
 
 </body>
 </html>
