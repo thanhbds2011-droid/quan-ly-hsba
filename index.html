@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#a9255e">
+  <meta name="theme-color" content="#9f1d2d">
   <meta name="description" content="Ứng dụng quản lý hồ sơ bệnh án">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.08.13.4">
+  <meta name="version" content="2026.08.13.5">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -24,25 +24,25 @@
 
 <style>
     :root {
-      --primary: #a9255e;
-      --primary-2: #d34f82;
-      --primary-3: #721740;
-      --primary-soft: #fbe5ed;
-      --success: #1f9d68;
-      --success-soft: #eaf9f1;
-      --danger: #b4233d;
-      --danger-soft: #fff0f2;
-      --warning: #c98514;
+      --primary: #9f1d2d;
+      --primary-2: #c12b39;
+      --primary-3: #6f1520;
+      --primary-soft: #f7ecee;
+      --success: #1f8a5b;
+      --success-soft: #edf8f2;
+      --danger: #b42318;
+      --danger-soft: #fff1ef;
+      --warning: #a56612;
       --warning-soft: #fff8e8;
-      --accent: #be326b;
-      --accent-soft: #fff5f8;
-      --text: #35232b;
-      --muted: #78666e;
-      --line: #efdce4;
+      --accent: #8c1825;
+      --accent-soft: #faf2f3;
+      --text: #2f2426;
+      --muted: #746367;
+      --line: #eadcdf;
       --surface: #ffffff;
-      --bg: #fdf7f9;
-      --shadow: 0 16px 38px rgba(101, 31, 63, .10);
-      --shadow-soft: 0 8px 24px rgba(101, 31, 63, .06);
+      --bg: #faf8f7;
+      --shadow: 0 16px 38px rgba(111, 21, 32, .10);
+      --shadow-soft: 0 8px 24px rgba(111, 21, 32, .06);
       --radius: 18px;
       --sidebar-width: 270px;
     }
@@ -59,9 +59,9 @@
       margin: 0;
       min-height: 100vh;
       background:
-        radial-gradient(circle at 12% 0%, rgba(211,79,130,.14), transparent 30rem),
-        radial-gradient(circle at 95% 12%, rgba(169,37,94,.10), transparent 26rem),
-        linear-gradient(180deg, #fff9fb 0%, var(--bg) 100%);
+        radial-gradient(circle at 12% 0%, rgba(159,29,45,.08), transparent 30rem),
+        radial-gradient(circle at 95% 12%, rgba(111,21,32,.055), transparent 26rem),
+        linear-gradient(180deg, #fffdfc 0%, var(--bg) 100%);
     }
 
     button, input, select, textarea { font: inherit; }
@@ -383,7 +383,7 @@
       font-size: 13px;
     }
 
-    .patient-line strong { color: #29465d; }
+    .patient-line strong { color: #3b2d30; }
 
     .badges {
       display: flex;
@@ -797,46 +797,46 @@
       .stats-grid { grid-template-columns: 1fr 1fr; }
     }
   
-    /* ===== GIAO DIỆN HIỆN ĐẠI, TƯƠI SÁNG ===== */
-    .topbar { background: rgba(255,255,255,.94); box-shadow: 0 5px 18px rgba(42,106,102,.05); }
-    .top-title { color: #27434a; }
-    .brand-icon { background: linear-gradient(145deg,var(--primary),var(--primary-2)); box-shadow: 0 12px 28px rgba(18,166,166,.24); }
-    .nav-btn.active { background: linear-gradient(135deg,#e8fbf7,#f4fffd); border-color:#ccefe9; color:var(--primary-3); box-shadow: inset 3px 0 0 var(--primary); }
-    .nav-btn:hover { background:#f5fcfa; border-color:#dcefeb; }
-    .rule { background:linear-gradient(145deg,#fffaf0,#fff4df); border-color:#f5dfad; color:#78551a; }
-    .page-head h1 { color:#24404a; }
-    .btn.primary { background:linear-gradient(135deg,var(--primary),var(--primary-2)); box-shadow:0 10px 24px rgba(18,166,166,.22); }
-    .btn.primary:hover:not([disabled]) { box-shadow:0 13px 28px rgba(18,166,166,.27); }
-    .search-panel { border-color:#dbece8; background:rgba(255,255,255,.97); }
-    .chip { background:linear-gradient(135deg,#eafbf8,#f3fffd); border-color:#d2efea; color:var(--primary-3); }
+    /* ===== 2026.08.13.5 - CHỦ ĐỀ ĐỎ ĐÔ CHUYÊN NGHIỆP ===== */
+    .topbar { background: rgba(255,255,255,.96); box-shadow: 0 5px 18px rgba(111,21,32,.045); }
+    .top-title { color: #3a292c; }
+    .brand-icon { background: linear-gradient(145deg,var(--primary),var(--primary-2)); box-shadow: 0 12px 28px rgba(159,29,45,.20); }
+    .nav-btn.active { background: linear-gradient(135deg,#f8f0f1,#fdf9f9); border-color:#ead6d9; color:var(--primary-3); box-shadow: inset 3px 0 0 var(--primary); }
+    .nav-btn:hover { background:#fbf7f7; border-color:#eee2e4; }
+    .rule { background:linear-gradient(145deg,#fffaf0,#fff6e8); border-color:#f0deb4; color:#76561f; }
+    .page-head h1 { color:#342529; }
+    .btn.primary { background:linear-gradient(135deg,var(--primary),var(--primary-2)); box-shadow:0 10px 24px rgba(159,29,45,.18); }
+    .btn.primary:hover:not([disabled]) { box-shadow:0 13px 28px rgba(159,29,45,.23); }
+    .search-panel { border-color:#e9dddf; background:rgba(255,255,255,.98); }
+    .chip { background:linear-gradient(135deg,#f8f1f2,#fdf9f9); border-color:#eadadd; color:var(--primary-3); }
     .patient-card::before { background:linear-gradient(180deg,var(--primary),var(--accent)); }
-    .avatar { background:linear-gradient(145deg,#e7fbf7,#d9f4ef); color:var(--primary-3); }
-    .patient-card:hover { border-color:#b8e2dc; box-shadow:0 16px 34px rgba(30,104,101,.12); }
-    .detail-card { background:linear-gradient(135deg,rgba(232,251,247,.98),rgba(255,255,255,.98)); border-color:#cfeae5; }
+    .avatar { background:linear-gradient(145deg,#f8eeee,#f2e2e4); color:var(--primary-3); }
+    .patient-card:hover { border-color:#dec4c8; box-shadow:0 16px 34px rgba(111,21,32,.10); }
+    .detail-card { background:linear-gradient(135deg,rgba(252,247,247,.99),rgba(255,255,255,.99)); border-color:#e7d7da; }
     .detail-card::before { background:linear-gradient(180deg,var(--primary),var(--accent)); }
-    .detail-avatar { background:linear-gradient(145deg,var(--primary),var(--primary-2)); box-shadow:0 12px 26px rgba(18,166,166,.24); }
+    .detail-avatar { background:linear-gradient(145deg,var(--primary),var(--primary-2)); box-shadow:0 12px 26px rgba(159,29,45,.20); }
     .badge.open { background:var(--success-soft); color:var(--success); }
     .badge.closed { background:var(--primary-soft); color:var(--primary-3); }
     .badge.death { background:var(--danger-soft); color:var(--danger); }
-    .death-overview { background:linear-gradient(135deg,#fff4ef,#fffaf8); border-color:#ffd8cd; }
-    .death-count { background:linear-gradient(145deg,var(--danger),#f07a67); box-shadow:0 10px 24px rgba(224,90,71,.20); }
-    .stat-card { position:relative; overflow:hidden; min-height:136px; border-color:#dbece8; background:linear-gradient(145deg,#fff,#fbfefd); transition:transform .16s ease,box-shadow .16s ease; }
+    .death-overview { background:linear-gradient(135deg,#fff6f3,#fffaf8); border-color:#f1d4cc; }
+    .death-count { background:linear-gradient(145deg,var(--danger),#d94a3c); box-shadow:0 10px 24px rgba(180,35,24,.18); }
+    .stat-card { position:relative; overflow:hidden; min-height:136px; border-color:#e9dddf; background:linear-gradient(145deg,#fff,#fdfbfb); transition:transform .16s ease,box-shadow .16s ease; }
     .stat-card:hover { transform:translateY(-2px); box-shadow:var(--shadow); }
-    .stat-card::after { content:""; position:absolute; right:-18px; bottom:-22px; width:92px; height:92px; border-radius:50%; background:linear-gradient(135deg,rgba(54,194,180,.12),rgba(255,138,101,.08)); }
+    .stat-card::after { content:""; position:absolute; right:-18px; bottom:-22px; width:92px; height:92px; border-radius:50%; background:linear-gradient(135deg,rgba(159,29,45,.07),rgba(111,21,32,.035)); }
     .stat-card strong { color:var(--primary-3); }
-    th { background:#f5fbfa; color:#5d747d; }
-    tbody tr:hover { background:#f8fdfc; }
-    .loading { background:linear-gradient(135deg,rgba(32,49,60,.95),rgba(13,127,134,.94)); }
+    th { background:#faf6f6; color:#6f5d61; }
+    tbody tr:hover { background:#fdf9f9; }
+    .loading { background:linear-gradient(135deg,rgba(47,36,38,.96),rgba(111,21,32,.95)); }
     @media(max-width:720px){ .page-head{gap:12px}.page-head h1{line-height:1.08}.btn.primary{min-height:52px;font-size:16px}.search-panel{border-radius:18px}.stats-grid{gap:12px}.stat-card{min-height:120px;padding:18px}.stat-card strong{font-size:31px} }
 
 
     .form-note {
       margin: -2px 0 15px;
       padding: 11px 12px;
-      border: 1px solid #cfeae5;
+      border: 1px solid #e7d7da;
       border-radius: 11px;
       background: linear-gradient(135deg, #eefbf8, #f9fffd);
-      color: #42636a;
+      color: #6b5559;
       font-size: 13px;
       line-height: 1.45;
     }
@@ -1545,7 +1545,7 @@ td {
 
 .dashboard-panel-title {
   margin: 0;
-  color: #29464e;
+  color: #3b2d30;
   font-size: 18px;
   line-height: 1.3;
 }
@@ -1634,7 +1634,7 @@ td {
 }
 
 .scan-detail-row strong {
-  color: #29464e;
+  color: #3b2d30;
 }
 
 .progress-track {
@@ -1671,7 +1671,7 @@ td {
 }
 
 .status-bar-head strong {
-  color: #29464e;
+  color: #3b2d30;
   font-size: 14px;
 }
 
@@ -1714,7 +1714,7 @@ td {
   padding: 12px 13px;
   border: 1px solid #e2efec;
   border-radius: 15px;
-  background: linear-gradient(145deg, #fbfefd, #ffffff);
+  background: linear-gradient(145deg, #fdfbfb, #ffffff);
 }
 
 .management-metric-icon {
@@ -1735,7 +1735,7 @@ td {
 
 .management-metric-name {
   margin-top: 3px;
-  color: #29464e;
+  color: #3b2d30;
   font-size: 13px;
   font-weight: 700;
 }
@@ -1778,7 +1778,7 @@ td {
 
 .dashboard-alert strong {
   display: block;
-  color: var(--alert-color, #29464e);
+  color: var(--alert-color, #3b2d30);
   font-size: 16px;
 }
 
@@ -1991,7 +1991,7 @@ td {
   align-items: center;
   gap: 7px;
   padding: 8px 11px;
-  border: 1px solid #d9e8e5;
+  border: 1px solid #e9dfe1;
   border-radius: 13px;
   background: rgba(255,255,255,.92);
   color: #536b74;
@@ -2029,7 +2029,7 @@ td {
 }
 
 .status-filter-icon.all {
-  background: #e8f8f5;
+  background: #f7f2f2;
   color: var(--primary-3);
 }
 
@@ -2050,7 +2050,7 @@ td {
 
 .status-filter-icon.no-book {
   background: #eef2f6;
-  color: #677b8b;
+  color: #78696c;
 }
 
 .status-filter-btn b {
@@ -2061,7 +2061,7 @@ td {
   padding: 0 7px;
   border-radius: 999px;
   background: #edf3f2;
-  color: #536a72;
+  color: #705f62;
   font-size: 11px;
   line-height: 1;
 }
@@ -2623,7 +2623,7 @@ td {
 .advanced-filter-item:hover {
   transform: translateY(-1px);
   border-color: #b5ddd6;
-  background: #f8fdfc;
+  background: #fdf9f9;
   box-shadow: 0 8px 20px rgba(30, 104, 101, .07);
 }
 
@@ -2658,7 +2658,7 @@ td {
 }
 
 .advanced-filter-choice-icon.all {
-  background: #e8f8f5;
+  background: #f7f2f2;
   color: var(--primary-3);
 }
 
@@ -2679,7 +2679,7 @@ td {
 
 .advanced-filter-choice-icon.no-book {
   background: #eef2f6;
-  color: #677b8b;
+  color: #78696c;
 }
 
 .advanced-filter-main strong,
@@ -2708,7 +2708,7 @@ td {
   padding: 0 8px;
   border-radius: 999px;
   background: #edf3f2;
-  color: #536a72;
+  color: #705f62;
   font-size: 12px;
 }
 
@@ -3116,7 +3116,7 @@ body {
   overflow: hidden !important;
   border-radius: 11px !important;
   background: #eef2f6 !important;
-  color: #677b8b !important;
+  color: #78696c !important;
   font-size: 18px !important;
   font-weight: 800 !important;
   line-height: 1 !important;
@@ -3283,9 +3283,9 @@ body {
     18px
     max(20px, env(safe-area-inset-bottom));
   background:
-    radial-gradient(circle at 15% 0%, rgba(54,194,180,.20), transparent 28rem),
-    radial-gradient(circle at 100% 100%, rgba(255,138,101,.16), transparent 30rem),
-    rgba(246,252,250,.98);
+    radial-gradient(circle at 15% 0%, rgba(159,29,45,.11), transparent 28rem),
+    radial-gradient(circle at 100% 100%, rgba(111,21,32,.07), transparent 30rem),
+    rgba(250,248,247,.985);
   backdrop-filter: blur(12px);
 }
 
@@ -3298,10 +3298,10 @@ body {
   display: grid;
   gap: 18px;
   padding: 30px;
-  border: 1px solid #d7eae6;
+  border: 1px solid #eadcdf;
   border-radius: 25px;
   background: rgba(255,255,255,.98);
-  box-shadow: 0 24px 70px rgba(25, 91, 87, .17);
+  box-shadow: 0 24px 70px rgba(111,21,32,.13);
 }
 
 .auth-logo {
@@ -3314,7 +3314,7 @@ body {
   color: white;
   font-size: 37px;
   font-weight: 900;
-  box-shadow: 0 14px 30px rgba(18,166,166,.23);
+  box-shadow: 0 14px 30px rgba(159,29,45,.20);
 }
 
 .auth-test-label {
@@ -3357,9 +3357,9 @@ body {
   width: 100%;
   min-height: 49px;
   padding: 11px 13px;
-  border: 1px solid #d4e6e2;
+  border: 1px solid #e8dadd;
   border-radius: 13px;
-  background: #fbfefd;
+  background: #fdfbfb;
   color: var(--text);
   outline: none;
 }
@@ -3401,12 +3401,12 @@ body {
   content: '';
   flex: 1;
   height: 1px;
-  background: #e1ece9;
+  background: #eee5e6;
 }
 
 .auth-help {
   margin: -3px 0 0 !important;
-  color: #71858d !important;
+  color: #7c6c70 !important;
   font-size: 12px;
   line-height: 1.5 !important;
   text-align: center;
@@ -3417,10 +3417,10 @@ body {
   align-items: center;
   min-height: 40px;
   padding: 9px 12px;
-  border: 1px solid #d9e8e5;
+  border: 1px solid #e9dfe1;
   border-radius: 12px;
-  background: #f7fbfa;
-  color: #62767e;
+  background: #fbf8f8;
+  color: #736367;
   font-size: 12px;
   font-weight: 800;
 }
@@ -3434,12 +3434,12 @@ body {
   padding: 12px 18px;
   border: 0;
   border-radius: 15px;
-  border: 1px solid #d5e7e3;
+  border: 1px solid #eadcdf;
   background: #ffffff;
-  color: #35505a;
+  color: #3b2c2f;
   font-size: 14px;
   font-weight: 800;
-  box-shadow: 0 8px 20px rgba(18,166,166,.08);
+  box-shadow: 0 8px 20px rgba(111,21,32,.055);
 }
 
 .google-login-btn:disabled {
@@ -3714,7 +3714,7 @@ body {
       margin-top: 8px;
       padding: 9px 11px;
       border-radius: 10px;
-      background: #eaf8f5;
+      background: #f7f2f2;
       color: #166b69;
       font-size: 12px;
       line-height: 1.45;
@@ -3893,6 +3893,161 @@ body {
     }
 
 
+    /* ===== 2026.08.13.5 - POPUP XÁC NHẬN TRONG ỨNG DỤNG ===== */
+    .confirm-dialog {
+      width: min(560px, calc(100vw - 28px));
+      max-height: min(86vh, 720px);
+      padding: 0;
+      border: 0;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #fff;
+      color: var(--text);
+      box-shadow: 0 28px 80px rgba(50, 18, 23, .24);
+    }
+
+    .confirm-dialog::backdrop {
+      background: rgba(40, 28, 30, .46);
+      backdrop-filter: blur(3px);
+    }
+
+    .confirm-dialog form { padding: 0; margin: 0; }
+
+    .confirm-dialog-shell {
+      overflow: hidden;
+      background: linear-gradient(180deg, #fff 0%, #fdfafa 100%);
+    }
+
+    .confirm-dialog-accent {
+      height: 5px;
+      background: linear-gradient(90deg, var(--primary-3), var(--primary), var(--primary-2));
+    }
+
+    .confirm-dialog-top {
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      padding: 22px 24px 8px;
+    }
+
+    .confirm-dialog-icon {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 23px;
+      font-weight: 900;
+    }
+
+    .confirm-dialog-chip {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .confirm-dialog-top h3 {
+      margin: 0 0 5px;
+      color: #2f2426;
+      font-size: 23px;
+      line-height: 1.25;
+    }
+
+    .confirm-dialog-subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .confirm-dialog-content {
+      display: grid;
+      gap: 14px;
+      padding: 12px 24px 20px;
+    }
+
+    .confirm-dialog-message {
+      margin: 0;
+      color: #3a2d30;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .confirm-dialog-detail {
+      display: grid;
+      gap: 8px;
+      padding: 13px 14px;
+      border: 1px solid #eadcdf;
+      border-radius: 13px;
+      background: #faf6f6;
+      color: #655257;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .confirm-dialog-detail.hidden { display: none !important; }
+
+    .confirm-dialog-detail div {
+      position: relative;
+      padding-left: 15px;
+    }
+
+    .confirm-dialog-detail div::before {
+      content: '';
+      position: absolute;
+      top: .75em;
+      left: 0;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--primary);
+      transform: translateY(-50%);
+    }
+
+    .confirm-dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 0 24px 22px;
+    }
+
+    .confirm-dialog-actions .btn {
+      min-width: 112px;
+    }
+
+    .btn.confirm-primary-btn,
+    .btn.confirm-danger-btn {
+      border-color: transparent;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: 0 10px 22px rgba(159,29,45,.17);
+    }
+
+    .btn.confirm-danger-btn:hover:not(:disabled),
+    .btn.confirm-primary-btn:hover:not(:disabled) {
+      box-shadow: 0 13px 26px rgba(159,29,45,.22);
+    }
+
+    @media (max-width: 620px) {
+      .confirm-dialog-top {
+        grid-template-columns: 42px minmax(0,1fr);
+        padding: 18px 18px 7px;
+      }
+      .confirm-dialog-icon { width: 42px; height: 42px; border-radius: 13px; }
+      .confirm-dialog-top h3 { font-size: 20px; }
+      .confirm-dialog-content { padding: 10px 18px 18px; }
+      .confirm-dialog-actions { padding: 0 18px 18px; flex-direction: column-reverse; }
+      .confirm-dialog-actions .btn { width: 100%; }
+    }
+
+
 /* ===== QUẢN LÝ THÙNG VÀ VỊ TRÍ LƯU TRỮ ===== */
 .storage-location-preview {
   display: flex;
@@ -3926,7 +4081,7 @@ body {
 }
 
 .storage-location-preview.ready strong {
-  color: #087d80;
+  color: #8f1b29;
 }
 
 .dashboard-kpi-grid {
@@ -3951,7 +4106,7 @@ body {
 
 .storage-inventory-head h3 {
   margin: 0;
-  color: #29464e;
+  color: #3b2d30;
   font-size: 19px;
 }
 
@@ -3973,8 +4128,8 @@ body {
 .storage-danger {
   padding: 7px 11px;
   border-radius: 999px;
-  background: #eaf8f5;
-  color: #24666b;
+  background: #f7f2f2;
+  color: #704147;
   font-size: 12px;
   font-weight: 700;
 }
@@ -4003,7 +4158,7 @@ body {
   padding: 0 14px;
   border: 1px solid #cfe3df;
   border-radius: 13px;
-  background: #fbfefd;
+  background: #fdfbfb;
   color: var(--text);
   font: inherit;
 }
@@ -4035,8 +4190,8 @@ body {
   margin: 2px 4px 2px 0;
   place-items: center;
   border-radius: 9px;
-  background: #eaf8f5;
-  color: #087d80;
+  background: #f7f2f2;
+  color: #8f1b29;
   font-size: 12px;
   font-weight: 800;
 }
@@ -4052,7 +4207,7 @@ body {
   padding: 6px 9px;
   border: 1px solid #dcebe8;
   border-radius: 10px;
-  background: #fbfefd;
+  background: #fdfbfb;
   color: #445f68;
   font-size: 11px;
   font-weight: 700;
@@ -4088,7 +4243,7 @@ body {
   padding: 18px;
   border: 1px solid #d8e9e6;
   border-radius: 17px;
-  background: linear-gradient(135deg, #f8fdfc 0%, #f3fbfa 100%);
+  background: linear-gradient(135deg, #fdf9f9 0%, #f3fbfa 100%);
 }
 
 .document-inventory-head {
@@ -4107,7 +4262,7 @@ body {
 
 .document-inventory-head p {
   margin: 5px 0 0;
-  color: #71838b;
+  color: #817174;
   font-size: 12px;
   line-height: 1.5;
 }
@@ -4128,7 +4283,7 @@ body {
 .document-inventory-total strong {
   display: block;
   margin-top: 2px;
-  color: #07858a;
+  color: #9f1d2d;
   font-size: 20px;
   line-height: 1.1;
 }
@@ -4162,7 +4317,7 @@ body {
 
 .document-inventory-grid .form-field input {
   min-height: 44px;
-  background: #fbfefd;
+  background: #fdfbfb;
 }
 
 .inventory-cell {
@@ -4180,21 +4335,21 @@ body {
   padding: 6px 8px;
   border: 1px solid #dcebe8;
   border-radius: 9px;
-  background: #fbfefd;
+  background: #fdfbfb;
   color: #49636b;
   font-size: 10px;
   line-height: 1.25;
 }
 
 .inventory-chip strong {
-  color: #087d80;
+  color: #8f1b29;
   font-size: 12px;
 }
 
 .inventory-total-chip {
   grid-column: 1 / -1;
   border-color: #b9dfd8;
-  background: #eaf8f5;
+  background: #f7f2f2;
   color: #27676b;
   font-weight: 800;
 }
@@ -4228,7 +4383,7 @@ body {
 
 .inventory-stats-head h3 {
   margin: 0;
-  color: #29464e;
+  color: #3b2d30;
   font-size: 19px;
 }
 
@@ -4241,8 +4396,8 @@ body {
 .inventory-completion-badge {
   padding: 7px 11px;
   border-radius: 999px;
-  background: #eaf8f5;
-  color: #24666b;
+  background: #f7f2f2;
+  color: #704147;
   font-size: 12px;
   font-weight: 800;
   white-space: nowrap;
@@ -4258,7 +4413,7 @@ body {
   padding: 14px;
   border: 1px solid #e1eeeb;
   border-radius: 14px;
-  background: #fbfefd;
+  background: #fdfbfb;
 }
 
 .inventory-stat-card span {
@@ -4272,13 +4427,13 @@ body {
 .inventory-stat-card strong {
   display: block;
   margin-top: 7px;
-  color: #173f47;
+  color: #3a2a2d;
   font-size: 23px;
 }
 
 .inventory-stat-note {
   margin: 13px 0 0;
-  color: #71838b;
+  color: #817174;
   font-size: 12px;
 }
 
@@ -4340,8 +4495,8 @@ body {
   height: 34px;
   padding: 0 10px;
   border-radius: 11px;
-  background: #e8f8f5;
-  color: #087d80;
+  background: #f7f2f2;
+  color: #8f1b29;
   font-size: 14px;
 }
 
@@ -4373,7 +4528,7 @@ body {
 
 .book-period-line strong,
 .storage-position-line strong {
-  color: #173f47;
+  color: #3a2a2d;
   font-size: 13px;
   white-space: nowrap;
 }
@@ -4430,7 +4585,7 @@ body {
 
 .inventory-summary-card strong {
   display: block;
-  color: #087d80;
+  color: #8f1b29;
   font-size: 14px;
   line-height: 1.2;
   white-space: nowrap;
@@ -4442,7 +4597,7 @@ body {
   border: 1px solid #b7ddd6;
   border-radius: 9px;
   background: #fff;
-  color: #0b7377;
+  color: #7d1824;
   font-size: 11px;
   font-weight: 800;
   cursor: pointer;
@@ -4480,7 +4635,7 @@ body {
 
 .inventory-detail-head h3 {
   margin: 0 0 5px;
-  color: #173f47;
+  color: #3a2a2d;
   font-size: 20px;
 }
 
@@ -4513,7 +4668,7 @@ body {
 }
 
 .inventory-detail-total strong {
-  color: #07858a;
+  color: #9f1d2d;
   font-size: 22px;
 }
 
@@ -4532,11 +4687,11 @@ body {
   padding: 12px 13px;
   border: 1px solid #dcebe8;
   border-radius: 12px;
-  background: #fbfefd;
+  background: #fdfbfb;
 }
 
 .inventory-detail-item span {
-  color: #526b72;
+  color: #705f62;
   font-size: 12px;
   line-height: 1.35;
 }
@@ -4545,8 +4700,8 @@ body {
   min-width: 34px;
   padding: 6px 9px;
   border-radius: 9px;
-  background: #eaf8f5;
-  color: #087d80;
+  background: #f7f2f2;
+  color: #8f1b29;
   font-size: 14px;
   text-align: center;
 }
@@ -4651,7 +4806,7 @@ body {
   border: 1px solid #cde7e2;
   border-radius: 12px;
   background: #ffffff;
-  color: #0b7377;
+  color: #7d1824;
   font-size: 12px;
   font-weight: 850;
   cursor: pointer;
@@ -4659,7 +4814,7 @@ body {
 }
 
 .auth-login-top-btn:hover {
-  background: #eaf8f5;
+  background: #f7f2f2;
 }
 
 .auth-card {
@@ -4674,10 +4829,10 @@ body {
   height: 38px;
   display: grid;
   place-items: center;
-  border: 1px solid #d9e8e5;
+  border: 1px solid #e9dfe1;
   border-radius: 11px;
   background: #fff;
-  color: #526b72;
+  color: #705f62;
   font-size: 22px;
   cursor: pointer;
 }
@@ -4720,7 +4875,7 @@ body.guest-mode #patientsEmpty {
 
 .guest-access-card h3 {
   margin: 0 0 8px;
-  color: #173f47;
+  color: #3a2a2d;
   font-size: 22px;
 }
 
@@ -4842,13 +4997,13 @@ body.guest-mode #patientsEmpty {
 .export-excel-btn {
   border-color: #b9ddd6;
   background: linear-gradient(135deg, #f1fbf8, #ffffff);
-  color: #087d80;
+  color: #8f1b29;
   box-shadow: 0 8px 20px rgba(18,166,166,.10);
 }
 
 .export-excel-btn:hover:not([disabled]) {
   border-color: #7fcfc4;
-  background: #e8f8f5;
+  background: #f7f2f2;
 }
 
 /* Ghi đè quy tắc cũ: khách vẫn được xem, tìm kiếm và lọc danh mục công khai. */
@@ -4886,7 +5041,7 @@ body.guest-mode #exportExcelBtn {
   padding: 9px 10px;
   border: 1px solid #dcebe8;
   border-radius: 11px;
-  background: #fbfefd;
+  background: #fdfbfb;
 }
 
 .event-info-item.death {
@@ -5280,7 +5435,7 @@ body.guest-mode #exportExcelBtn {
       z-index: 2;
       padding: 9px 7px;
       border: 1px solid #b9d9d5;
-      background: #0d7f86;
+      background: #8f1b29;
       color: #fff;
       text-align: center;
       vertical-align: middle;
@@ -5314,7 +5469,7 @@ body.guest-mode #exportExcelBtn {
     }
 
     .report-preview-table td.status-finished {
-      color: #0d7f86;
+      color: #8f1b29;
       font-weight: 800;
     }
 
@@ -5325,7 +5480,7 @@ body.guest-mode #exportExcelBtn {
       border: 1px solid #cce7e2;
       border-radius: 12px;
       background: #eefaf7;
-      color: #42636a;
+      color: #6b5559;
       font-size: 12px;
       line-height: 1.45;
     }
@@ -5990,17 +6145,17 @@ html, body {
        Chỉ thay đổi lớp trình bày; không thay đổi nghiệp vụ/Firebase.
        ============================================================ */
     :root {
-      --primary: #d95f8d;
-      --primary-2: #ef8fb1;
-      --primary-3: #a73f69;
-      --primary-soft: #fff0f6;
+      --primary: #b52332;
+      --primary-2: #df9299;
+      --primary-3: #8e2632;
+      --primary-soft: #f8eeee;
       --accent: #f3a6bd;
-      --accent-soft: #fff3f7;
+      --accent-soft: #faf2f3;
       --text: #352934;
       --muted: #806f79;
-      --line: #f0dce5;
+      --line: #eadcdf;
       --surface: #ffffff;
-      --bg: #fff8fb;
+      --bg: #fffafa;
       --shadow: 0 16px 38px rgba(169,63,105,.12);
       --shadow-soft: 0 8px 24px rgba(169,63,105,.08);
     }
@@ -6011,35 +6166,35 @@ html, body {
       background:
         radial-gradient(circle at 10% 0%, rgba(239,143,177,.18), transparent 31rem),
         radial-gradient(circle at 96% 9%, rgba(244,191,209,.20), transparent 28rem),
-        linear-gradient(180deg, #fffdfd 0%, #fff8fb 48%, #fffafd 100%);
+        linear-gradient(180deg, #fffdfd 0%, #fffafa 48%, #fffdfc 100%);
     }
 
     .sidebar {
       background: rgba(255,252,254,.975);
-      border-right-color: #f0dce5;
+      border-right-color: #eadcdf;
     }
 
     .brand-icon {
-      background: linear-gradient(145deg, #d95f8d, #ef8fb1);
+      background: linear-gradient(145deg, #b52332, #df9299);
       box-shadow: 0 10px 24px rgba(169,63,105,.22);
     }
 
     .nav-btn:hover {
-      background: #fff3f7;
+      background: #faf2f3;
       border-color: #f3d8e3;
     }
 
     .nav-btn.active {
-      background: linear-gradient(135deg, #fff0f6, #fff8fb);
+      background: linear-gradient(135deg, #f8eeee, #fffafa);
       border-color: #efccda;
-      color: #a73f69;
-      box-shadow: inset 3px 0 0 #d95f8d;
+      color: #8e2632;
+      box-shadow: inset 3px 0 0 #b52332;
     }
 
     .rule {
       border-color: #f2d6df;
       background: linear-gradient(145deg, #fff8f3, #fff2f7);
-      color: #73525f;
+      color: #6d5559;
     }
 
     .topbar {
@@ -6049,7 +6204,7 @@ html, body {
     }
 
     .main::before {
-      background: linear-gradient(90deg, #d95f8d, #f2a0bb) !important;
+      background: linear-gradient(90deg, #b52332, #f2a0bb) !important;
     }
 
     .search-card,
@@ -6059,7 +6214,7 @@ html, body {
     .stats-card,
     .report-card,
     .modal-card {
-      border-color: #f0dce5;
+      border-color: #eadcdf;
     }
 
     .patient-card {
@@ -6068,7 +6223,7 @@ html, body {
     }
 
     .patient-card::before {
-      background: linear-gradient(180deg, #d95f8d, #f1a2bc) !important;
+      background: linear-gradient(180deg, #b52332, #f1a2bc) !important;
     }
 
     .patient-card:hover {
@@ -6084,8 +6239,8 @@ html, body {
     .btn.primary,
     .primary-action,
     #addPatientBtn {
-      background: linear-gradient(135deg, #d95f8d, #e978a0) !important;
-      border-color: #d95f8d !important;
+      background: linear-gradient(135deg, #b52332, #e978a0) !important;
+      border-color: #b52332 !important;
       color: #fff !important;
       box-shadow: 0 10px 22px rgba(217,95,141,.20);
     }
@@ -6106,9 +6261,9 @@ html, body {
 
     .filter-btn.active,
     .status-filter.active {
-      border-color: #e4a8bf !important;
-      background: linear-gradient(135deg, #fff0f6, #fff8fb) !important;
-      color: #a73f69 !important;
+      border-color: #d9aeb3 !important;
+      background: linear-gradient(135deg, #f8eeee, #fffafa) !important;
+      color: #8e2632 !important;
     }
 
     /* Avatar giới tính dạng vector: chuyên nghiệp, không dùng ảnh ngoài. */
@@ -6148,9 +6303,9 @@ html, body {
     }
 
     .gender-avatar.female {
-      background: linear-gradient(145deg, #fff0f6, #fbd9e7) !important;
+      background: linear-gradient(145deg, #f8eeee, #f2e2e4) !important;
       color: #c44f7c !important;
-      border-color: #f0c3d5;
+      border-color: #e5c9cd;
     }
 
     .gender-avatar.unknown {
@@ -6184,7 +6339,7 @@ html, body {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: #d95f8d;
+  background: #b52332;
   color: #fff;
   font-size: 11px;
   font-weight: 800;
@@ -6193,10 +6348,10 @@ html, body {
 .account-access-notice {
   margin: 0 0 18px;
   padding: 13px 16px;
-  border: 1px solid #efd2de;
+  border: 1px solid #e5cdd0;
   border-radius: 14px;
-  background: linear-gradient(135deg, #fff3f7, #fffafd);
-  color: #7d3f59;
+  background: linear-gradient(135deg, #faf2f3, #fffdfc);
+  color: #74313a;
   font-size: 14px;
   line-height: 1.55;
   box-shadow: var(--shadow-soft);
@@ -6244,7 +6399,7 @@ html, body {
   gap: 16px;
   align-items: center;
   padding: 14px 15px;
-  border: 1px solid #f0dce5;
+  border: 1px solid #eadcdf;
   border-radius: 15px;
   background: #fff;
 }
@@ -6261,8 +6416,8 @@ html, body {
   display: grid;
   place-items: center;
   border-radius: 13px;
-  background: linear-gradient(145deg, #fff0f6, #fbd9e7);
-  color: #a73f69;
+  background: linear-gradient(145deg, #f8eeee, #f2e2e4);
+  color: #8e2632;
   font-weight: 900;
 }
 .account-admin-info { min-width: 0; display: grid; gap: 3px; }
@@ -6291,17 +6446,17 @@ html, body {
   background: #fff;
 }
 .danger-outline {
-  border-color: #f2b8c4 !important;
-  color: #b63e58 !important;
-  background: #fff7f9 !important;
+  border-color: #e4b4b9 !important;
+  color: #a72b37 !important;
+  background: #fff8f8 !important;
 }
 .account-admin-empty {
   padding: 22px 14px;
-  border: 1px dashed #e7cbd7;
+  border: 1px dashed #e4d0d2;
   border-radius: 14px;
   color: var(--muted);
   text-align: center;
-  background: #fffafd;
+  background: #fffdfc;
 }
 @media (max-width: 760px) {
   .account-admin-section { padding: 14px; }
@@ -6312,30 +6467,30 @@ html, body {
 }
 
 
-    /* ===== 2026.08.13.2 - CHỦ ĐỀ HỒNG/BORDEAUX ĐỒNG BỘ TỔNG HỢP SỐ LIỆU ===== */
+    /* ===== 2026.08.13.5 - TINH CHỈNH ĐỎ ĐÔ / TRẮNG TRUNG TÍNH ===== */
     :root {
       --rose-950: #58112f;
-      --rose-900: #721740;
+      --rose-900: #6f1520;
       --rose-800: #8e1e50;
-      --rose-700: #a9255e;
-      --rose-600: #be326b;
-      --rose-500: #d34f82;
-      --rose-200: #f4bfd3;
-      --rose-150: #f8d4e1;
-      --rose-100: #fbe5ed;
-      --rose-50: #fff5f8;
+      --rose-700: #9f1d2d;
+      --rose-600: #8c1825;
+      --rose-500: #c12b39;
+      --rose-200: #e9c2c6;
+      --rose-150: #efdadc;
+      --rose-100: #f7ecee;
+      --rose-50: #faf4f4;
     }
 
     body {
       background:
         radial-gradient(circle at 12% 0%, rgba(211,79,130,.13), transparent 30rem),
         radial-gradient(circle at 95% 12%, rgba(169,37,94,.09), transparent 28rem),
-        linear-gradient(180deg, #fff9fb 0%, #fdf7f9 100%);
+        linear-gradient(180deg, #fdfafa 0%, #faf8f7 100%);
     }
 
     .topbar {
       background: rgba(255,255,255,.95);
-      border-bottom-color: #efdce4;
+      border-bottom-color: #eadcdf;
       box-shadow: 0 5px 18px rgba(101,31,63,.05);
     }
     .top-title, .page-head h1 { color: #35232b; }
@@ -6346,20 +6501,20 @@ html, body {
     .auth-logo,
     .btn.primary,
     .email-login-btn {
-      background: linear-gradient(145deg, #a9255e, #d34f82);
+      background: linear-gradient(145deg, #9f1d2d, #c12b39);
       box-shadow: 0 12px 28px rgba(169,37,94,.20);
     }
 
     .nav-btn { color: #5f5159; }
     .nav-btn:hover {
-      background: #fff5f8;
-      border-color: #efdce4;
+      background: #faf4f4;
+      border-color: #eadcdf;
     }
     .nav-btn.active {
-      background: linear-gradient(135deg, #fbe5ed, #fff5f8);
-      border-color: #f0c3d5;
-      color: #721740;
-      box-shadow: inset 3px 0 0 #a9255e;
+      background: linear-gradient(135deg, #f7ecee, #faf4f4);
+      border-color: #e5c9cd;
+      color: #6f1520;
+      box-shadow: inset 3px 0 0 #9f1d2d;
     }
 
     .search-panel,
@@ -6369,73 +6524,73 @@ html, body {
     .dashboard-section,
     .admin-card,
     .account-admin-card {
-      border-color: #efdce4;
+      border-color: #eadcdf;
     }
 
     .chip,
     .badge.closed {
-      background: linear-gradient(135deg, #fbe5ed, #fff5f8);
-      border-color: #f4bfd3;
-      color: #721740;
+      background: linear-gradient(135deg, #f7ecee, #faf4f4);
+      border-color: #e9c2c6;
+      color: #6f1520;
     }
 
     .patient-card::before,
     .detail-card::before,
     .page-head::after {
-      background: linear-gradient(180deg, #a9255e, #d34f82);
+      background: linear-gradient(180deg, #9f1d2d, #c12b39);
     }
 
     .avatar {
-      background: linear-gradient(145deg, #fbe5ed, #f8d4e1);
-      color: #721740;
+      background: linear-gradient(145deg, #f7ecee, #efdadc);
+      color: #6f1520;
     }
     .patient-card:hover {
-      border-color: #e4a8bf;
+      border-color: #d9aeb3;
       box-shadow: 0 16px 34px rgba(101,31,63,.10);
     }
     .patient-card .btn {
-      color: #721740;
-      border-color: #f0c3d5;
-      background: #fff9fb;
+      color: #6f1520;
+      border-color: #e5c9cd;
+      background: #fdfafa;
     }
     .patient-card .btn:hover {
-      background: #fbe5ed;
-      border-color: #e4a8bf;
+      background: #f7ecee;
+      border-color: #d9aeb3;
     }
 
     .detail-card {
       background: linear-gradient(135deg, rgba(251,229,237,.96), rgba(255,255,255,.98));
-      border-color: #f0c3d5;
+      border-color: #e5c9cd;
     }
 
-    th { background: #fff5f8; color: #73525f; }
-    tbody tr:hover { background: #fff9fb; }
+    th { background: #faf4f4; color: #6d5559; }
+    tbody tr:hover { background: #fdfafa; }
 
     input:focus,
     select:focus,
     textarea:focus,
     .auth-field input:focus {
-      border-color: #a9255e !important;
+      border-color: #9f1d2d !important;
       box-shadow: 0 0 0 4px rgba(169,37,94,.10) !important;
     }
 
     .form-note {
-      border-color: #f0c3d5;
-      background: linear-gradient(135deg, #fff5f8, #fff9fb);
-      color: #73525f;
+      border-color: #e5c9cd;
+      background: linear-gradient(135deg, #faf4f4, #fdfafa);
+      color: #6d5559;
     }
     dialog input[readonly] {
-      background: #fff9fb;
+      background: #fdfafa;
       color: #5f5159;
     }
 
     .auth-login-top-btn {
-      border-color: #f0c3d5;
+      border-color: #e5c9cd;
       background: #fff;
-      color: #721740;
+      color: #6f1520;
       box-shadow: 0 7px 18px rgba(101,31,63,.07);
     }
-    .auth-login-top-btn:hover { background: #fff5f8; }
+    .auth-login-top-btn:hover { background: #faf4f4; }
 
     .auth-gate {
       background:
@@ -6444,21 +6599,21 @@ html, body {
         rgba(253,247,249,.985);
     }
     .auth-card {
-      border-color: #efdce4;
+      border-color: #eadcdf;
       box-shadow: 0 24px 70px rgba(101,31,63,.14);
     }
     .auth-card-close {
-      border-color: #efdce4;
-      color: #73525f;
+      border-color: #eadcdf;
+      color: #6d5559;
     }
     .google-login-btn {
-      border-color: #efdce4;
+      border-color: #eadcdf;
       color: #35232b;
       box-shadow: 0 8px 20px rgba(101,31,63,.06);
     }
     .google-login-btn:hover:not(:disabled) {
-      background: #fff9fb;
-      border-color: #f0c3d5;
+      background: #fdfafa;
+      border-color: #e5c9cd;
     }
 
     .loading {
@@ -6466,7 +6621,7 @@ html, body {
     }
 
     .table-wrap {
-      scrollbar-color: #e4a8bf #fff5f8;
+      scrollbar-color: #d9aeb3 #faf4f4;
     }
 
 </style>
@@ -6497,7 +6652,7 @@ html, body {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.08.13.4</small>
+        <small>Phiên bản 2026.08.13.5</small>
       </div>
     </aside>
 
@@ -7009,6 +7164,31 @@ html, body {
       <div class="modal-actions">
         <button type="button" class="btn close-dialog">Hủy</button>
         <button id="deletePatientSubmitBtn" type="submit" class="btn danger-primary">Xóa hồ sơ</button>
+      </div>
+    </form>
+  </dialog>
+
+
+  <dialog id="confirmActionDialog" class="confirm-dialog" aria-labelledby="confirmActionTitle" aria-describedby="confirmActionMessage">
+    <form method="dialog" id="confirmActionForm">
+      <div class="confirm-dialog-shell">
+        <div class="confirm-dialog-accent"></div>
+        <div class="confirm-dialog-top">
+          <div id="confirmActionIcon" class="confirm-dialog-icon" aria-hidden="true">!</div>
+          <div>
+            <span id="confirmActionChip" class="confirm-dialog-chip">Xác nhận thao tác</span>
+            <h3 id="confirmActionTitle">Xác nhận thao tác</h3>
+            <p id="confirmActionSubtitle" class="confirm-dialog-subtitle">Vui lòng kiểm tra thông tin trước khi tiếp tục.</p>
+          </div>
+        </div>
+        <div class="confirm-dialog-content">
+          <p id="confirmActionMessage" class="confirm-dialog-message"></p>
+          <div id="confirmActionDetail" class="confirm-dialog-detail hidden"></div>
+        </div>
+        <div class="confirm-dialog-actions">
+          <button id="confirmActionCancelBtn" type="button" class="btn">Quay lại</button>
+          <button id="confirmActionSubmitBtn" type="button" class="btn confirm-danger-btn">Xác nhận</button>
+        </div>
       </div>
     </form>
   </dialog>
@@ -10054,6 +10234,13 @@ html, body {
         button.addEventListener('click', () => button.closest('dialog').close());
       });
 
+      $('#confirmActionCancelBtn')?.addEventListener('click', () => closeConfirmActionDialog(false));
+      $('#confirmActionSubmitBtn')?.addEventListener('click', () => closeConfirmActionDialog(true));
+      $('#confirmActionDialog')?.addEventListener('cancel', event => {
+        event.preventDefault();
+        closeConfirmActionDialog(false);
+      });
+
       $('#bookForm [name="trangThai"]').addEventListener('change', updateDeathPlaceVisibility);
       $('#bookForm [name="thungSo"]').addEventListener('input', updateStorageLocationPreview);
       $('#bookForm [name="viTriSo"]').addEventListener('input', updateStorageLocationPreview);
@@ -10815,7 +11002,7 @@ html, body {
       $('#statsGrid').innerHTML = `
         ${publicView ? '<div class="public-view-note">👁 Đang xem danh mục tra cứu công khai. Đăng nhập để xem tệp, ghi chú và thông tin nghiệp vụ đầy đủ.</div>' : ''}
         <div class="dashboard-kpi-grid">
-          ${dashboardKpiHtml({icon:'👥',label:'Tổng hồ sơ',value:totalPatients,note:'Số đối tượng đã tạo hồ sơ lưu trữ',color:'#0d7f86',bg:'#e5f8f4',soft:'rgba(54,194,180,.13)'})}
+          ${dashboardKpiHtml({icon:'👥',label:'Tổng hồ sơ',value:totalPatients,note:'Số đối tượng đã tạo hồ sơ lưu trữ',color:'#8f1b29',bg:'#e5f8f4',soft:'rgba(54,194,180,.13)'})}
           ${dashboardKpiHtml({icon:'📚',label:'Tổng quyển lưu',value:totalBooks,note:`Bình quân ${averageBooks} quyển/hồ sơ`,color:'#5b63b7',bg:'#eeeffd',soft:'rgba(91,99,183,.11)'})}
           ${dashboardKpiHtml({icon:'✓',label:'Hết quyển',value:finishedBooks,note:`${rate(finishedBooks)}% tổng số quyển`,color:'#1c9664',bg:'#e6f7ee',soft:'rgba(46,182,125,.12)'})}
           ${dashboardKpiHtml({icon:'⌂',label:'Đối tượng hồi gia',value:returnedBooks,note:`${rate(returnedBooks)}% tổng số quyển`,color:'#c47b13',bg:'#fff3db',soft:'rgba(249,176,65,.13)'})}
@@ -11525,7 +11712,7 @@ html, body {
                 </select>
                 <button class="btn primary small" type="button" data-account-action="approve">${isPending ? 'Duyệt' : 'Duyệt lại'}</button>
                 ${isPending ? '<button class="btn small" type="button" data-account-action="reject">Từ chối</button>' : ''}
-                <button class="btn small danger-outline" type="button" data-account-action="delete-request" title="Xóa yêu cầu truy cập HSBA">Xóa yêu cầu</button>
+                <button class="btn small danger-outline" type="button" data-account-action="delete-request" title="Xóa yêu cầu cấp quyền">Xóa yêu cầu</button>
               </div>
             </article>`;
           }).join('')
@@ -11553,7 +11740,7 @@ html, body {
                   <button class="btn small ${account.active === true ? 'danger-outline' : 'primary'}" type="button" data-account-action="toggle-active">
                     ${account.active === true ? 'Khóa' : 'Mở khóa'}
                   </button>
-                  <button class="btn small danger-outline" type="button" data-account-action="delete-account" title="Xóa quyền và yêu cầu đăng ký HSBA">Xóa tài khoản</button>
+                  <button class="btn small danger-outline" type="button" data-account-action="delete-account" title="Xóa tài khoản khỏi ứng dụng">Xóa tài khoản</button>
                 </div>
               </article>`;
           }).join('')
@@ -11625,6 +11812,70 @@ html, body {
       showToast(`Đã từ chối yêu cầu của ${request.email || 'tài khoản'}.`);
     }
 
+    const confirmActionState = {
+      resolver: null,
+      resolve(value) {
+        if (typeof this.resolver === 'function') {
+          const fn = this.resolver;
+          this.resolver = null;
+          fn(Boolean(value));
+        }
+      }
+    };
+
+    function closeConfirmActionDialog(result) {
+      const dialog = $('#confirmActionDialog');
+      if (dialog?.open) dialog.close();
+      confirmActionState.resolve(result);
+    }
+
+    function showConfirmActionDialog(options = {}) {
+      const dialog = $('#confirmActionDialog');
+      if (!dialog) return Promise.resolve(true);
+
+      const {
+        chip = 'Xác nhận thao tác',
+        title = 'Xác nhận thao tác',
+        subtitle = 'Vui lòng kiểm tra thông tin trước khi tiếp tục.',
+        message = '',
+        detailLines = [],
+        confirmText = 'Xác nhận',
+        cancelText = 'Quay lại',
+        tone = 'danger',
+        icon = '!'
+      } = options;
+
+      $('#confirmActionChip').textContent = chip;
+      $('#confirmActionTitle').textContent = title;
+      $('#confirmActionSubtitle').textContent = subtitle;
+      $('#confirmActionMessage').textContent = message;
+      $('#confirmActionCancelBtn').textContent = cancelText;
+      $('#confirmActionSubmitBtn').textContent = confirmText;
+      $('#confirmActionIcon').textContent = icon;
+
+      const detailEl = $('#confirmActionDetail');
+      const lines = Array.isArray(detailLines)
+        ? detailLines.filter(Boolean)
+        : (String(detailLines || '').trim() ? [String(detailLines || '').trim()] : []);
+      detailEl.innerHTML = lines.map(line => `<div>${escapeHtml(line)}</div>`).join('');
+      detailEl.classList.toggle('hidden', lines.length === 0);
+
+      const submitBtn = $('#confirmActionSubmitBtn');
+      submitBtn.classList.remove('confirm-danger-btn', 'confirm-primary-btn');
+      submitBtn.classList.add(tone === 'primary' ? 'confirm-primary-btn' : 'confirm-danger-btn');
+
+      // Nếu một xác nhận cũ còn treo, đóng an toàn trước khi mở xác nhận mới.
+      if (typeof confirmActionState.resolver === 'function') {
+        confirmActionState.resolve(false);
+      }
+
+      return new Promise(resolve => {
+        confirmActionState.resolver = resolve;
+        if (dialog.open) dialog.close();
+        dialog.showModal();
+      });
+    }
+
     async function updateHsbaPermission(uid, patch) {
       if (state.currentRole !== 'admin') throw new Error('Chỉ quản trị viên mới được thay đổi quyền.');
       const account = state.accountAdmin.permissions.find(item => item.uid === uid);
@@ -11639,9 +11890,20 @@ html, body {
       const isCurrentAccount = uid === firebaseAuth.currentUser?.uid;
 
       if (isCurrentAccount && (nextRole !== 'admin' || nextActive !== true)) {
-        const confirmed = window.confirm(
-          'Bạn đang thay đổi chính tài khoản quản trị đang đăng nhập. Sau thao tác này bạn có thể mất quyền quản trị HSBA ngay lập tức. Tiếp tục?'
-        );
+        const confirmed = await showConfirmActionDialog({
+          chip: 'Thay đổi quyền sử dụng',
+          title: 'Bạn đang thay đổi quyền của chính mình',
+          subtitle: 'Thay đổi sẽ được áp dụng ngay sau khi lưu.',
+          message: 'Nếu tiếp tục, quyền sử dụng hiện tại của tài khoản đang đăng nhập sẽ được cập nhật theo lựa chọn mới.',
+          detailLines: [
+            'Bạn có thể không còn quyền quản trị sau khi lưu thay đổi.',
+            'Hệ thống sẽ tự tải lại để áp dụng quyền mới.'
+          ],
+          confirmText: 'Lưu thay đổi',
+          cancelText: 'Quay lại',
+          tone: 'primary',
+          icon: '✓'
+        });
         if (!confirmed) return false;
       }
 
@@ -11670,9 +11932,20 @@ html, body {
       const request = state.accountAdmin.requests.find(item => item.uid === uid);
       if (!request) throw new Error('Không tìm thấy yêu cầu cần xóa.');
 
-      const confirmed = window.confirm(
-        `Xóa yêu cầu truy cập HSBA của ${request.email || 'tài khoản này'}?\n\nNgười dùng có thể đăng nhập Google lại để gửi một yêu cầu mới.`
-      );
+      const confirmed = await showConfirmActionDialog({
+        chip: 'Quản trị tài khoản',
+        title: 'Xóa yêu cầu cấp quyền?',
+        subtitle: 'Yêu cầu sẽ được gỡ khỏi danh sách chờ xử lý.',
+        message: `Bạn có chắc muốn xóa yêu cầu cấp quyền của ${request.email || 'tài khoản này'}?`,
+        detailLines: [
+          'Yêu cầu hiện tại sẽ được xóa khỏi danh sách quản trị.',
+          'Nếu cần sử dụng lại, người dùng có thể đăng nhập để gửi yêu cầu cấp quyền mới.'
+        ],
+        confirmText: 'Xóa yêu cầu',
+        cancelText: 'Quay lại',
+        tone: 'danger',
+        icon: '×'
+      });
       if (!confirmed) return false;
 
       await remove(ref(firebaseDatabase, `${CONFIG.ACCESS_REQUEST_PATH}/${uid}`));
@@ -11688,12 +11961,26 @@ html, body {
       if (!account) throw new Error('Không tìm thấy tài khoản cần xóa.');
 
       const isCurrentAccount = uid === firebaseAuth.currentUser?.uid;
-      const selfWarning = isCurrentAccount
-        ? '\n\nĐây là chính tài khoản đang đăng nhập. Sau thao tác, quyền hiện tại có thể thay đổi ngay.'
-        : '';
-      const confirmed = window.confirm(
-        `Xóa tài khoản HSBA của ${account.email || 'người dùng này'}?\n\nThao tác sẽ xóa quyền HSBA và yêu cầu đăng ký HSBA của UID này. Tài khoản Google/Firebase Authentication và quyền ở các ứng dụng khác KHÔNG bị xóa.${selfWarning}`
-      );
+      const detailLines = [
+        'Tài khoản sẽ không còn quyền sử dụng ứng dụng Hồ sơ bệnh án lưu trữ.',
+        'Các hồ sơ và dữ liệu đã nhập trước đây vẫn được giữ nguyên.',
+        'Nếu cần sử dụng lại, người dùng phải đăng nhập và gửi yêu cầu cấp quyền mới.'
+      ];
+      if (isCurrentAccount) {
+        detailLines.unshift('Đây là tài khoản bạn đang sử dụng. Quyền quản trị sẽ kết thúc ngay sau khi xác nhận.');
+      }
+
+      const confirmed = await showConfirmActionDialog({
+        chip: 'Quản trị tài khoản',
+        title: 'Xóa tài khoản khỏi hệ thống?',
+        subtitle: 'Thao tác chỉ loại bỏ quyền sử dụng trong Hồ sơ bệnh án lưu trữ.',
+        message: `Bạn có chắc muốn xóa tài khoản ${account.email || 'này'} khỏi hệ thống?`,
+        detailLines,
+        confirmText: 'Xóa tài khoản',
+        cancelText: 'Quay lại',
+        tone: 'danger',
+        icon: '×'
+      });
       if (!confirmed) return false;
 
       await update(ref(firebaseDatabase), {
