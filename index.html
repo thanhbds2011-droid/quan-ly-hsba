@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.08.13.6">
+  <meta name="version" content="2026.08.13.7">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -255,6 +255,9 @@
     }
 
     .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       border: 1px solid var(--line);
       border-radius: 11px;
       padding: 11px 15px;
@@ -4912,7 +4915,7 @@ body.guest-mode #patientsEmpty {
   }
 
   .auth-login-top-btn::before {
-    content: "🔐";
+    content: "";
     font-size: 17px;
   }
 
@@ -5790,7 +5793,7 @@ html, body {
   }
 
   #openLoginBtn.auth-login-top-btn::before {
-    content: "🔐";
+    content: "";
     font-size: 19px;
     line-height: 1;
   }
@@ -6481,7 +6484,7 @@ html, body {
 }
 
 
-    /* ===== 2026.08.13.6 - HỆ MÀU ROSE/BORDEAUX ĐỒNG BỘ ===== */
+    /* ===== 2026.08.13.7 - HỆ MÀU ROSE/BORDEAUX ĐỒNG BỘ ===== */
     :root {
       --rose-950: #58112f;
       --rose-900: #721740;
@@ -6651,7 +6654,7 @@ html, body {
 
 
     /* ============================================================
-       HSBA 2026.08.13.6 - DESIGN SYSTEM ROSE / BORDEAUX
+       HSBA 2026.08.13.7 - DESIGN SYSTEM ROSE / BORDEAUX
        Hệ màu theo bảng: 950 → 50. Chỉ thay lớp trình bày.
        ============================================================ */
     :root {
@@ -6931,14 +6934,336 @@ html, body {
       scrollbar-color: var(--rose-200) var(--rose-50);
     }
 
+
+
+/* ============================================================
+   HSBA 2026.08.13.7 · PROFESSIONAL UX REFINEMENT
+   1) Đồng bộ icon SVG
+   2) Giảm thống kê lặp trên desktop
+   3) Gọn typography/khoảng trắng desktop
+   4) Report viewer một vùng cuộn chính
+   5) Chuẩn hóa Primary / Secondary / Danger
+   6) Sticky action footer trên biểu mẫu mobile
+   7) Giữ nguyên kiến trúc mobile, chỉ refinement
+   ============================================================ */
+.ui-icon-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ui-icon {
+  width: 1.1em;
+  height: 1.1em;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: -0.16em;
+}
+
+.brand-icon .ui-icon { width: 28px; height: 28px; stroke-width: 2.6; }
+.nav-btn .ui-icon { width: 19px; height: 19px; }
+.btn .ui-icon,
+.auth-login-top-btn .ui-icon,
+.auth-sync-public-btn .ui-icon,
+.auth-logout-btn .ui-icon,
+.file-link .ui-icon,
+.readonly-label .ui-icon { width: 17px; height: 17px; }
+
+.nav-btn,
+.btn,
+.auth-login-top-btn,
+.auth-sync-public-btn,
+.auth-logout-btn,
+.file-link,
+.readonly-label {
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn,
+.auth-login-top-btn,
+.auth-sync-public-btn,
+.auth-logout-btn,
+.file-link { gap: 7px; }
+
+/* Button hierarchy */
+.btn.primary {
+  border-color: transparent !important;
+  background: linear-gradient(135deg, var(--rose-800), var(--rose-700)) !important;
+  color: #fff !important;
+  box-shadow: 0 9px 22px rgba(114,23,64,.18) !important;
+}
+.btn.primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--rose-900), var(--rose-800)) !important;
+  box-shadow: 0 12px 26px rgba(88,17,47,.22) !important;
+}
+.btn.secondary-action,
+.export-excel-btn,
+.search-submit-btn {
+  border-color: #ead6df !important;
+  background: #fff !important;
+  color: var(--rose-950) !important;
+  box-shadow: none !important;
+}
+.btn.secondary-action:hover:not(:disabled),
+.export-excel-btn:hover:not(:disabled),
+.search-submit-btn:hover:not(:disabled) {
+  border-color: var(--rose-200) !important;
+  background: var(--rose-50) !important;
+  color: var(--rose-900) !important;
+}
+.btn.danger-action,
+.btn.danger,
+.confirm-danger-btn {
+  border-color: #efc7c1 !important;
+  background: #fff6f4 !important;
+  color: #a62a20 !important;
+  box-shadow: none !important;
+}
+.btn.danger-action:hover:not(:disabled),
+.btn.danger:hover:not(:disabled),
+.confirm-danger-btn:hover:not(:disabled) {
+  border-color: #d99c94 !important;
+  background: #ffe9e5 !important;
+  color: #861d16 !important;
+}
+.btn.danger-primary {
+  border-color: #b42318 !important;
+  background: #b42318 !important;
+  color: #fff !important;
+}
+.btn.danger-primary:hover:not(:disabled) { background: #8f1d14 !important; }
+
+/* Desktop density refinement */
+@media (min-width: 761px) {
+  .main { padding-top: 26px !important; }
+  .page-head { margin-bottom: 16px !important; }
+  .page-head h1 {
+    font-size: clamp(32px, 2.4vw, 40px) !important;
+    line-height: 1.05 !important;
+  }
+  .page-head p { margin-top: 6px !important; }
+  .search-filter-panel { margin-top: 18px !important; }
+
+  /* Desktop đã có số liệu trực tiếp trong các nút lọc; tránh lặp thêm một hàng chip. */
+  #patientsView #summary { display: none !important; }
+}
+
+/* Mobile vẫn giữ summary 2x2 và kiến trúc đã tối ưu */
+@media (max-width: 760px) {
+  #patientsView #summary { display: grid !important; }
+  .page-head h1 { font-size: 32px !important; line-height: 1.08 !important; }
+}
+
+/* Report Viewer: chỉ còn một vùng cuộn chính cho toàn phần nội dung. */
+.report-preview-dialog {
+  width: min(1540px, 97vw) !important;
+  height: min(94vh, 920px) !important;
+  max-height: 94vh !important;
+  overflow: hidden !important;
+  border-radius: 18px !important;
+}
+.report-preview-shell {
+  height: 100% !important;
+  max-height: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: #fffafc !important;
+}
+.report-preview-head {
+  flex: 0 0 auto;
+  margin: 0 !important;
+  padding: 16px 20px !important;
+  background: rgba(255,255,255,.98) !important;
+  border-bottom: 1px solid var(--rose-100) !important;
+  box-shadow: 0 6px 18px rgba(88,17,47,.05);
+}
+.report-preview-head h3 { color: var(--rose-950); }
+.report-preview-head-actions { display: flex; align-items: center; gap: 8px; }
+.report-preview-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 14px 0 22px;
+  scrollbar-color: var(--rose-200) var(--rose-50);
+}
+.report-preview-summary {
+  width: min(1120px, calc(100% - 36px));
+  margin: 0 auto 10px;
+  padding: 0 !important;
+}
+.report-preview-statline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px 18px;
+  padding: 10px 14px;
+  border: 1px solid var(--rose-100);
+  border-radius: 12px;
+  background: #fff;
+  color: #66555d;
+  font-size: 13px;
+}
+.report-preview-statline strong { color: var(--rose-900); }
+.report-preview-paper {
+  width: 1120px !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  margin: 0 auto 12px !important;
+  padding: 24px 26px 26px !important;
+  overflow: visible !important;
+  border: 1px solid var(--rose-100) !important;
+  box-shadow: 0 12px 30px rgba(88,17,47,.08) !important;
+}
+.report-preview-title-block { margin-bottom: 16px !important; }
+.report-preview-title-block h2 {
+  color: var(--rose-800) !important;
+  font-size: 20px !important;
+}
+.report-preview-title-block p { color: #5e4d55 !important; }
+.report-preview-table-frame { width: max-content; min-width: 100%; }
+.report-preview-table {
+  width: 1600px !important;
+  min-width: 1600px !important;
+  font-size: 11px;
+}
+.report-preview-table th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--rose-800) !important;
+  border-color: var(--rose-700) !important;
+}
+.report-preview-table td { border-color: #eadde2 !important; color: #3f3438 !important; }
+.report-preview-table tbody tr:nth-child(even) td { background: #fff8fb !important; }
+.report-preview-note {
+  width: min(1120px, calc(100% - 36px));
+  margin: 0 auto !important;
+  padding: 10px 13px !important;
+  border-color: var(--rose-100) !important;
+  background: #fff !important;
+  color: #75646c !important;
+}
+.report-preview-actions { display: none !important; }
+
+/* Compact, consistent inline icons */
+.search-leading-icon .ui-icon,
+.filter-toolbar-icon .ui-icon,
+.mobile-filter-trigger-icon .ui-icon,
+.clear-filters-btn .ui-icon { width: 18px; height: 18px; }
+.dashboard-kpi-icon .ui-icon { width: 27px; height: 27px; }
+.management-metric-icon .ui-icon { width: 21px; height: 21px; }
+.dashboard-alert-icon .ui-icon { width: 22px; height: 22px; }
+.public-view-note { display: flex; gap: 8px; align-items: flex-start; }
+
+/* Mobile form actions luôn ở vị trí thao tác thuận tiện. */
+@media (max-width: 760px) {
+  .record-dialog:not(.report-preview-dialog) {
+    max-height: calc(100dvh - 12px) !important;
+    overflow: hidden !important;
+  }
+  .record-dialog:not(.report-preview-dialog) > form {
+    max-height: calc(100dvh - 12px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-bottom: 0 !important;
+  }
+  .record-dialog:not(.report-preview-dialog) .modal-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 8;
+    margin: 20px -20px 0 !important;
+    padding: 14px 20px calc(14px + env(safe-area-inset-bottom)) !important;
+    background: rgba(255,255,255,.97);
+    border-top: 1px solid var(--rose-100) !important;
+    box-shadow: 0 -10px 26px rgba(88,17,47,.08);
+    backdrop-filter: blur(10px);
+  }
+  .report-preview-dialog {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+  }
+  .report-preview-paper {
+    width: 1120px !important;
+    margin-left: 14px !important;
+    margin-right: 14px !important;
+  }
+  .report-preview-summary,
+  .report-preview-note {
+    width: calc(100% - 28px) !important;
+  }
+  .report-preview-head { padding: 13px 14px !important; }
+  .report-preview-export-top span { display: none; }
+  .report-preview-export-top { width: 44px; height: 44px; padding: 0 !important; justify-content: center; }
+
+  #openLoginBtn.auth-login-top-btn::before { content: none !important; }
+  #openLoginBtn.auth-login-top-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+  #openLoginBtn.auth-login-top-btn .ui-icon { width: 19px; height: 19px; }
+  .auth-sync-public-btn::before { content: none !important; }
+  .auth-sync-public-btn,
+  .auth-logout-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+  .auth-sync-public-btn > span,
+  .auth-logout-btn > span { display: none !important; }
+  .auth-sync-public-btn .ui-icon,
+  .auth-logout-btn .ui-icon { width: 19px; height: 19px; }
+}
+
 </style>
 </head>
 
 <body>
+
+  <!-- HSBA UI icon sprite · Professional UX Refinement 2026.08.13.7 -->
+  <svg class="ui-icon-sprite" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+      <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M8 13h8M10 16h4"/></symbol>
+      <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3z"/><path d="m9 12 2 2 4-4"/></symbol>
+      <symbol id="i-log-in" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 6v5h-5"/><path d="M4 18v-5h5"/><path d="M18.5 9A7 7 0 0 0 6 6.5L4 11M5.5 15A7 7 0 0 0 18 17.5l2-4.5"/></symbol>
+      <symbol id="i-log-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></symbol>
+      <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+      <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+      <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></symbol>
+      <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 15H6L5 6"/><path d="M10 11v6M14 11v6"/></symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/></symbol>
+      <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+      <symbol id="i-paperclip" viewBox="0 0 24 24"><path d="m21.4 11.6-8.5 8.5a6 6 0 0 1-8.5-8.5l9-9a4 4 0 0 1 5.7 5.7l-9 9a2 2 0 1 1-2.8-2.8l8.3-8.3"/></symbol>
+      <symbol id="i-box" viewBox="0 0 24 24"><path d="m21 8-9 5-9-5 9-5z"/><path d="m3 8 9 5 9-5v8l-9 5-9-5z"/><path d="M12 13v8"/></symbol>
+      <symbol id="i-warning" viewBox="0 0 24 24"><path d="M10.3 3.6 2.2 18a2 2 0 0 0 1.7 3h16.2a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></symbol>
+      <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/></symbol>
+      <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+      <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+    </defs>
+  </svg>
+
   <div class="layout">
     <aside id="sidebar" class="sidebar">
       <div class="brand">
-        <div class="brand-icon">✚</div>
+        <div class="brand-icon"><svg class="ui-icon brand-mark-icon" aria-hidden="true" focusable="false"><use href="#i-plus"></use></svg></div>
         <div>
           <strong>QUẢN LÝ HSBA</strong>
           <small>Hồ sơ bệnh án lưu trữ</small>
@@ -6946,10 +7271,10 @@ html, body {
       </div>
 
       <nav class="nav">
-        <button class="nav-btn active" data-view="patients">👥 Danh sách hồ sơ</button>
-        <button class="nav-btn" data-view="deaths">🗂️ Hồ sơ tử vong</button>
-        <button class="nav-btn" data-view="dashboard">📈 Thống kê tổng quan</button>
-        <button id="adminAccountsNavBtn" class="nav-btn hidden" data-view="accounts">🔐 Quản trị tài khoản <span id="pendingAccountBadge" class="nav-count-badge hidden">0</span></button>
+        <button class="nav-btn active" data-view="patients"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-users"></use></svg><span>Danh sách hồ sơ</span></button>
+        <button class="nav-btn" data-view="deaths"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-folder"></use></svg><span>Hồ sơ tử vong</span></button>
+        <button class="nav-btn" data-view="dashboard"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-chart"></use></svg><span>Thống kê tổng quan</span></button>
+        <button id="adminAccountsNavBtn" class="nav-btn hidden" data-view="accounts"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-shield"></use></svg><span>Quản trị tài khoản</span><span id="pendingAccountBadge" class="nav-count-badge hidden">0</span></button>
 </nav>
 
       <div class="rule">
@@ -6959,7 +7284,7 @@ html, body {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.08.13.6</small>
+        <small>Phiên bản 2026.08.13.7</small>
       </div>
     </aside>
 
@@ -6968,14 +7293,14 @@ html, body {
     <section class="main-area">
       <header class="topbar">
         <div class="topbar-left">
-          <button id="menuBtn" class="icon-btn menu-btn" aria-label="Mở menu">☰</button>
+          <button id="menuBtn" class="icon-btn menu-btn" aria-label="Mở menu"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-menu"></use></svg></button>
           <div class="top-heading">
             <div class="top-title">HỒ SƠ BỆNH ÁN LƯU TRỮ <span id="connectionBadge" class="firebase-test-badge">ĐANG KẾT NỐI</span></div>
             <div class="top-subtitle">Số hóa, tra cứu và quản lý hồ sơ tập trung</div>
           </div>
         </div>
 
-        <button id="openLoginBtn" class="auth-login-top-btn" type="button">🔐 Đăng nhập chỉnh sửa</button>
+        <button id="openLoginBtn" class="auth-login-top-btn" type="button"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-log-in"></use></svg><span>Đăng nhập chỉnh sửa</span></button>
 
         <div id="authUserBar" class="auth-user-bar hidden">
           <div class="auth-user-summary">
@@ -6984,12 +7309,10 @@ html, body {
           </div>
 
           <button id="syncPublicBtn" class="auth-sync-public-btn hidden" type="button" title="Cập nhật danh mục xem">
-            ↻ Cập nhật danh mục xem
+            <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-refresh"></use></svg><span>Cập nhật danh mục xem</span>
           </button>
 
-          <button id="logoutBtn" class="auth-logout-btn" type="button">
-            Đăng xuất
-          </button>
+          <button id="logoutBtn" class="auth-logout-btn" type="button"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-log-out"></use></svg><span>Đăng xuất</span></button>
         </div>
 </header>
 
@@ -7001,15 +7324,15 @@ html, body {
               <p>Tra cứu nhanh theo số hồ sơ, tiền tố họ tên, năm sinh hoặc giới tính</p>
             </div>
             <div class="page-actions">
-              <button id="exportExcelBtn" class="btn export-excel-btn hidden" type="button">▣ Xem file báo cáo</button>
-              <button id="addPatientBtn" class="btn primary hidden">＋ Thêm hồ sơ</button>
+              <button id="exportExcelBtn" class="btn export-excel-btn hidden" type="button"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-file"></use></svg><span>Xem file báo cáo</span></button>
+              <button id="addPatientBtn" class="btn primary hidden"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-plus"></use></svg><span>Thêm hồ sơ</span></button>
             </div>
           </div>
 
           <section class="search-filter-panel">
             <div class="search-panel search-main-row">
               <label class="search-box">
-                <span class="search-leading-icon">⌕</span>
+                <span class="search-leading-icon"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-search"></use></svg></span>
                 <input
                   id="searchInput"
                   type="search"
@@ -7024,7 +7347,7 @@ html, body {
 
             <div class="filter-toolbar">
               <div class="filter-toolbar-title">
-                <span class="filter-toolbar-icon">⚙</span>
+                <span class="filter-toolbar-icon"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-filter"></use></svg></span>
                 <div>
                   <strong>Lọc theo trạng thái</strong>
                   <small>Chọn nhóm hồ sơ cần tra cứu</small>
@@ -7082,14 +7405,14 @@ html, body {
                 id="openAdvancedFilterBtn"
                 type="button"
                 class="advanced-filter-open-btn">
-                ☰ Lọc chi tiết
+                <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-filter"></use></svg><span>Lọc chi tiết</span>
               </button>
 
               <button
                 id="mobileFilterTrigger"
                 type="button"
                 class="mobile-filter-trigger">
-                <span class="mobile-filter-trigger-icon">⚙</span>
+                <span class="mobile-filter-trigger-icon"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-filter"></use></svg></span>
 
                 <span class="mobile-filter-trigger-text">
                   <small>Bộ lọc hồ sơ</small>
@@ -7106,7 +7429,7 @@ html, body {
                 class="clear-filters-btn"
                 title="Xóa từ khóa và bộ lọc"
                 aria-label="Đặt lại bộ lọc">
-                ↺
+                <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-reset"></use></svg>
               </button>
             </div>
           </section>
@@ -7152,7 +7475,7 @@ html, body {
               <h1>Quản trị tài khoản</h1>
               <p>Duyệt yêu cầu đăng nhập Google và quản lý quyền sử dụng riêng của HSBA.</p>
             </div>
-            <button id="refreshAccountsBtn" class="btn" type="button">↻ Làm mới</button>
+            <button id="refreshAccountsBtn" class="btn secondary-action" type="button"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-refresh"></use></svg><span>Làm mới</span></button>
           </div>
 
           <section class="account-admin-section">
@@ -7371,7 +7694,7 @@ html, body {
         </div>
 
         <div id="storageLocationPreview" class="storage-location-preview full-span">
-          <span>📦 Vị trí lưu</span>
+          <span><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-box"></use></svg> Vị trí lưu</span>
           <strong>Chưa chọn thùng và vị trí</strong>
         </div>
 
@@ -7453,8 +7776,8 @@ html, body {
 
       <input type="hidden" name="soHoSo">
 
-      <div class="delete-warning">
-        <strong>Lưu ý:</strong> Chỉ xóa được hồ sơ chưa có quyển lưu trữ. Hồ sơ đã có quyển chỉ được chỉnh sửa để bảo đảm an toàn dữ liệu.
+      <div id="deletePatientWarning" class="delete-warning">
+        <strong>Lưu ý:</strong> Quyền xóa hồ sơ được áp dụng theo vai trò tài khoản.
       </div>
 
       <div class="delete-confirm-record">
@@ -7519,67 +7842,56 @@ html, body {
     <div class="report-preview-shell">
       <div class="modal-head report-preview-head">
         <div>
-          <h3>Xem file báo cáo</h3>
-          <p class="modal-subtitle">
-            Kiểm tra dữ liệu trước khi quyết định xuất Excel.
-          </p>
+          <h3>Báo cáo hồ sơ bệnh án</h3>
+          <p class="modal-subtitle">Xem nhanh dữ liệu và xuất Excel khi cần.</p>
         </div>
         <div class="report-preview-head-actions">
-          <button
-            id="reportPreviewExportBtn"
-            type="button"
-            class="btn primary report-preview-export-top">
-            ▣ Xuất Excel
+          <button id="reportPreviewExportBtn" type="button" class="btn primary report-preview-export-top">
+            <svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-file"></use></svg><span>Xuất Excel</span>
           </button>
-          <button
-            type="button"
-            class="icon-btn close-dialog"
-            aria-label="Đóng">×</button>
+          <button type="button" class="icon-btn close-dialog" aria-label="Đóng">×</button>
         </div>
       </div>
 
-      <div id="reportPreviewSummary" class="report-preview-summary"></div>
+      <div class="report-preview-scroll">
+        <div id="reportPreviewSummary" class="report-preview-summary"></div>
 
-      <section class="report-preview-paper">
-        <div class="report-preview-title-block">
-          <h2>BÁO CÁO DANH MỤC HỒ SƠ BỆNH ÁN LƯU TRỮ</h2>
-          <p id="reportPreviewScope">Phạm vi báo cáo: Tất cả hồ sơ</p>
-          <small id="reportPreviewGeneratedAt"></small>
+        <section class="report-preview-paper">
+          <div class="report-preview-title-block">
+            <h2>BÁO CÁO DANH MỤC HỒ SƠ BỆNH ÁN LƯU TRỮ</h2>
+            <p id="reportPreviewScope">Phạm vi báo cáo: Tất cả hồ sơ</p>
+            <small id="reportPreviewGeneratedAt"></small>
+          </div>
+
+          <div class="report-preview-table-frame">
+            <table class="report-preview-table">
+              <thead>
+                <tr>
+                  <th>STT</th>
+                  <th>Số hồ sơ</th>
+                  <th>Họ và tên</th>
+                  <th>Năm sinh</th>
+                  <th>Giới tính</th>
+                  <th>Quyển</th>
+                  <th>Ngày mở</th>
+                  <th>Ngày kết thúc</th>
+                  <th>Trạng thái</th>
+                  <th>Ngày hồi gia</th>
+                  <th>Nơi tử vong</th>
+                  <th>Nguyên nhân tử vong</th>
+                  <th>Thùng</th>
+                  <th>Vị trí</th>
+                  <th>Tổng kiểm kê</th>
+                </tr>
+              </thead>
+              <tbody id="reportPreviewBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="report-preview-note">
+          Dữ liệu xem trước được giữ trong phiên làm việc hiện tại; khi xuất Excel hệ thống sử dụng lại đúng tập dữ liệu này.
         </div>
-
-        <div class="report-preview-table-scroll">
-          <table class="report-preview-table">
-            <thead>
-              <tr>
-                <th>STT</th>
-                <th>Số hồ sơ</th>
-                <th>Họ và tên</th>
-                <th>Năm sinh</th>
-                <th>Giới tính</th>
-                <th>Quyển</th>
-                <th>Ngày mở</th>
-                <th>Ngày kết thúc</th>
-                <th>Trạng thái</th>
-                <th>Ngày hồi gia</th>
-                <th>Nơi tử vong</th>
-                <th>Nguyên nhân tử vong</th>
-                <th>Thùng</th>
-                <th>Vị trí</th>
-                <th>Tổng kiểm kê</th>
-              </tr>
-            </thead>
-            <tbody id="reportPreviewBody"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <div class="report-preview-note">
-        Bản xem trước được giữ tạm trong phiên làm việc. Khi bấm
-        <strong>Xuất Excel</strong>, hệ thống dùng lại dữ liệu này và không tải lại dữ liệu.
-      </div>
-
-      <div class="modal-actions report-preview-actions">
-        <button type="button" class="btn close-dialog">Đóng</button>
       </div>
     </div>
   </dialog>
@@ -7587,7 +7899,7 @@ html, body {
   <section id="authGate" class="auth-gate hidden" aria-hidden="true">
     <div class="auth-card">
       <button id="closeAuthGateBtn" class="auth-card-close" type="button" aria-label="Đóng">×</button>
-      <div class="auth-logo">✚</div>
+      <div class="auth-logo"><svg class="ui-icon auth-logo-icon" aria-hidden="true" focusable="false"><use href="#i-plus"></use></svg></div>
 
       <div>
         <h2>Hồ sơ bệnh án lưu trữ</h2>
@@ -7634,7 +7946,7 @@ html, body {
           empty.classList.remove('hidden');
           empty.innerHTML = `
             <div class="guest-access-card">
-              <div class="guest-icon">🖥️</div>
+              <div class="guest-icon"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-eye"></use></svg></div>
               <h3>Đang xem thử giao diện</h3>
               <p>Dữ liệu trực tuyến chỉ được tải khi mở ứng dụng từ đường dẫn GitHub Pages chính thức.</p>
             </div>`;
@@ -10261,7 +10573,7 @@ html, body {
       if (state.currentRole === 'pending') {
         message = '⏳ Yêu cầu sử dụng HSBA đã được ghi nhận. Bạn vẫn có thể xem danh mục công khai trong khi chờ quản trị viên duyệt; sau khi được duyệt chỉ cần tải lại trang.';
       } else if (state.currentRole === 'blocked') {
-        message = '🔒 Tài khoản HSBA hiện đang bị khóa. Vui lòng liên hệ quản trị viên để được mở lại quyền.';
+        message = 'Tài khoản HSBA hiện đang bị khóa. Vui lòng liên hệ quản trị viên để được mở lại quyền.';
       } else if (state.currentRole === 'rejected') {
         message = 'ℹ️ Yêu cầu sử dụng HSBA chưa được duyệt. Đăng nhập lại sẽ tạo yêu cầu xét duyệt mới.';
       }
@@ -10420,7 +10732,7 @@ html, body {
 
       $('#authGate').classList.add('hidden');
       $('#openLoginBtn').classList.remove('hidden');
-      $('#openLoginBtn').textContent = '🔐 Đăng nhập chỉnh sửa';
+      $('#openLoginBtn').innerHTML = `${uiIcon('log-in')}<span>Đăng nhập chỉnh sửa</span>`;
       $('#authUserBar').classList.add('hidden');
       hideAuthError();
 
@@ -10806,10 +11118,10 @@ html, body {
         : `${state.patients.length} hồ sơ đang hiển thị`;
 
       $('#summary').innerHTML = `
-        <span class="chip">👥 ${patientSummaryLabel}</span>
-        <span class="chip">✓ ${finishedCount} quyển hết quyển</span>
-        <span class="chip">⌂ ${returnCount} quyển hồi gia</span>
-        <span class="chip">🗂️ ${deathCount} quyển tử vong</span>
+        <span class="chip">${uiIcon('users')} ${patientSummaryLabel}</span>
+        <span class="chip">${uiIcon('check')} ${finishedCount} quyển hết quyển</span>
+        <span class="chip">${uiIcon('home')} ${returnCount} quyển hồi gia</span>
+        <span class="chip">${uiIcon('folder')} ${deathCount} quyển tử vong</span>
       `;
 
       if (!state.patients.length) {
@@ -10859,7 +11171,7 @@ html, body {
                 <div class="patient-info-item"><span class="patient-info-label">Năm sinh</span><span class="patient-info-value">${escapeHtml(patient['NĂM SINH'])}</span></div>
                 <div class="patient-info-item"><span class="patient-info-label">Giới tính</span><span class="patient-info-value">${escapeHtml(patient['GIỚI TÍNH'] || 'Chưa cập nhật')}</span></div>
                 <div class="patient-info-item"><span class="patient-info-label">Số hồ sơ</span><span class="patient-info-value">${escapeHtml(patient['SỐ HỒ SƠ'])}</span></div>
-                <div class="patient-info-item"><span class="patient-info-label">Số quyển lưu</span><span class="patient-info-value">${Number(patient['TỔNG SỐ QUYỂN']) || 0}</span></div>
+                <div class="patient-info-item"><span class="patient-info-label">Số quyển</span><span class="patient-info-value">${Number(patient['TỔNG SỐ QUYỂN']) || 0}</span></div>
               </div>
               <div class="patient-status-row">
                 <span class="badge ${statusClass}">${escapeHtml(displayStatus)}</span>
@@ -10922,18 +11234,18 @@ html, body {
               <span>Giới tính: <strong>${escapeHtml(patient['GIỚI TÍNH'] || 'Chưa cập nhật')}</strong></span>
             </div>
             <div class="badges">
-              <span class="badge">📚 ${books.length} quyển lưu</span>
+              <span class="badge">${uiIcon('book')} ${books.length} quyển</span>
               ${patient['TRẠNG THÁI MỚI NHẤT'] ? `<span class="badge ${isDeath ? 'death' : 'closed'}">${escapeHtml(patient['TRẠNG THÁI MỚI NHẤT'])}</span>` : ''}
             </div>
           </div>
           <div class="detail-action">
             ${canEdit ? `<div class="detail-action-group">
               ${(state.currentRole === 'admin' || books.length > 0)
-                ? '<button id="editPatientBtn" class="btn secondary-action">✎ Chỉnh sửa thông tin</button>'
+                ? `<button id="editPatientBtn" class="btn secondary-action">${uiIcon('edit')}<span>Chỉnh sửa thông tin</span></button>`
                 : ''}
-              ${canDeleteRecords() ? `<button id="deletePatientBtn" class="btn danger-action" ${state.currentRole === 'editor' && books.length ? 'disabled title="Tài khoản nhập liệu không được xóa hồ sơ đã có quyển"' : ''}>🗑 Xóa hồ sơ</button>` : ''}
-              <button id="openBookBtn" class="btn primary" ${isDeath ? 'disabled title="Hồ sơ tử vong không mở thêm quyển mới"' : ''}>＋ Lưu hồ sơ</button>
-            </div>` : `<span class="readonly-label">👁 ${isPublicView ? 'Xem công khai' : 'Chế độ chỉ xem'}</span>`}
+              ${canDeleteRecords() ? `<button id="deletePatientBtn" class="btn danger-action" ${state.currentRole === 'editor' && books.length ? 'disabled title="Tài khoản nhập liệu không được xóa hồ sơ đã có quyển"' : ''}>${uiIcon('trash')}<span>Xóa hồ sơ</span></button>` : ''}
+              <button id="openBookBtn" class="btn primary" ${isDeath ? 'disabled title="Hồ sơ tử vong không mở thêm quyển mới"' : ''}>${uiIcon('plus')}<span>Lưu hồ sơ</span></button>
+            </div>` : `<span class="readonly-label">${uiIcon('eye')} ${isPublicView ? 'Xem công khai' : 'Chế độ chỉ xem'}</span>`}
           </div>
         </section>
 
@@ -11136,7 +11448,7 @@ html, body {
                 ? `<a class="file-link"
                      href="${escapeAttr(book['FILE ĐÍNH KÈM'])}"
                      target="_blank"
-                     rel="noopener">📎 Mở tệp</a>`
+                     rel="noopener">${uiIcon('paperclip')}<span>Mở tệp</span></a>`
                 : '—'}
             </td>`;
 
@@ -11274,7 +11586,7 @@ html, body {
               <td class="death-cause-cell">${escapeHtml(item['NGUYÊN NHÂN TỬ VONG'] || '—')}</td>
               ${storageCells}
               <td>${item['FILE ĐÍNH KÈM']
-                ? `<a class="file-link" href="${escapeAttr(item['FILE ĐÍNH KÈM'])}" target="_blank" rel="noopener">📎 Mở file</a>`
+                ? `<a class="file-link" href="${escapeAttr(item['FILE ĐÍNH KÈM'])}" target="_blank" rel="noopener">${uiIcon('paperclip')}<span>Mở file</span></a>`
                 : '—'}</td>
             </tr>`;
           }).join('') : `<tr><td colspan="${publicView ? 10 : 13}">Chưa có hồ sơ tử vong trong năm đã chọn.</td></tr>`}</tbody>
@@ -11307,13 +11619,13 @@ html, body {
       const publicView = isPublicSession();
 
       $('#statsGrid').innerHTML = `
-        ${publicView ? '<div class="public-view-note">👁 Đang xem danh mục tra cứu công khai. Đăng nhập để xem tệp, ghi chú và thông tin nghiệp vụ đầy đủ.</div>' : ''}
+        ${publicView ? `<div class="public-view-note">${uiIcon('eye')}<span>Đang xem danh mục tra cứu công khai. Đăng nhập để xem tệp, ghi chú và thông tin nghiệp vụ đầy đủ.</span></div>` : ''}
         <div class="dashboard-kpi-grid">
-          ${dashboardKpiHtml({icon:'👥',label:'Tổng hồ sơ',value:totalPatients,note:'Số đối tượng đã tạo hồ sơ lưu trữ',color:'#8f1b29',bg:'#e5f8f4',soft:'rgba(54,194,180,.13)'})}
-          ${dashboardKpiHtml({icon:'📚',label:'Tổng quyển lưu',value:totalBooks,note:`Bình quân ${averageBooks} quyển/hồ sơ`,color:'#5b63b7',bg:'#eeeffd',soft:'rgba(91,99,183,.11)'})}
-          ${dashboardKpiHtml({icon:'✓',label:'Hết quyển',value:finishedBooks,note:`${rate(finishedBooks)}% tổng số quyển`,color:'#1c9664',bg:'#e6f7ee',soft:'rgba(46,182,125,.12)'})}
-          ${dashboardKpiHtml({icon:'⌂',label:'Đối tượng hồi gia',value:returnedBooks,note:`${rate(returnedBooks)}% tổng số quyển`,color:'#c47b13',bg:'#fff3db',soft:'rgba(249,176,65,.13)'})}
-          ${dashboardKpiHtml({icon:'📦',label:'Tổng thùng lưu trữ',value:totalBoxes,note:`${structuredBooks} quyển đã xác định vị trí`,color:'#8a5b22',bg:'#fff4df',soft:'rgba(202,139,54,.13)'})}
+          ${dashboardKpiHtml({icon:'users',label:'Tổng hồ sơ',value:totalPatients,note:'Số đối tượng đã tạo hồ sơ lưu trữ',color:'#8f1b29',bg:'#e5f8f4',soft:'rgba(54,194,180,.13)'})}
+          ${dashboardKpiHtml({icon:'book',label:'Tổng quyển lưu',value:totalBooks,note:`Bình quân ${averageBooks} quyển/hồ sơ`,color:'#5b63b7',bg:'#eeeffd',soft:'rgba(91,99,183,.11)'})}
+          ${dashboardKpiHtml({icon:'check',label:'Hết quyển',value:finishedBooks,note:`${rate(finishedBooks)}% tổng số quyển`,color:'#1c9664',bg:'#e6f7ee',soft:'rgba(46,182,125,.12)'})}
+          ${dashboardKpiHtml({icon:'home',label:'Đối tượng hồi gia',value:returnedBooks,note:`${rate(returnedBooks)}% tổng số quyển`,color:'#c47b13',bg:'#fff3db',soft:'rgba(249,176,65,.13)'})}
+          ${dashboardKpiHtml({icon:'box',label:'Tổng thùng lưu trữ',value:totalBoxes,note:`${structuredBooks} quyển đã xác định vị trí`,color:'#8a5b22',bg:'#fff4df',soft:'rgba(202,139,54,.13)'})}
         </div>
         <div class="dashboard-panels">
           <article class="dashboard-panel">
@@ -11333,17 +11645,17 @@ html, body {
           <article class="dashboard-panel">
             <div class="dashboard-panel-head"><div><h3 class="dashboard-panel-title">Chỉ số quản lý</h3><p class="dashboard-panel-subtitle">Các chỉ số phục vụ kiểm tra hồ sơ lưu trữ</p></div></div>
             <div class="management-metrics">
-              ${managementMetricHtml('📘','Bình quân quyển',`${averageBooks}`,'Mỗi hồ sơ','#5b63b7','#eeeffd')}
-              ${managementMetricHtml('●','Hồ sơ tử vong',`${deathBooks}`,'Quyển hồ sơ','#b94747','#fdebec')}
-              ${managementMetricHtml('📎','File còn thiếu',`${unscannedBooks}`,'Quyển cần bổ sung','#d36a3d','#fff0e8')}
+              ${managementMetricHtml('book','Bình quân quyển',`${averageBooks}`,'Mỗi hồ sơ','#5b63b7','#eeeffd')}
+              ${managementMetricHtml('folder','Hồ sơ tử vong',`${deathBooks}`,'Quyển hồ sơ','#b94747','#fdebec')}
+              ${managementMetricHtml('paperclip','File còn thiếu',`${unscannedBooks}`,'Quyển cần bổ sung','#d36a3d','#fff0e8')}
             </div>
           </article>
         </div>
         ${storageInventoryPanelHtml(storageStats)}
         ${documentInventoryStatsPanelHtml(inventoryStats)}
         <div class="dashboard-alerts">
-          <article class="dashboard-alert ${unscannedBooks ? 'warning' : 'success'}"><div class="dashboard-alert-icon">${unscannedBooks ? '⚠️' : '✓'}</div><div><strong>${unscannedBooks ? `${unscannedBooks} quyển chưa có file` : 'Đã hoàn tất file số hóa'}</strong><p>${unscannedBooks ? 'Cần tiếp tục bổ sung file scan hoặc hình ảnh.' : 'Tất cả quyển hiện có đều đã đính kèm file.'}</p></div></article>
-          <article class="dashboard-alert ${deathBooks ? '' : 'success'}"><div class="dashboard-alert-icon">${deathBooks ? '●' : '✓'}</div><div><strong>${deathBooks ? `${deathBooks} quyển thuộc hồ sơ tử vong` : 'Chưa có hồ sơ tử vong'}</strong><p>Danh mục tử vong có thể lọc theo năm và nơi tử vong.</p></div></article>
+          <article class="dashboard-alert ${unscannedBooks ? 'warning' : 'success'}"><div class="dashboard-alert-icon">${uiIcon(unscannedBooks ? 'warning' : 'check')}</div><div><strong>${unscannedBooks ? `${unscannedBooks} quyển chưa có file` : 'Đã hoàn tất file số hóa'}</strong><p>${unscannedBooks ? 'Cần tiếp tục bổ sung file scan hoặc hình ảnh.' : 'Tất cả quyển hiện có đều đã đính kèm file.'}</p></div></article>
+          <article class="dashboard-alert ${deathBooks ? '' : 'success'}"><div class="dashboard-alert-icon">${uiIcon(deathBooks ? 'folder' : 'check')}</div><div><strong>${deathBooks ? `${deathBooks} quyển thuộc hồ sơ tử vong` : 'Chưa có hồ sơ tử vong'}</strong><p>Danh mục tử vong có thể lọc theo năm và nơi tử vong.</p></div></article>
         </div>`;
 
       const storageSearchInput = $('#storageInventorySearch');
@@ -11469,7 +11781,7 @@ html, body {
             <strong class="dashboard-kpi-value">${Number(value) || 0}</strong>
             <p class="dashboard-kpi-note">${escapeHtml(note)}</p>
           </div>
-          <div class="dashboard-kpi-icon">${icon}</div>
+          <div class="dashboard-kpi-icon">${uiIcon(icon, 'dashboard-kpi-svg')}</div>
         </article>
       `;
     }
@@ -11507,7 +11819,7 @@ html, body {
               --metric-color:${color};
               --metric-bg:${background};
             ">
-            ${icon}
+            ${uiIcon(icon, 'management-metric-svg')}
           </div>
           <div>
             <div class="management-metric-label">${escapeHtml(label)}</div>
@@ -11695,6 +12007,13 @@ html, body {
           true
         );
         return;
+      }
+
+      const warning = $('#deletePatientWarning');
+      if (warning) {
+        warning.innerHTML = state.currentRole === 'admin'
+          ? '<strong>Lưu ý:</strong> Quản trị được xóa toàn bộ hồ sơ, kể cả hồ sơ đã có quyển. Dữ liệu liên quan sẽ được xử lý theo quy trình xóa của hệ thống.'
+          : '<strong>Lưu ý:</strong> Tài khoản nhập liệu chỉ được xóa hồ sơ chưa có quyển. Hồ sơ đã có quyển chỉ được chỉnh sửa để bảo đảm an toàn dữ liệu.';
       }
 
       const form = $('#deletePatientForm');
@@ -12513,11 +12832,13 @@ html, body {
       ).length;
 
       $('#reportPreviewSummary').innerHTML = `
-        <span class="report-preview-chip">Hồ sơ <strong>${patients.length}</strong></span>
-        <span class="report-preview-chip">Dòng quyển <strong>${bookRows.length}</strong></span>
-        <span class="report-preview-chip">Hết quyển <strong>${finishedCount}</strong></span>
-        <span class="report-preview-chip">Hồi gia <strong>${returnedCount}</strong></span>
-        <span class="report-preview-chip">Tử vong <strong>${deathCount}</strong></span>
+        <div class="report-preview-statline" role="status">
+          <span><strong>${patients.length}</strong> hồ sơ</span>
+          <span><strong>${bookRows.length}</strong> dòng quyển</span>
+          <span>Hết quyển <strong>${finishedCount}</strong></span>
+          <span>Hồi gia <strong>${returnedCount}</strong></span>
+          <span>Tử vong <strong>${deathCount}</strong></span>
+        </div>
       `;
 
       $('#reportPreviewScope').textContent =
@@ -12585,7 +12906,7 @@ html, body {
       if (!requireEditPermission()) return;
 
       const button = $('#exportExcelBtn');
-      const originalText = button.textContent;
+      const originalHtml = button.innerHTML;
 
       button.disabled = true;
       button.textContent = 'Đang chuẩn bị báo cáo...';
@@ -12598,7 +12919,7 @@ html, body {
         });
       } finally {
         button.disabled = false;
-        button.textContent = originalText;
+        button.innerHTML = originalHtml;
       }
     }
 
@@ -13116,6 +13437,13 @@ html, body {
         reader.onerror = () => reject(new Error('Không đọc được file.'));
         reader.readAsDataURL(file);
       });
+    }
+
+
+    function uiIcon(name, className = '') {
+      const safeName = String(name || '').replace(/[^a-z0-9-]/gi, '');
+      const safeClass = String(className || '').replace(/[^a-z0-9 _-]/gi, '').trim();
+      return `<svg class="ui-icon${safeClass ? ` ${safeClass}` : ''}" aria-hidden="true" focusable="false"><use href="#i-${safeName}"></use></svg>`;
     }
 
     function normalize(value) {
