@@ -9,8 +9,9 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.08.13.7">
+  <meta name="version" content="2026.08.13.9">
   <title>Hồ sơ bệnh án lưu trữ</title>
+  <link rel="manifest" href="./manifest.webmanifest?v=2026.08.13.9">
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -6484,7 +6485,7 @@ html, body {
 }
 
 
-    /* ===== 2026.08.13.7 - HỆ MÀU ROSE/BORDEAUX ĐỒNG BỘ ===== */
+    /* ===== 2026.08.13.9 - HỆ MÀU ROSE/BORDEAUX ĐỒNG BỘ ===== */
     :root {
       --rose-950: #58112f;
       --rose-900: #721740;
@@ -6654,7 +6655,7 @@ html, body {
 
 
     /* ============================================================
-       HSBA 2026.08.13.7 - DESIGN SYSTEM ROSE / BORDEAUX
+       HSBA 2026.08.13.9 - DESIGN SYSTEM ROSE / BORDEAUX
        Hệ màu theo bảng: 950 → 50. Chỉ thay lớp trình bày.
        ============================================================ */
     :root {
@@ -6937,7 +6938,7 @@ html, body {
 
 
 /* ============================================================
-   HSBA 2026.08.13.7 · PROFESSIONAL UX REFINEMENT
+   HSBA 2026.08.13.9 · PROFESSIONAL UX REFINEMENT
    1) Đồng bộ icon SVG
    2) Giảm thống kê lặp trên desktop
    3) Gọn typography/khoảng trắng desktop
@@ -7225,12 +7226,278 @@ html, body {
   .auth-logout-btn .ui-icon { width: 19px; height: 19px; }
 }
 
+
+
+/* ============================================================
+   HSBA 2026.08.13.9 · DESKTOP COMPACT + REALTIME/PWA REFINEMENT
+   ============================================================ */
+.nav-legacy-icon {
+  width: 22px;
+  min-width: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  line-height: 1;
+}
+
+/* Bỏ tiêu đề "Lọc theo trạng thái"; các lựa chọn dàn đều toàn bộ chiều ngang. */
+@media (min-width: 761px) {
+  :root { --sidebar-width: 250px; }
+
+  .sidebar {
+    padding: 16px 12px;
+  }
+  .brand {
+    padding: 6px 7px 18px;
+    gap: 10px;
+  }
+  .brand-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+  }
+  .brand strong { font-size: 14px; }
+  .brand small { font-size: 12px; }
+  .nav { gap: 5px; }
+  .nav-btn {
+    min-height: 43px;
+    padding: 10px 12px;
+    border-radius: 11px;
+    font-size: 14px;
+  }
+  .rule {
+    margin-top: 22px;
+    padding: 13px;
+    font-size: 12px;
+  }
+
+  .topbar {
+    height: 64px;
+    padding: 0 22px;
+  }
+  .top-title { font-size: 13px; }
+  .top-subtitle { font-size: 11px; }
+
+  .main {
+    width: min(1280px, 100%);
+    padding: 22px 24px 64px !important;
+  }
+  .page-head {
+    margin-bottom: 14px !important;
+    gap: 14px;
+  }
+  .page-head h1 {
+    font-size: clamp(30px, 2.15vw, 36px) !important;
+    line-height: 1.06 !important;
+  }
+  .page-head p {
+    margin-top: 4px !important;
+    font-size: 14px;
+  }
+  .page-actions .btn {
+    min-height: 42px;
+    padding: 9px 14px;
+  }
+
+  .search-filter-panel {
+    margin-top: 14px !important;
+    border-radius: 15px;
+  }
+  .search-main-row {
+    padding: 8px 10px !important;
+  }
+  .search-box {
+    min-height: 44px !important;
+  }
+  .search-box input {
+    padding: 10px 0;
+    font-size: 14px;
+  }
+  .search-submit-btn {
+    min-height: 44px !important;
+    min-width: 110px !important;
+    border-radius: 12px !important;
+  }
+
+  .filter-toolbar {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 0 !important;
+    padding: 11px 14px 13px !important;
+    background: linear-gradient(135deg, rgba(255,245,248,.86), rgba(255,255,255,.98)) !important;
+    border-top-color: var(--rose-100) !important;
+  }
+  .filter-toolbar-title,
+  .advanced-filter-open-btn,
+  .clear-filters-btn,
+  .mobile-filter-trigger {
+    display: none !important;
+  }
+  .status-filter-list {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  .status-filter-btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 42px !important;
+    justify-content: center !important;
+    padding: 7px 9px !important;
+    border-radius: 12px !important;
+    font-size: 12.5px !important;
+  }
+  .status-filter-btn span:nth-child(2) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .cards { gap: 11px !important; }
+  .patient-card {
+    padding: 15px 16px !important;
+    border-radius: 16px !important;
+  }
+  .patient-card h3 { font-size: 16px !important; }
+  .avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+  }
+}
+
+/* Mobile: đúng một nút cập nhật danh mục và một nút đăng xuất, không pseudo-icon lặp. */
+@media (max-width: 760px) {
+  .topbar {
+    height: 64px !important;
+    min-height: 64px !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    overflow: visible !important;
+    padding-left: max(9px, env(safe-area-inset-left)) !important;
+    padding-right: max(9px, env(safe-area-inset-right)) !important;
+  }
+  .topbar-left {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+  #authUserBar:not(.hidden) {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 6px !important;
+  }
+  .auth-user-summary { display: none !important; }
+  .auth-sync-public-btn,
+  .auth-logout-btn {
+    position: static !important;
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    flex: 0 0 40px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0 !important;
+  }
+  .auth-sync-public-btn::before,
+  .auth-sync-public-btn::after,
+  .auth-logout-btn::before,
+  .auth-logout-btn::after {
+    content: none !important;
+    display: none !important;
+  }
+  .auth-sync-public-btn > span,
+  .auth-logout-btn > span { display: none !important; }
+  .auth-sync-public-btn .ui-icon,
+  .auth-logout-btn .ui-icon {
+    display: block !important;
+    width: 20px !important;
+    height: 20px !important;
+  }
+}
+
+/* Thông báo cập nhật phiên bản nằm trong ứng dụng. */
+.app-update-banner {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 10020;
+  width: min(430px, calc(100vw - 28px));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 14px 14px 16px;
+  border: 1px solid var(--rose-200);
+  border-left: 5px solid var(--rose-800);
+  border-radius: 16px;
+  background: rgba(255,255,255,.985);
+  box-shadow: 0 18px 46px rgba(88,17,47,.20);
+  backdrop-filter: blur(12px);
+}
+.app-update-copy { min-width: 0; }
+.app-update-copy strong,
+.app-update-copy span { display: block; }
+.app-update-copy strong {
+  color: var(--rose-950);
+  font-size: 14px;
+}
+.app-update-copy span {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.app-update-dismiss {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 21px;
+}
+.app-update-dismiss:hover { background: var(--rose-50); color: var(--rose-900); }
+@media (max-width: 620px) {
+  .app-update-banner {
+    right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    width: calc(100vw - 20px);
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 9px;
+  }
+  .app-update-dismiss {
+    position: absolute;
+    right: 5px;
+    top: 4px;
+  }
+  .app-update-copy { padding-right: 22px; }
+  .app-update-banner .btn { grid-column: 1 / -1; width: 100%; }
+}
+
 </style>
 </head>
 
 <body>
 
-  <!-- HSBA UI icon sprite · Professional UX Refinement 2026.08.13.7 -->
+  <!-- HSBA UI icon sprite · Professional UX Refinement 2026.08.13.9 -->
   <svg class="ui-icon-sprite" aria-hidden="true" focusable="false">
     <defs>
       <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
@@ -7271,20 +7538,15 @@ html, body {
       </div>
 
       <nav class="nav">
-        <button class="nav-btn active" data-view="patients"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-users"></use></svg><span>Danh sách hồ sơ</span></button>
-        <button class="nav-btn" data-view="deaths"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-folder"></use></svg><span>Hồ sơ tử vong</span></button>
-        <button class="nav-btn" data-view="dashboard"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-chart"></use></svg><span>Thống kê tổng quan</span></button>
-        <button id="adminAccountsNavBtn" class="nav-btn hidden" data-view="accounts"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-shield"></use></svg><span>Quản trị tài khoản</span><span id="pendingAccountBadge" class="nav-count-badge hidden">0</span></button>
+        <button class="nav-btn active" data-view="patients"><span class="nav-legacy-icon" aria-hidden="true">👥</span><span>Danh sách hồ sơ</span></button>
+        <button class="nav-btn" data-view="deaths"><span class="nav-legacy-icon" aria-hidden="true">📁</span><span>Hồ sơ tử vong</span></button>
+        <button class="nav-btn" data-view="dashboard"><span class="nav-legacy-icon" aria-hidden="true">📈</span><span>Thống kê tổng quan</span></button>
+        <button id="adminAccountsNavBtn" class="nav-btn hidden" data-view="accounts"><span class="nav-legacy-icon" aria-hidden="true">🔐</span><span>Quản trị tài khoản</span><span id="pendingAccountBadge" class="nav-count-badge hidden">0</span></button>
 </nav>
-
-      <div class="rule">
-        <strong>Nguyên tắc quản lý</strong>
-        Không mở quyển mới khi quyển hiện tại chưa có ngày kết thúc.
-      </div>
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.08.13.7</small>
+        <small>Phiên bản 2026.08.13.9</small>
       </div>
     </aside>
 
@@ -7346,14 +7608,6 @@ html, body {
             </div>
 
             <div class="filter-toolbar">
-              <div class="filter-toolbar-title">
-                <span class="filter-toolbar-icon"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-filter"></use></svg></span>
-                <div>
-                  <strong>Lọc theo trạng thái</strong>
-                  <small>Chọn nhóm hồ sơ cần tra cứu</small>
-                </div>
-              </div>
-
               <div class="status-filter-list" role="group" aria-label="Bộ lọc trạng thái hồ sơ">
                 <button
                   type="button"
@@ -7481,7 +7735,6 @@ html, body {
           <section class="account-admin-section">
             <div class="account-admin-title">
               <div>
-                <span class="account-admin-kicker">YÊU CẦU TRUY CẬP</span>
                 <h2>Chưa được cấp quyền</h2>
               </div>
               <span id="pendingAccountCount" class="account-count-pill">0</span>
@@ -7916,12 +8169,143 @@ html, body {
     </div>
   </section>
 
+  <aside id="appUpdateBanner" class="app-update-banner hidden" role="status" aria-live="polite">
+    <div class="app-update-copy">
+      <strong>Có phiên bản mới</strong>
+      <span id="appUpdateText">Ứng dụng đã có bản cập nhật mới.</span>
+    </div>
+    <button id="applyAppUpdateBtn" class="btn primary small" type="button">Cập nhật ngay</button>
+    <button id="dismissAppUpdateBtn" class="app-update-dismiss" type="button" aria-label="Để sau">×</button>
+  </aside>
+
   <div id="toast" class="toast"></div>
 
   <div id="loading" class="loading hidden">
     <div class="spinner"></div>
     <span>Đang xử lý...</span>
   </div>
+
+  <script>
+    (() => {
+      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.08.13.9';
+      const banner = () => document.getElementById('appUpdateBanner');
+      const updateText = () => document.getElementById('appUpdateText');
+      let registration = null;
+      let latestVersion = '';
+      let reloadingForUpdate = false;
+      let dismissedVersion = '';
+
+      function showUpdateNotice(version = '') {
+        latestVersion = version || latestVersion || 'mới';
+        if (dismissedVersion && dismissedVersion === latestVersion) return;
+        const element = banner();
+        if (!element) return;
+        if (updateText()) {
+          updateText().textContent = version
+            ? `Phiên bản ${version} đã sẵn sàng. Cập nhật để sử dụng giao diện và chức năng mới nhất.`
+            : 'Phiên bản mới đã sẵn sàng. Cập nhật để sử dụng giao diện và chức năng mới nhất.';
+        }
+        element.classList.remove('hidden');
+      }
+
+      function hideUpdateNotice() {
+        banner()?.classList.add('hidden');
+      }
+
+      async function checkLatestVersion() {
+        try {
+          const response = await fetch(`./index.html?__hsba_version_check=${Date.now()}`, {
+            cache: 'no-store',
+            headers: { 'Cache-Control': 'no-cache' }
+          });
+          if (!response.ok) return;
+          const html = await response.text();
+          const match = html.match(/<meta\s+name=["']version["']\s+content=["']([^"']+)["']/i);
+          const remoteVersion = String(match?.[1] || '').trim();
+          if (remoteVersion && remoteVersion !== currentVersion) {
+            showUpdateNotice(remoteVersion);
+            registration?.update?.().catch(() => {});
+          }
+        } catch (_) {
+          // Kiểm tra phiên bản là cơ chế bổ sung, không làm gián đoạn ứng dụng khi mất mạng.
+        }
+      }
+
+      async function applyUpdate() {
+        const button = document.getElementById('applyAppUpdateBtn');
+        if (button) {
+          button.disabled = true;
+          button.textContent = 'Đang cập nhật...';
+        }
+
+        try {
+          await registration?.update?.();
+          if (registration?.waiting) {
+            registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+            return;
+          }
+          // Trường hợp chỉ index.html thay đổi mà service worker không đổi.
+          window.location.replace(`${window.location.pathname}?v=${Date.now()}`);
+        } catch (_) {
+          window.location.reload();
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('applyAppUpdateBtn')?.addEventListener('click', applyUpdate);
+        document.getElementById('dismissAppUpdateBtn')?.addEventListener('click', () => {
+          dismissedVersion = latestVersion || 'mới';
+          hideUpdateNotice();
+        });
+      }, { once: true });
+
+      if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+        window.addEventListener('load', async () => {
+          try {
+            registration = await navigator.serviceWorker.register('./sw.js', {
+              scope: './',
+              updateViaCache: 'none'
+            });
+
+            if (registration.waiting && navigator.serviceWorker.controller) {
+              showUpdateNotice();
+            }
+
+            registration.addEventListener('updatefound', () => {
+              const worker = registration.installing;
+              if (!worker) return;
+              worker.addEventListener('statechange', () => {
+                if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+                  showUpdateNotice();
+                }
+              });
+            });
+
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+              if (reloadingForUpdate) return;
+              reloadingForUpdate = true;
+              window.location.reload();
+            });
+
+            registration.update().catch(() => {});
+          } catch (error) {
+            console.warn('Không đăng ký được cơ chế cập nhật PWA:', error);
+          }
+
+          checkLatestVersion();
+          window.setInterval(checkLatestVersion, 3 * 60 * 1000);
+          window.setInterval(() => registration?.update?.().catch(() => {}), 5 * 60 * 1000);
+        });
+
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') {
+            checkLatestVersion();
+            registration?.update?.().catch(() => {});
+          }
+        });
+      }
+    })();
+  </script>
 
   <script type="module">
     const HSBA_RUNTIME_ALLOWED =
@@ -10293,6 +10677,102 @@ html, body {
     const $ = (selector, root = document) => root.querySelector(selector);
     const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
+    let realtimeCatalogUnsubscribe = null;
+    let realtimeCatalogMetaSeen = 0;
+    let realtimeRefreshTimer = null;
+    let realtimeRefreshRunning = false;
+    let realtimeRefreshQueued = false;
+
+    function activeViewId() {
+      return document.querySelector('.view.active')?.id || 'patientsView';
+    }
+
+    async function refreshCurrentPatientRealtime() {
+      const soHoSo = state.currentPatient?.['SỐ HỒ SƠ'];
+      if (!soHoSo) return;
+
+      const id = firebaseKey(soHoSo);
+      const patientSnapshot = await get(
+        ref(firebaseDatabase, `${patientCatalogPath()}/${id}`)
+      );
+
+      if (!patientSnapshot.exists()) {
+        state.currentPatient = null;
+        state.currentBooks = [];
+        switchView('patients');
+        showToast('Hồ sơ đang xem vừa được cập nhật hoặc xóa trên thiết bị khác.');
+        return;
+      }
+
+      state.currentPatient = patientToUi(id, patientSnapshot.val() || {});
+      const detail = await api.get('layChiTietHoSo', { soHoSo });
+      state.currentBooks = detail.data || [];
+      renderDetail();
+    }
+
+    async function runRealtimeDataRefresh() {
+      if (realtimeRefreshRunning) {
+        realtimeRefreshQueued = true;
+        return;
+      }
+
+      realtimeRefreshRunning = true;
+      try {
+        await refreshPatientSummariesSilently();
+
+        const view = activeViewId();
+        if (view === 'detailView') {
+          await refreshCurrentPatientRealtime();
+        } else if (view === 'deathsView') {
+          await refreshDeathsSilently();
+        } else if (view === 'dashboardView') {
+          state.storageStatsLoaded = false;
+          await refreshStorageStatsSilently();
+        }
+
+        if (view === 'accountsView' && state.currentRole === 'admin') {
+          state.accountAdmin.loaded = false;
+          await refreshAccountAdministration(true);
+        }
+      } catch (error) {
+        console.warn('Không tự đồng bộ được dữ liệu mới:', error);
+      } finally {
+        realtimeRefreshRunning = false;
+        if (realtimeRefreshQueued) {
+          realtimeRefreshQueued = false;
+          scheduleRealtimeDataRefresh(250);
+        }
+      }
+    }
+
+    function scheduleRealtimeDataRefresh(delay = 450) {
+      window.clearTimeout(realtimeRefreshTimer);
+      realtimeRefreshTimer = window.setTimeout(runRealtimeDataRefresh, delay);
+    }
+
+    function startRealtimeDataSync() {
+      if (realtimeCatalogUnsubscribe) return;
+
+      realtimeCatalogUnsubscribe = onValue(
+        ref(firebaseDatabase, 'congKhai/_meta/updatedAt'),
+        snapshot => {
+          const updatedAt = Number(snapshot.val() || 0);
+          if (!updatedAt) return;
+
+          // Lần đầu chỉ ghi nhận mốc hiện tại để không gọi lại bootstrap.
+          if (!realtimeCatalogMetaSeen) {
+            realtimeCatalogMetaSeen = updatedAt;
+            return;
+          }
+
+          if (updatedAt <= realtimeCatalogMetaSeen) return;
+          realtimeCatalogMetaSeen = updatedAt;
+          scheduleRealtimeDataRefresh();
+        },
+        error => console.warn('Không mở được kênh đồng bộ thời gian thực:', error)
+      );
+    }
+
     let hsbaInitStarted = false;
 
     function startHsbaApp() {
@@ -10415,6 +10895,7 @@ html, body {
           renderPatients();
           renderDeaths();
           renderStats();
+          startRealtimeDataSync();
 
           if (publicMode && state.patients.length === 0) {
             $('#patientsEmpty')?.classList.remove('hidden');
