@@ -1,0 +1,274 @@
+/* UI production 8.0.3 — compact login card */
+.auth-legacy-controls { display: none !important; }
+
+/* Logo ứng dụng ở thanh tiêu đề */
+.brand-mark-logo {
+  padding: 0 !important;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.28) !important;
+  background: transparent !important;
+  box-shadow: 0 8px 20px rgba(72,11,39,.16);
+}
+.brand-mark-logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ===== MÀN HÌNH ĐĂNG NHẬP GỌN ===== */
+#authView {
+  min-height: calc(100vh - 190px);
+}
+
+.login-stage {
+  width: min(470px, calc(100% - 28px));
+  margin: clamp(34px, 7vh, 74px) auto 36px;
+  padding: 0;
+}
+
+.login-shell {
+  display: block;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid rgba(133, 38, 78, .14);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow:
+    0 20px 46px rgba(86, 22, 51, .10),
+    0 2px 8px rgba(86, 22, 51, .04);
+}
+
+/* Phần logo nhỏ phía trên */
+.login-brand-panel {
+  position: relative;
+  min-height: 0;
+  display: flex;
+  justify-content: flex-start;
+  padding: 30px 34px 0;
+  overflow: visible;
+  color: inherit;
+  background: transparent;
+}
+
+.login-brand-glow,
+.login-brand-copy {
+  display: none !important;
+}
+
+.login-logo-wrap {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 19px;
+  background: #f7e7ee;
+  box-shadow: 0 9px 22px rgba(110, 26, 63, .13);
+}
+
+.login-app-logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+}
+
+/* Khối nội dung */
+.login-action-panel {
+  display: block;
+  padding: 22px 34px 14px;
+  background: #fff;
+}
+
+.login-action-panel .auth-panel {
+  width: 100%;
+  padding: 0;
+}
+
+.login-action-copy {
+  margin: 0 0 24px;
+}
+
+.login-eyebrow {
+  display: none !important;
+}
+
+/* Dùng tên ứng dụng làm tiêu đề chính, giống mẫu đăng nhập gọn */
+.login-action-copy h2 {
+  margin: 0 0 10px;
+  color: #4f102d;
+  font-size: 0;
+  line-height: 1.18;
+  letter-spacing: -.025em;
+}
+.login-action-copy h2::after {
+  content: "Tổng hợp số liệu Phòng Y tế";
+  display: block;
+  font-size: 29px;
+  font-weight: 800;
+}
+
+.login-action-copy p {
+  margin: 0;
+  color: #6f6469;
+  font-size: 15px;
+  line-height: 1.55;
+}
+.login-action-copy p::first-letter {
+  text-transform: none;
+}
+
+/* Nút đăng nhập */
+.auth-provider-google-only {
+  display: block;
+  margin: 0;
+}
+
+.btn-login-primary {
+  width: 100%;
+  min-height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 14px;
+  background: #a9255e;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow: 0 10px 22px rgba(169,37,94,.20);
+  transition:
+    transform .16s ease,
+    box-shadow .16s ease,
+    background-color .16s ease;
+}
+
+.btn-login-primary:hover {
+  transform: translateY(-1px);
+  background: #941f52;
+  box-shadow: 0 13px 26px rgba(169,37,94,.24);
+}
+.btn-login-primary:active {
+  transform: translateY(0);
+}
+
+.btn-login-primary svg {
+  display: none;
+}
+
+/* Bỏ ô ghi chú quyền cũ; dùng chân thẻ gọn giống mẫu bên phải */
+.login-security-note {
+  display: none !important;
+}
+
+.login-shell::after {
+  content: "Trung tâm Bảo trợ xã hội Tân Hiệp";
+  display: block;
+  margin: 0 34px;
+  padding: 22px 0 28px;
+  border-top: 1px solid #f1e3e9;
+  color: #8a7a81;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* Giữ ô tìm kiếm Tổng quan luôn trống khi trình duyệt khôi phục form */
+#dashboardSearch:-webkit-autofill,
+#dashboardSearch:-webkit-autofill:hover,
+#dashboardSearch:-webkit-autofill:focus {
+  -webkit-text-fill-color: inherit !important;
+  transition: background-color 9999s ease-out 0s;
+}
+
+/* Tablet / mobile */
+@media (max-width: 620px) {
+  #authView {
+    min-height: calc(100vh - 165px);
+  }
+
+  .login-stage {
+    width: min(430px, calc(100% - 24px));
+    margin-top: 28px;
+  }
+
+  .login-shell {
+    border-radius: 19px;
+    box-shadow: 0 15px 34px rgba(86, 22, 51, .09);
+  }
+
+  .login-brand-panel {
+    padding: 26px 26px 0;
+  }
+
+  .login-logo-wrap {
+    width: 66px;
+    height: 66px;
+    border-radius: 17px;
+  }
+
+  .login-action-panel {
+    padding: 20px 26px 12px;
+  }
+
+  .login-action-copy {
+    margin-bottom: 21px;
+  }
+
+  .login-action-copy h2::after {
+    font-size: 25px;
+  }
+
+  .login-action-copy p {
+    font-size: 14px;
+  }
+
+  .btn-login-primary {
+    min-height: 53px;
+    border-radius: 13px;
+  }
+
+  .login-shell::after {
+    margin-inline: 26px;
+    padding: 19px 0 24px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .login-stage {
+    width: calc(100% - 20px);
+    margin-top: 20px;
+  }
+
+  .login-brand-panel {
+    padding: 23px 22px 0;
+  }
+
+  .login-logo-wrap {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+  }
+
+  .login-action-panel {
+    padding: 18px 22px 10px;
+  }
+
+  .login-action-copy h2::after {
+    font-size: 23px;
+  }
+
+  .login-action-copy p {
+    font-size: 13px;
+  }
+
+  .login-shell::after {
+    margin-inline: 22px;
+    padding-bottom: 22px;
+  }
+}
