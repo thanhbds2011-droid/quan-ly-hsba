@@ -1,0 +1,29 @@
+HSBA - GIAI ĐOẠN 1A–3
+Ngày tạo bộ: 11/08/2026
+
+1A. firebase-rules.json
+- Đồng bộ nguyên văn Rules production do quản trị sao chép từ Firebase Realtime Database.
+- KHÔNG yêu cầu Publish lại Firebase nếu Rules production hiện đang đúng.
+- Mục đích: repository phản ánh đúng Rules đang vận hành.
+
+2. index.html - DriveUploader
+- Sửa lỗi recordError không tồn tại trong DriveUploader.request().
+- Khi Apps Script/Drive trả HTTP lỗi, hệ thống throw thông báo hợp lệ.
+- Không thay URL Apps Script, Drive, kiểu file hoặc giới hạn 20 MB.
+
+3. index.html - Login / congKhai
+- Bỏ cơ chế hsba_force_public_sync ở Email Login và Google Login.
+- Bỏ rebuildPublicCatalog() cưỡng bức ngay sau mỗi lần đăng nhập admin/editor.
+- Giữ syncPublicCatalogIfNeeded() trong bootstrap để chỉ rebuild khi metadata cho thấy cần đồng bộ.
+- Bổ sung guard: viewer không được kích hoạt rebuild congKhai.
+- Nút “Cập nhật danh mục xem” thủ công vẫn giữ nguyên.
+
+KHÔNG THAY ĐỔI
+- Firebase project/config.
+- UID và phanQuyen/{UID}.
+- accessAccounts.
+- Apps Script endpoints.
+- Cấu trúc dữ liệu nghiệp vụ.
+- Giao diện desktop/mobile.
+- Vercel production domain.
+- GitHub Pages runtime.
