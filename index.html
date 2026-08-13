@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#d95f8d">
+  <meta name="theme-color" content="#a9255e">
   <meta name="description" content="Ứng dụng quản lý hồ sơ bệnh án">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.08.13.1">
+  <meta name="version" content="2026.08.13.2">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -24,25 +24,25 @@
 
 <style>
     :root {
-      --primary: #12a6a6;
-      --primary-2: #36c2b4;
-      --primary-3: #0d7f86;
-      --primary-soft: #eafbf8;
+      --primary: #a9255e;
+      --primary-2: #d34f82;
+      --primary-3: #721740;
+      --primary-soft: #fbe5ed;
       --success: #1f9d68;
       --success-soft: #eaf9f1;
-      --danger: #e05a47;
-      --danger-soft: #fff1ee;
+      --danger: #b4233d;
+      --danger-soft: #fff0f2;
       --warning: #c98514;
       --warning-soft: #fff8e8;
-      --accent: #ff8a65;
-      --accent-soft: #fff2ec;
-      --text: #20313c;
-      --muted: #70828e;
-      --line: #dfecea;
+      --accent: #be326b;
+      --accent-soft: #fff5f8;
+      --text: #35232b;
+      --muted: #78666e;
+      --line: #efdce4;
       --surface: #ffffff;
-      --bg: #f7fbfa;
-      --shadow: 0 16px 38px rgba(30, 104, 101, .12);
-      --shadow-soft: 0 8px 24px rgba(30, 104, 101, .08);
+      --bg: #fdf7f9;
+      --shadow: 0 16px 38px rgba(101, 31, 63, .10);
+      --shadow-soft: 0 8px 24px rgba(101, 31, 63, .06);
       --radius: 18px;
       --sidebar-width: 270px;
     }
@@ -59,9 +59,9 @@
       margin: 0;
       min-height: 100vh;
       background:
-        radial-gradient(circle at 12% 0%, rgba(54,194,180,.14), transparent 30rem),
-        radial-gradient(circle at 95% 12%, rgba(255,138,101,.10), transparent 26rem),
-        linear-gradient(180deg, #fbfefd 0%, var(--bg) 100%);
+        radial-gradient(circle at 12% 0%, rgba(211,79,130,.14), transparent 30rem),
+        radial-gradient(circle at 95% 12%, rgba(169,37,94,.10), transparent 26rem),
+        linear-gradient(180deg, #fff9fb 0%, var(--bg) 100%);
     }
 
     button, input, select, textarea { font: inherit; }
@@ -6311,6 +6311,164 @@ html, body {
   .account-role-select { flex: 1 1 120px; }
 }
 
+
+    /* ===== 2026.08.13.2 - CHỦ ĐỀ HỒNG/BORDEAUX ĐỒNG BỘ TỔNG HỢP SỐ LIỆU ===== */
+    :root {
+      --rose-950: #58112f;
+      --rose-900: #721740;
+      --rose-800: #8e1e50;
+      --rose-700: #a9255e;
+      --rose-600: #be326b;
+      --rose-500: #d34f82;
+      --rose-200: #f4bfd3;
+      --rose-150: #f8d4e1;
+      --rose-100: #fbe5ed;
+      --rose-50: #fff5f8;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 12% 0%, rgba(211,79,130,.13), transparent 30rem),
+        radial-gradient(circle at 95% 12%, rgba(169,37,94,.09), transparent 28rem),
+        linear-gradient(180deg, #fff9fb 0%, #fdf7f9 100%);
+    }
+
+    .topbar {
+      background: rgba(255,255,255,.95);
+      border-bottom-color: #efdce4;
+      box-shadow: 0 5px 18px rgba(101,31,63,.05);
+    }
+    .top-title, .page-head h1 { color: #35232b; }
+    .top-subtitle, .sidebar-footer, .sidebar-footer small { color: #78666e; }
+
+    .brand-icon,
+    .detail-avatar,
+    .auth-logo,
+    .btn.primary,
+    .email-login-btn {
+      background: linear-gradient(145deg, #a9255e, #d34f82);
+      box-shadow: 0 12px 28px rgba(169,37,94,.20);
+    }
+
+    .nav-btn { color: #5f5159; }
+    .nav-btn:hover {
+      background: #fff5f8;
+      border-color: #efdce4;
+    }
+    .nav-btn.active {
+      background: linear-gradient(135deg, #fbe5ed, #fff5f8);
+      border-color: #f0c3d5;
+      color: #721740;
+      box-shadow: inset 3px 0 0 #a9255e;
+    }
+
+    .search-panel,
+    .table-wrap,
+    .patient-card,
+    .stat-card,
+    .dashboard-section,
+    .admin-card,
+    .account-admin-card {
+      border-color: #efdce4;
+    }
+
+    .chip,
+    .badge.closed {
+      background: linear-gradient(135deg, #fbe5ed, #fff5f8);
+      border-color: #f4bfd3;
+      color: #721740;
+    }
+
+    .patient-card::before,
+    .detail-card::before,
+    .page-head::after {
+      background: linear-gradient(180deg, #a9255e, #d34f82);
+    }
+
+    .avatar {
+      background: linear-gradient(145deg, #fbe5ed, #f8d4e1);
+      color: #721740;
+    }
+    .patient-card:hover {
+      border-color: #e4a8bf;
+      box-shadow: 0 16px 34px rgba(101,31,63,.10);
+    }
+    .patient-card .btn {
+      color: #721740;
+      border-color: #f0c3d5;
+      background: #fff9fb;
+    }
+    .patient-card .btn:hover {
+      background: #fbe5ed;
+      border-color: #e4a8bf;
+    }
+
+    .detail-card {
+      background: linear-gradient(135deg, rgba(251,229,237,.96), rgba(255,255,255,.98));
+      border-color: #f0c3d5;
+    }
+
+    th { background: #fff5f8; color: #73525f; }
+    tbody tr:hover { background: #fff9fb; }
+
+    input:focus,
+    select:focus,
+    textarea:focus,
+    .auth-field input:focus {
+      border-color: #a9255e !important;
+      box-shadow: 0 0 0 4px rgba(169,37,94,.10) !important;
+    }
+
+    .form-note {
+      border-color: #f0c3d5;
+      background: linear-gradient(135deg, #fff5f8, #fff9fb);
+      color: #73525f;
+    }
+    dialog input[readonly] {
+      background: #fff9fb;
+      color: #5f5159;
+    }
+
+    .auth-login-top-btn {
+      border-color: #f0c3d5;
+      background: #fff;
+      color: #721740;
+      box-shadow: 0 7px 18px rgba(101,31,63,.07);
+    }
+    .auth-login-top-btn:hover { background: #fff5f8; }
+
+    .auth-gate {
+      background:
+        radial-gradient(circle at 15% 0%, rgba(211,79,130,.18), transparent 28rem),
+        radial-gradient(circle at 100% 100%, rgba(169,37,94,.12), transparent 30rem),
+        rgba(253,247,249,.985);
+    }
+    .auth-card {
+      border-color: #efdce4;
+      box-shadow: 0 24px 70px rgba(101,31,63,.14);
+    }
+    .auth-card-close {
+      border-color: #efdce4;
+      color: #73525f;
+    }
+    .google-login-btn {
+      border-color: #efdce4;
+      color: #35232b;
+      box-shadow: 0 8px 20px rgba(101,31,63,.06);
+    }
+    .google-login-btn:hover:not(:disabled) {
+      background: #fff9fb;
+      border-color: #f0c3d5;
+    }
+
+    .loading {
+      background: linear-gradient(135deg, rgba(53,35,43,.96), rgba(114,23,64,.95));
+    }
+
+    .table-wrap {
+      scrollbar-color: #e4a8bf #fff5f8;
+    }
+
 </style>
 </head>
 
@@ -6945,7 +7103,6 @@ html, body {
       <div class="auth-logo">✚</div>
 
       <div>
-        <span class="auth-test-label">HỆ THỐNG CHÍNH THỨC</span>
         <h2>Hồ sơ bệnh án lưu trữ</h2>
         <p>Đăng nhập bằng Gmail. Nếu chưa có quyền, hệ thống sẽ tự ghi nhận yêu cầu để quản trị viên HSBA duyệt.</p>
       </div>
@@ -6955,9 +7112,6 @@ html, body {
         Đăng nhập bằng Google
       </button>
 
-      <p class="auth-help">
-        Không cần đăng ký qua Google Sheet. UID được Firebase Authentication tạo tự động khi đăng nhập Google.
-      </p>
 
       <div id="authError" class="auth-error hidden"></div>
     </div>
