@@ -9,9 +9,9 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.08.13.11">
+  <meta name="version" content="2026.08.13.12">
   <title>Hồ sơ bệnh án lưu trữ</title>
-  <link rel="manifest" href="./manifest.webmanifest?v=2026.08.13.11">
+  <link rel="manifest" href="./manifest.webmanifest?v=2026.08.13.12">
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -6500,7 +6500,7 @@ html, body {
 }
 
 
-    /* ===== 2026.08.13.11 - HỆ MÀU ROSE/BORDEAUX ĐỒNG BỘ ===== */
+    /* ===== 2026.08.13.12 - HỆ MÀU ROSE/BORDEAUX ĐỒNG BỘ ===== */
     :root {
       --rose-950: #58112f;
       --rose-900: #721740;
@@ -6670,7 +6670,7 @@ html, body {
 
 
     /* ============================================================
-       HSBA 2026.08.13.11 - DESIGN SYSTEM ROSE / BORDEAUX
+       HSBA 2026.08.13.12 - DESIGN SYSTEM ROSE / BORDEAUX
        Hệ màu theo bảng: 950 → 50. Chỉ thay lớp trình bày.
        ============================================================ */
     :root {
@@ -6953,7 +6953,7 @@ html, body {
 
 
 /* ============================================================
-   HSBA 2026.08.13.11 · PROFESSIONAL UX REFINEMENT
+   HSBA 2026.08.13.12 · PROFESSIONAL UX REFINEMENT
    1) Đồng bộ icon SVG
    2) Giảm thống kê lặp trên desktop
    3) Gọn typography/khoảng trắng desktop
@@ -7244,7 +7244,7 @@ html, body {
 
 
 /* ============================================================
-   HSBA 2026.08.13.11 · DESKTOP COMPACT + REALTIME/PWA REFINEMENT
+   HSBA 2026.08.13.12 · DESKTOP COMPACT + REALTIME/PWA REFINEMENT
    ============================================================ */
 .nav-legacy-icon {
   width: 22px;
@@ -7446,6 +7446,33 @@ html, body {
   }
 }
 
+/* ============================================================
+   HSBA 2026.08.13.12 · MOBILE FILTER RESET ICON FIX
+   Chỉ dùng SVG i-reset; vô hiệu hóa ký hiệu ↺ cũ từ pseudo-element.
+   ============================================================ */
+@media (max-width: 760px) {
+  #clearFiltersBtn.clear-filters-btn::before,
+  #clearFiltersBtn.clear-filters-btn::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  #clearFiltersBtn.clear-filters-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    font-size: 0 !important;
+  }
+
+  #clearFiltersBtn.clear-filters-btn .ui-icon {
+    display: block !important;
+    width: 21px !important;
+    height: 21px !important;
+    margin: 0 !important;
+  }
+}
+
 /* Thông báo cập nhật phiên bản nằm trong ứng dụng. */
 .app-update-banner {
   position: fixed;
@@ -7510,7 +7537,7 @@ html, body {
 
 
 /* ============================================================
-   HSBA 2026.08.13.11 · MOBILE/PWA AUTH TOOLBAR STABILITY
+   HSBA 2026.08.13.12 · MOBILE/PWA AUTH TOOLBAR STABILITY
    Chỉ sửa bố cục mobile. Desktop và nghiệp vụ giữ nguyên.
    - .hidden luôn thắng các rule display !important cũ.
    - Khi đã đăng nhập: chỉ 1 nút đồng bộ + 1 nút đăng xuất.
@@ -7681,7 +7708,7 @@ html, body {
 
 <body>
 
-  <!-- HSBA UI icon sprite · Professional UX Refinement 2026.08.13.11 -->
+  <!-- HSBA UI icon sprite · Professional UX Refinement 2026.08.13.12 -->
   <svg class="ui-icon-sprite" aria-hidden="true" focusable="false">
     <defs>
       <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
@@ -7730,7 +7757,7 @@ html, body {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.08.13.11</small>
+        <small>Phiên bản 2026.08.13.12</small>
       </div>
     </aside>
 
@@ -8370,7 +8397,7 @@ html, body {
 
   <script>
     (() => {
-      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.08.13.11';
+      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.08.13.12';
       const banner = () => document.getElementById('appUpdateBanner');
       const updateText = () => document.getElementById('appUpdateText');
       let registration = null;
