@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#9f1d2d">
+  <meta name="theme-color" content="#8e1e50">
   <meta name="description" content="Ứng dụng quản lý hồ sơ bệnh án">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.08.13.5">
+  <meta name="version" content="2026.08.13.6">
   <title>Hồ sơ bệnh án lưu trữ</title>
 
   <meta name="mobile-web-app-capable" content="yes">
@@ -24,25 +24,39 @@
 
 <style>
     :root {
-      --primary: #9f1d2d;
-      --primary-2: #c12b39;
-      --primary-3: #6f1520;
-      --primary-soft: #f7ecee;
+      /* Hệ màu Rose/Bordeaux chuẩn */
+      --rose-950: #58112f;
+      --rose-900: #721740;
+      --rose-800: #8e1e50;
+      --rose-700: #a9255e;
+      --rose-600: #be326b;
+      --rose-500: #d34f82;
+      --rose-200: #f4bfd3;
+      --rose-150: #f8d4e1;
+      --rose-100: #fbe5ed;
+      --rose-50: #fff5f8;
+
+      --primary: var(--rose-800);
+      --primary-2: var(--rose-700);
+      --primary-3: var(--rose-950);
+      --primary-soft: var(--rose-100);
+      --accent: var(--rose-600);
+      --accent-soft: var(--rose-50);
+
       --success: #1f8a5b;
       --success-soft: #edf8f2;
-      --danger: #b42318;
-      --danger-soft: #fff1ef;
-      --warning: #a56612;
-      --warning-soft: #fff8e8;
-      --accent: #8c1825;
-      --accent-soft: #faf2f3;
-      --text: #2f2426;
-      --muted: #746367;
-      --line: #eadcdf;
+      --danger: var(--rose-900);
+      --danger-soft: var(--rose-50);
+      --warning: #9a6516;
+      --warning-soft: #fff8e9;
+
+      --text: #35232b;
+      --muted: #78666e;
+      --line: #efdce4;
       --surface: #ffffff;
-      --bg: #faf8f7;
-      --shadow: 0 16px 38px rgba(111, 21, 32, .10);
-      --shadow-soft: 0 8px 24px rgba(111, 21, 32, .06);
+      --bg: #fff9fb;
+      --shadow: 0 16px 38px rgba(88, 17, 47, .10);
+      --shadow-soft: 0 8px 24px rgba(88, 17, 47, .065);
       --radius: 18px;
       --sidebar-width: 270px;
     }
@@ -59,8 +73,8 @@
       margin: 0;
       min-height: 100vh;
       background:
-        radial-gradient(circle at 12% 0%, rgba(159,29,45,.08), transparent 30rem),
-        radial-gradient(circle at 95% 12%, rgba(111,21,32,.055), transparent 26rem),
+        radial-gradient(circle at 12% 0%, rgba(169,37,94,.08), transparent 30rem),
+        radial-gradient(circle at 95% 12%, rgba(88,17,47,.055), transparent 26rem),
         linear-gradient(180deg, #fffdfc 0%, var(--bg) 100%);
     }
 
@@ -800,13 +814,13 @@
     /* ===== 2026.08.13.5 - CHỦ ĐỀ ĐỎ ĐÔ CHUYÊN NGHIỆP ===== */
     .topbar { background: rgba(255,255,255,.96); box-shadow: 0 5px 18px rgba(111,21,32,.045); }
     .top-title { color: #3a292c; }
-    .brand-icon { background: linear-gradient(145deg,var(--primary),var(--primary-2)); box-shadow: 0 12px 28px rgba(159,29,45,.20); }
+    .brand-icon { background: linear-gradient(145deg,var(--primary),var(--primary-2)); box-shadow: 0 12px 28px rgba(88,17,47,.18); }
     .nav-btn.active { background: linear-gradient(135deg,#f8f0f1,#fdf9f9); border-color:#ead6d9; color:var(--primary-3); box-shadow: inset 3px 0 0 var(--primary); }
     .nav-btn:hover { background:#fbf7f7; border-color:#eee2e4; }
     .rule { background:linear-gradient(145deg,#fffaf0,#fff6e8); border-color:#f0deb4; color:#76561f; }
     .page-head h1 { color:#342529; }
-    .btn.primary { background:linear-gradient(135deg,var(--primary),var(--primary-2)); box-shadow:0 10px 24px rgba(159,29,45,.18); }
-    .btn.primary:hover:not([disabled]) { box-shadow:0 13px 28px rgba(159,29,45,.23); }
+    .btn.primary { background:linear-gradient(135deg,var(--primary),var(--primary-2)); box-shadow:0 10px 24px rgba(88,17,47,.16); }
+    .btn.primary:hover:not([disabled]) { box-shadow:0 13px 28px rgba(88,17,47,.22); }
     .search-panel { border-color:#e9dddf; background:rgba(255,255,255,.98); }
     .chip { background:linear-gradient(135deg,#f8f1f2,#fdf9f9); border-color:#eadadd; color:var(--primary-3); }
     .patient-card::before { background:linear-gradient(180deg,var(--primary),var(--accent)); }
@@ -814,7 +828,7 @@
     .patient-card:hover { border-color:#dec4c8; box-shadow:0 16px 34px rgba(111,21,32,.10); }
     .detail-card { background:linear-gradient(135deg,rgba(252,247,247,.99),rgba(255,255,255,.99)); border-color:#e7d7da; }
     .detail-card::before { background:linear-gradient(180deg,var(--primary),var(--accent)); }
-    .detail-avatar { background:linear-gradient(145deg,var(--primary),var(--primary-2)); box-shadow:0 12px 26px rgba(159,29,45,.20); }
+    .detail-avatar { background:linear-gradient(145deg,var(--primary),var(--primary-2)); box-shadow:0 12px 26px rgba(88,17,47,.18); }
     .badge.open { background:var(--success-soft); color:var(--success); }
     .badge.closed { background:var(--primary-soft); color:var(--primary-3); }
     .badge.death { background:var(--danger-soft); color:var(--danger); }
@@ -3314,7 +3328,7 @@ body {
   color: white;
   font-size: 37px;
   font-weight: 900;
-  box-shadow: 0 14px 30px rgba(159,29,45,.20);
+  box-shadow: 0 14px 30px rgba(88,17,47,.18);
 }
 
 .auth-test-label {
@@ -3439,7 +3453,7 @@ body {
   color: #3b2c2f;
   font-size: 14px;
   font-weight: 800;
-  box-shadow: 0 8px 20px rgba(111,21,32,.055);
+  box-shadow: 0 8px 20px rgba(88,17,47,.055);
 }
 
 .google-login-btn:disabled {
@@ -3720,8 +3734,8 @@ body {
       line-height: 1.45;
     }
     .detail-action-group { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
-    .btn.secondary-action { background: #eef7f6; color: #126e72; border-color: #cde8e5; }
-    .btn.edit-action { background: #fff8e9; color: #9a6516; border-color: #f4d89d; }
+    .btn.secondary-action { background: #fff5f8; color: #721740; border-color: #f4bfd3; }
+    .btn.edit-action { background: #fff5f8; color: #721740; border-color: #f4bfd3; }
     .death-year-toolbar {
       display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
       margin: 14px 0; padding: 12px 14px; background: #f7fbfb;
@@ -4027,12 +4041,12 @@ body {
       border-color: transparent;
       color: #fff;
       background: linear-gradient(135deg, var(--primary), var(--primary-2));
-      box-shadow: 0 10px 22px rgba(159,29,45,.17);
+      box-shadow: 0 10px 22px rgba(88,17,47,.16);
     }
 
     .btn.confirm-danger-btn:hover:not(:disabled),
     .btn.confirm-primary-btn:hover:not(:disabled) {
-      box-shadow: 0 13px 26px rgba(159,29,45,.22);
+      box-shadow: 0 13px 26px rgba(88,17,47,.21);
     }
 
     @media (max-width: 620px) {
@@ -6145,19 +6159,19 @@ html, body {
        Chỉ thay đổi lớp trình bày; không thay đổi nghiệp vụ/Firebase.
        ============================================================ */
     :root {
-      --primary: #b52332;
-      --primary-2: #df9299;
-      --primary-3: #8e2632;
-      --primary-soft: #f8eeee;
-      --accent: #f3a6bd;
-      --accent-soft: #faf2f3;
-      --text: #352934;
-      --muted: #806f79;
-      --line: #eadcdf;
+      --primary: var(--rose-800);
+      --primary-2: var(--rose-700);
+      --primary-3: var(--rose-950);
+      --primary-soft: var(--rose-100);
+      --accent: var(--rose-600);
+      --accent-soft: var(--rose-50);
+      --text: #35232b;
+      --muted: #78666e;
+      --line: #efdce4;
       --surface: #ffffff;
-      --bg: #fffafa;
-      --shadow: 0 16px 38px rgba(169,63,105,.12);
-      --shadow-soft: 0 8px 24px rgba(169,63,105,.08);
+      --bg: #fff9fb;
+      --shadow: 0 16px 38px rgba(88,17,47,.10);
+      --shadow-soft: 0 8px 24px rgba(88,17,47,.065);
     }
 
     html { background: var(--bg); }
@@ -6467,18 +6481,29 @@ html, body {
 }
 
 
-    /* ===== 2026.08.13.5 - TINH CHỈNH ĐỎ ĐÔ / TRẮNG TRUNG TÍNH ===== */
+    /* ===== 2026.08.13.6 - HỆ MÀU ROSE/BORDEAUX ĐỒNG BỘ ===== */
     :root {
       --rose-950: #58112f;
-      --rose-900: #6f1520;
+      --rose-900: #721740;
       --rose-800: #8e1e50;
-      --rose-700: #9f1d2d;
-      --rose-600: #8c1825;
-      --rose-500: #c12b39;
-      --rose-200: #e9c2c6;
-      --rose-150: #efdadc;
-      --rose-100: #f7ecee;
-      --rose-50: #faf4f4;
+      --rose-700: #a9255e;
+      --rose-600: #be326b;
+      --rose-500: #d34f82;
+      --rose-200: #f4bfd3;
+      --rose-150: #f8d4e1;
+      --rose-100: #fbe5ed;
+      --rose-50: #fff5f8;
+
+      --primary: var(--rose-800);
+      --primary-2: var(--rose-700);
+      --primary-3: var(--rose-950);
+      --primary-soft: var(--rose-100);
+      --accent: var(--rose-600);
+      --accent-soft: var(--rose-50);
+      --danger: var(--rose-900);
+      --danger-soft: var(--rose-50);
+      --line: #efdce4;
+      --bg: #fff9fb;
     }
 
     body {
@@ -6624,6 +6649,288 @@ html, body {
       scrollbar-color: #d9aeb3 #faf4f4;
     }
 
+
+    /* ============================================================
+       HSBA 2026.08.13.6 - DESIGN SYSTEM ROSE / BORDEAUX
+       Hệ màu theo bảng: 950 → 50. Chỉ thay lớp trình bày.
+       ============================================================ */
+    :root {
+      --rose-950: #58112f;
+      --rose-900: #721740;
+      --rose-800: #8e1e50;
+      --rose-700: #a9255e;
+      --rose-600: #be326b;
+      --rose-500: #d34f82;
+      --rose-200: #f4bfd3;
+      --rose-150: #f8d4e1;
+      --rose-100: #fbe5ed;
+      --rose-50: #fff5f8;
+
+      --primary: var(--rose-800);
+      --primary-2: var(--rose-700);
+      --primary-3: var(--rose-950);
+      --primary-soft: var(--rose-100);
+      --accent: var(--rose-600);
+      --accent-soft: var(--rose-50);
+      --danger: var(--rose-900);
+      --danger-soft: var(--rose-50);
+      --line: #efdce4;
+      --bg: #fff9fb;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 10% 0%, rgba(244,191,211,.24), transparent 30rem),
+        radial-gradient(circle at 96% 10%, rgba(251,229,237,.68), transparent 28rem),
+        linear-gradient(180deg, #fffdfd 0%, #fff9fb 48%, #fffdfd 100%);
+    }
+
+    .sidebar {
+      background: rgba(255,253,254,.98);
+      border-right-color: var(--line);
+    }
+
+    .topbar {
+      background: rgba(255,255,255,.95);
+      border-bottom-color: var(--line);
+      box-shadow: 0 5px 18px rgba(88,17,47,.045);
+    }
+
+    .brand-icon,
+    .detail-avatar,
+    .auth-logo {
+      background: linear-gradient(145deg, var(--rose-900), var(--rose-700)) !important;
+      box-shadow: 0 12px 27px rgba(88,17,47,.18) !important;
+    }
+
+    .nav-btn {
+      color: #5f5159;
+    }
+
+    .nav-btn:hover {
+      background: var(--rose-50) !important;
+      border-color: var(--rose-150) !important;
+      color: var(--rose-900);
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(135deg, var(--rose-100), var(--rose-50)) !important;
+      border-color: var(--rose-200) !important;
+      color: var(--rose-900) !important;
+      box-shadow: inset 3px 0 0 var(--rose-700) !important;
+    }
+
+    /* Hệ nút thống nhất */
+    .btn {
+      border-color: #eadce2;
+      background: #fff;
+      color: #4e3941;
+      box-shadow: 0 2px 8px rgba(88,17,47,.025);
+    }
+
+    .btn:hover:not([disabled]) {
+      background: var(--rose-50);
+      border-color: var(--rose-200);
+      color: var(--rose-900);
+      box-shadow: 0 7px 17px rgba(88,17,47,.07);
+    }
+
+    .btn.primary,
+    .primary-action,
+    #addPatientBtn,
+    .email-login-btn {
+      border-color: var(--rose-800) !important;
+      background: linear-gradient(135deg, var(--rose-800), var(--rose-700)) !important;
+      color: #fff !important;
+      box-shadow: 0 10px 22px rgba(114,23,64,.20) !important;
+    }
+
+    .btn.primary:hover:not([disabled]),
+    .primary-action:hover:not([disabled]),
+    #addPatientBtn:hover:not([disabled]),
+    .email-login-btn:hover:not([disabled]) {
+      border-color: var(--rose-900) !important;
+      background: linear-gradient(135deg, var(--rose-900), var(--rose-800)) !important;
+      color: #fff !important;
+      box-shadow: 0 13px 27px rgba(88,17,47,.24) !important;
+    }
+
+    .btn.secondary-action,
+    .btn.edit-action {
+      border-color: var(--rose-200) !important;
+      background: linear-gradient(135deg, #fff, var(--rose-50)) !important;
+      color: var(--rose-900) !important;
+    }
+
+    .btn.secondary-action:hover:not([disabled]),
+    .btn.edit-action:hover:not([disabled]) {
+      border-color: var(--rose-500) !important;
+      background: var(--rose-100) !important;
+      color: var(--rose-950) !important;
+    }
+
+    .btn.danger-action,
+    .danger-outline {
+      border-color: var(--rose-500) !important;
+      background: #fff !important;
+      color: var(--rose-900) !important;
+    }
+
+    .btn.danger-action:hover:not([disabled]),
+    .danger-outline:hover:not([disabled]) {
+      border-color: var(--rose-800) !important;
+      background: var(--rose-100) !important;
+      color: var(--rose-950) !important;
+    }
+
+    .btn.danger,
+    .btn.danger-primary {
+      border-color: var(--rose-900) !important;
+      background: linear-gradient(135deg, var(--rose-900), var(--rose-800)) !important;
+      color: #fff !important;
+      box-shadow: 0 9px 20px rgba(88,17,47,.18);
+    }
+
+    .btn.danger:hover:not([disabled]),
+    .btn.danger-primary:hover:not([disabled]) {
+      border-color: var(--rose-950) !important;
+      background: var(--rose-950) !important;
+      color: #fff !important;
+    }
+
+    .btn[disabled] {
+      opacity: .48;
+      box-shadow: none !important;
+    }
+
+    /* Popup xác nhận: thao tác thường và thao tác xóa có cấp độ riêng */
+    .btn.confirm-primary-btn {
+      border-color: var(--rose-800) !important;
+      background: linear-gradient(135deg, var(--rose-800), var(--rose-700)) !important;
+      color: #fff !important;
+      box-shadow: 0 10px 22px rgba(114,23,64,.18) !important;
+    }
+
+    .btn.confirm-danger-btn {
+      border-color: var(--rose-900) !important;
+      background: linear-gradient(135deg, var(--rose-900), var(--rose-800)) !important;
+      color: #fff !important;
+      box-shadow: 0 10px 22px rgba(88,17,47,.20) !important;
+    }
+
+    .btn.confirm-primary-btn:hover:not([disabled]),
+    .btn.confirm-danger-btn:hover:not([disabled]) {
+      background: linear-gradient(135deg, var(--rose-950), var(--rose-800)) !important;
+      box-shadow: 0 13px 27px rgba(88,17,47,.25) !important;
+    }
+
+    .confirm-dialog-accent {
+      background: linear-gradient(90deg, var(--rose-950), var(--rose-800), var(--rose-600)) !important;
+    }
+
+    .confirm-dialog-icon {
+      background: var(--rose-100) !important;
+      color: var(--rose-900) !important;
+    }
+
+    .confirm-dialog-chip {
+      color: var(--rose-800) !important;
+    }
+
+    .confirm-dialog-detail {
+      border-color: var(--rose-150) !important;
+      background: var(--rose-50) !important;
+    }
+
+    .confirm-dialog-detail div::before {
+      background: var(--rose-700) !important;
+    }
+
+    /* Card, badge và trường nhập liệu cùng một hệ màu */
+    .chip,
+    .badge.closed {
+      border-color: var(--rose-150) !important;
+      background: var(--rose-50) !important;
+      color: var(--rose-900) !important;
+    }
+
+    .patient-card,
+    .detail-card,
+    .search-panel,
+    .table-wrap,
+    .account-admin-card,
+    .account-admin-section {
+      border-color: var(--line) !important;
+    }
+
+    .patient-card::before,
+    .detail-card::before,
+    .main::before {
+      background: linear-gradient(180deg, var(--rose-800), var(--rose-600)) !important;
+    }
+
+    .patient-card:hover {
+      border-color: var(--rose-200) !important;
+      box-shadow: 0 16px 34px rgba(88,17,47,.10) !important;
+    }
+
+    .avatar,
+    .account-avatar {
+      background: linear-gradient(145deg, var(--rose-100), var(--rose-150)) !important;
+      color: var(--rose-900) !important;
+    }
+
+    .detail-card {
+      background: linear-gradient(135deg, var(--rose-50), #fff 72%) !important;
+      border-color: var(--rose-150) !important;
+    }
+
+    th {
+      background: var(--rose-50) !important;
+      color: #6d5559;
+    }
+
+    tbody tr:hover {
+      background: #fff9fb !important;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus,
+    .auth-field input:focus {
+      border-color: var(--rose-700) !important;
+      box-shadow: 0 0 0 4px rgba(169,37,94,.105) !important;
+    }
+
+    .auth-login-top-btn,
+    .google-login-btn {
+      border-color: var(--rose-150) !important;
+      background: #fff !important;
+      color: var(--rose-900) !important;
+    }
+
+    .auth-login-top-btn:hover,
+    .google-login-btn:hover:not(:disabled) {
+      border-color: var(--rose-200) !important;
+      background: var(--rose-50) !important;
+      color: var(--rose-950) !important;
+    }
+
+    .auth-gate {
+      background:
+        radial-gradient(circle at 14% 0%, rgba(244,191,211,.28), transparent 28rem),
+        radial-gradient(circle at 100% 100%, rgba(251,229,237,.75), transparent 30rem),
+        rgba(255,249,251,.985) !important;
+    }
+
+    .loading {
+      background: linear-gradient(135deg, rgba(88,17,47,.97), rgba(142,30,80,.96)) !important;
+    }
+
+    .table-wrap {
+      scrollbar-color: var(--rose-200) var(--rose-50);
+    }
+
 </style>
 </head>
 
@@ -6652,7 +6959,7 @@ html, body {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.08.13.5</small>
+        <small>Phiên bản 2026.08.13.6</small>
       </div>
     </aside>
 
