@@ -9,9 +9,9 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.08.13.10">
+  <meta name="version" content="2026.08.13.11">
   <title>Hồ sơ bệnh án lưu trữ</title>
-  <link rel="manifest" href="./manifest.webmanifest?v=2026.08.13.10">
+  <link rel="manifest" href="./manifest.webmanifest?v=2026.08.13.11">
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -6500,7 +6500,7 @@ html, body {
 }
 
 
-    /* ===== 2026.08.13.10 - HỆ MÀU ROSE/BORDEAUX ĐỒNG BỘ ===== */
+    /* ===== 2026.08.13.11 - HỆ MÀU ROSE/BORDEAUX ĐỒNG BỘ ===== */
     :root {
       --rose-950: #58112f;
       --rose-900: #721740;
@@ -6670,7 +6670,7 @@ html, body {
 
 
     /* ============================================================
-       HSBA 2026.08.13.10 - DESIGN SYSTEM ROSE / BORDEAUX
+       HSBA 2026.08.13.11 - DESIGN SYSTEM ROSE / BORDEAUX
        Hệ màu theo bảng: 950 → 50. Chỉ thay lớp trình bày.
        ============================================================ */
     :root {
@@ -6953,7 +6953,7 @@ html, body {
 
 
 /* ============================================================
-   HSBA 2026.08.13.10 · PROFESSIONAL UX REFINEMENT
+   HSBA 2026.08.13.11 · PROFESSIONAL UX REFINEMENT
    1) Đồng bộ icon SVG
    2) Giảm thống kê lặp trên desktop
    3) Gọn typography/khoảng trắng desktop
@@ -7244,7 +7244,7 @@ html, body {
 
 
 /* ============================================================
-   HSBA 2026.08.13.10 · DESKTOP COMPACT + REALTIME/PWA REFINEMENT
+   HSBA 2026.08.13.11 · DESKTOP COMPACT + REALTIME/PWA REFINEMENT
    ============================================================ */
 .nav-legacy-icon {
   width: 22px;
@@ -7507,12 +7507,181 @@ html, body {
   .app-update-banner .btn { grid-column: 1 / -1; width: 100%; }
 }
 
+
+
+/* ============================================================
+   HSBA 2026.08.13.11 · MOBILE/PWA AUTH TOOLBAR STABILITY
+   Chỉ sửa bố cục mobile. Desktop và nghiệp vụ giữ nguyên.
+   - .hidden luôn thắng các rule display !important cũ.
+   - Khi đã đăng nhập: chỉ 1 nút đồng bộ + 1 nút đăng xuất.
+   - Khi chưa đăng nhập: chỉ 1 nút đăng nhập.
+   - Không phát sinh hàng toolbar thứ hai.
+   ============================================================ */
+@media (max-width: 760px) {
+  /* Một hàng duy nhất: menu + tiêu đề | hành động tài khoản */
+  .topbar {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-rows: 64px !important;
+    column-gap: 8px !important;
+    row-gap: 0 !important;
+    height: 64px !important;
+    min-height: 64px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .topbar-left {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    align-self: center !important;
+  }
+
+  /* Quan trọng: trạng thái hidden không được CSS cũ ép hiển thị lại. */
+  #openLoginBtn.hidden,
+  #authUserBar.hidden,
+  #syncPublicBtn.hidden,
+  #logoutBtn.hidden {
+    display: none !important;
+  }
+
+  #openLoginBtn.auth-login-top-btn:not(.hidden) {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    align-self: center !important;
+    justify-self: end !important;
+    position: static !important;
+    display: inline-flex !important;
+    width: 42px !important;
+    min-width: 42px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #authUserBar:not(.hidden) {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    align-self: center !important;
+    justify-self: end !important;
+    position: static !important;
+    display: flex !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 6px !important;
+  }
+
+  #authUserBar .auth-user-summary {
+    display: none !important;
+  }
+
+  #syncPublicBtn:not(.hidden),
+  #logoutBtn:not(.hidden) {
+    position: static !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    flex: 0 0 40px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    border-radius: 12px !important;
+    font-size: 0 !important;
+    line-height: 1 !important;
+  }
+
+  /* Chỉ dùng SVG thật; vô hiệu toàn bộ pseudo-icon di sản. */
+  #openLoginBtn::before,
+  #openLoginBtn::after,
+  #syncPublicBtn::before,
+  #syncPublicBtn::after,
+  #logoutBtn::before,
+  #logoutBtn::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  #openLoginBtn > span,
+  #syncPublicBtn > span,
+  #logoutBtn > span {
+    display: none !important;
+  }
+
+  #openLoginBtn .ui-icon,
+  #syncPublicBtn .ui-icon,
+  #logoutBtn .ui-icon {
+    display: block !important;
+    width: 20px !important;
+    height: 20px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    fill: none !important;
+    stroke: currentColor !important;
+  }
+
+  /* Đồng bộ là thao tác phụ; đăng xuất trung tính, tránh tranh thị giác với nội dung. */
+  #syncPublicBtn:not(.hidden) {
+    border-color: #bfe4de !important;
+    background: #f0fbf9 !important;
+    color: #0b7a73 !important;
+  }
+  #logoutBtn:not(.hidden) {
+    border-color: var(--rose-150) !important;
+    background: #ffffff !important;
+    color: var(--rose-900) !important;
+  }
+
+  .top-title {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .topbar {
+    grid-template-rows: 60px !important;
+    height: 60px !important;
+    min-height: 60px !important;
+    column-gap: 5px !important;
+  }
+  #syncPublicBtn:not(.hidden),
+  #logoutBtn:not(.hidden) {
+    width: 36px !important;
+    min-width: 36px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    flex-basis: 36px !important;
+  }
+  #openLoginBtn.auth-login-top-btn:not(.hidden) {
+    width: 38px !important;
+    min-width: 38px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+  }
+}
+
 </style>
 </head>
 
 <body>
 
-  <!-- HSBA UI icon sprite · Professional UX Refinement 2026.08.13.10 -->
+  <!-- HSBA UI icon sprite · Professional UX Refinement 2026.08.13.11 -->
   <svg class="ui-icon-sprite" aria-hidden="true" focusable="false">
     <defs>
       <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
@@ -7561,7 +7730,7 @@ html, body {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.08.13.10</small>
+        <small>Phiên bản 2026.08.13.11</small>
       </div>
     </aside>
 
@@ -8201,7 +8370,7 @@ html, body {
 
   <script>
     (() => {
-      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.08.13.10';
+      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.08.13.11';
       const banner = () => document.getElementById('appUpdateBanner');
       const updateText = () => document.getElementById('appUpdateText');
       let registration = null;
