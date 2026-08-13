@@ -38,7 +38,6 @@
         getAuth,
         GoogleAuthProvider,
         signInWithPopup,
-        signInWithEmailAndPassword,
         onAuthStateChanged,
         signOut,
         setPersistence,
@@ -72,11 +71,9 @@
 
     const CONFIG = Object.freeze({
       OWNER_EMAIL: 'thanhbds2011@gmail.com',
+      ACCESS_REQUEST_PATH: 'hsbaYeuCauDangKy',
 
-      // Dán URL Web App của Apps Script đồng bộ nhân sự sau khi Deploy.
-      PERSONNEL_ACCESS_URL:
-        'https://script.google.com/macros/s/AKfycbxfLR5-08rHVWGwg8a3Zkafg9JN3lUHuGOtOngr0bjaosjKnGJ-fSZ-esaFoJBbUDQBEQ/exec',
-
+      // Apps Script này chỉ dùng upload Google Drive; cấp quyền HSBA không còn phụ thuộc Apps Script/Google Sheet.
       DRIVE_UPLOAD_URL:
         'https://script.google.com/macros/s/AKfycbwTuGwnLDDDE7sUi2Isy4W_TwvboLaC-Qo7g5QqueSSS0Z_Mo8UxaTBq8eGaI6ax9Mz/exec',
 
@@ -130,6 +127,19 @@
 
     function uppercaseVietnamese(value) {
       return String(value || '').trim().toLocaleUpperCase('vi-VN');
+    }
+
+    function formatVietnamesePersonName(value) {
+      const normalized = String(value || '')
+        .trim()
+        .replace(/\s+/g, ' ')
+        .toLocaleLowerCase('vi-VN');
+
+      return normalized.replace(
+        /(^|[\s'-])(\p{L})/gu,
+        (_, separator, letter) =>
+          separator + letter.toLocaleUpperCase('vi-VN')
+      );
     }
 
     function formatMedicalRecordNumber(value) {
@@ -356,7 +366,7 @@
       return {
         '_FIREBASE_ID': id,
         'SỐ HỒ SƠ': patient.soHoSo || '',
-        'HỌ VÀ TÊN': patient.hoTen || '',
+        'HỌ VÀ TÊN': formatVietnamesePersonName(patient.hoTen || ''),
         'NĂM SINH': patient.namSinh || '',
         'GIỚI TÍNH': patient.gioiTinh || '',
         'TỔNG SỐ QUYỂN': Number(patient.tongSoQuyen) || 0,
@@ -376,7 +386,7 @@
       const storage = parseStorageLocation(book);
       return {
         'SỐ HỒ SƠ': patient.soHoSo || '',
-        'HỌ VÀ TÊN': patient.hoTen || '',
+        'HỌ VÀ TÊN': formatVietnamesePersonName(patient.hoTen || ''),
         'NĂM SINH': patient.namSinh || '',
         'GIỚI TÍNH': patient.gioiTinh || '',
         'FILE ĐÍNH KÈM': book.fileDinhKem || '',
@@ -406,7 +416,7 @@
       const storage = parseStorageLocation(item);
       return {
         'SỐ HỒ SƠ': item.soHoSo || '',
-        'HỌ VÀ TÊN': item.hoTen || '',
+        'HỌ VÀ TÊN': formatVietnamesePersonName(item.hoTen || ''),
         'NĂM SINH': item.namSinh || '',
         'GIỚI TÍNH': item.gioiTinh || '',
         'QUYỂN SỐ': Number(item.quyenSo) || 0,
@@ -459,11 +469,15 @@
       return stats;
     }
 
+    function hasPrivateHsbaAccess(role = state.currentRole) {
+      return ['admin', 'editor', 'viewer'].includes(String(role || '').toLowerCase());
+    }
+
     function isPublicSession() {
       return (
         !firebaseAuth.currentUser ||
         firebaseAuth.currentUser?.isAnonymous === true ||
-        state.currentRole === 'public'
+        !hasPrivateHsbaAccess()
       );
     }
 
@@ -517,7 +531,7 @@
 
       return {
         soHoSo: String(patient.soHoSo || ''),
-        hoTen: String(patient.hoTen || ''),
+        hoTen: formatVietnamesePersonName(patient.hoTen || ''),
         hoTenTimKiem: String(
           patient.hoTenTimKiem || normalize(patient.hoTen || '')
         ),
@@ -763,17 +777,6 @@
       return isPublicSession()
         ? 'congKhai/hoSo'
         : 'doiTuong';
-    }
-
-    function patientEntryStatusGroup(entry) {
-      const patient = entry?.patient || {};
-      const latestStatus = normalizeRecordStatus(patient.trangThaiHienTai);
-      const totalBooks = Number(patient.tongSoQuyen) || 0;
-
-      if (latestStatus === CONFIG.STATUS.TU_VONG) return 'death';
-      if (latestStatus === CONFIG.STATUS.HOI_GIA) return 'returned';
-      if (latestStatus === CONFIG.STATUS.HET_QUYEN) return 'finished';
-      return totalBooks > 0 ? 'finished' : 'empty';
     }
 
     function snapshotPatientEntries(snapshot) {
@@ -1369,7 +1372,7 @@
         return (
           !this.auth.currentUser ||
           this.auth.currentUser?.isAnonymous === true ||
-          state.currentRole === 'public'
+          !hasPrivateHsbaAccess()
         );
       }
 
@@ -1393,8 +1396,8 @@
 
         await currentUser.getIdToken(true);
 
-        // Giai đoạn 4: danh sách hồ sơ lấy từ node doiTuong tóm tắt;
-        // chỉ đọc toàn bộ quyenHoSo một lần khi thực sự phải rebuild.
+        // Giai đoạn 5: rebuild thủ công mới đọc toàn bộ danh sách hồ sơ;
+        // đồng thời chỉ đọc toàn bộ quyenHoSo một lần khi thực sự phải rebuild.
         const entries = Array.isArray(patientEntries)
           ? patientEntries
           : await readPatientSummaries();
@@ -1748,7 +1751,7 @@
 
       async addPatient(payload) {
         const soHoSo = formatMedicalRecordNumber(payload.soHoSo);
-        const hoTen = uppercaseVietnamese(payload.hoTen);
+        const hoTen = formatVietnamesePersonName(payload.hoTen);
         const namSinh = Number(payload.namSinh);
         const gioiTinh = String(payload.gioiTinh || '').trim();
         const currentYear = new Date().getFullYear();
@@ -1819,7 +1822,7 @@
           payload.originalSoHoSo || payload.soHoSo
         );
         const soHoSo = formatMedicalRecordNumber(payload.soHoSo);
-        const hoTen = uppercaseVietnamese(payload.hoTen);
+        const hoTen = formatVietnamesePersonName(payload.hoTen);
         const namSinh = Number(payload.namSinh);
         const gioiTinh = String(payload.gioiTinh || '').trim();
         const currentYear = new Date().getFullYear();
@@ -1869,7 +1872,7 @@
 
           if (isEditor && bookCount === 0) {
             throw new Error(
-              'Hồ sơ chưa có quyển. Tài khoản cập nhật phải xóa hồ sơ nhập sai và tạo lại.'
+              'Hồ sơ chưa có quyển. Tài khoản nhập liệu phải xóa hồ sơ nhập sai và tạo lại.'
             );
           }
 
@@ -2021,7 +2024,7 @@
 
           if (isEditor && bookCount > 0) {
             throw new Error(
-              'Tài khoản cập nhật không được xóa hồ sơ đã có quyển. Hãy chỉnh sửa thông tin hồ sơ.'
+              'Tài khoản nhập liệu không được xóa hồ sơ đã có quyển. Hãy chỉnh sửa thông tin hồ sơ.'
             );
           }
 
@@ -2337,7 +2340,12 @@
       },
       activeStatusFilter: 'all',
       deathYearFilter: 'all',
-      currentRole: 'public'
+      currentRole: 'public',
+      accountAdmin: {
+        requests: [],
+        permissions: [],
+        loaded: false
+      }
     };
 
     const $ = (selector, root = document) => root.querySelector(selector);
@@ -2427,6 +2435,16 @@
             state.currentRole = access.role;
             showLoggedInState(user, access.role);
 
+            if (access.role === 'pending') {
+              showToast('Yêu cầu sử dụng HSBA đã được gửi và đang chờ quản trị viên duyệt.');
+            } else if (access.role === 'blocked') {
+              showToast('Tài khoản HSBA đang bị khóa. Bạn hiện chỉ xem được danh mục công khai.', true);
+            } else if (access.role === 'admin') {
+              refreshAccountAdministration(true).catch(error => {
+                console.warn('Không tải được danh sách tài khoản HSBA:', error);
+              });
+            }
+
           }
 
           applyRoleUi();
@@ -2473,7 +2491,7 @@
               error.message || 'Tài khoản chưa được cấp quyền.'
             );
           } else if (!publicMode) {
-            showLoggedInState(user, state.currentRole || 'viewer');
+            showLoggedInState(user, state.currentRole || 'pending');
             applyRoleUi();
             showToast(
               'Đã đăng nhập nhưng chưa tải được dữ liệu. Vui lòng tải lại trang.',
@@ -2499,31 +2517,35 @@
         return { active: true, role: 'admin', email };
       }
 
-      // Google Sheet/accessAccounts là nguồn phân quyền gốc.
-      // Mỗi lần người dùng đăng nhập, luôn gọi dịch vụ claimAccess để:
-      // 1) đối chiếu Email hiện tại với accessAccounts;
-      // 2) liên kết UID thật vào linkedUid/authReady;
-      // 3) cập nhật role/active mới nhất vào phanQuyen/{UID}.
-      // Cách này xử lý cả dữ liệu chuyển tiếp: phanQuyen đã tồn tại nhưng
-      // accessAccounts chưa có linkedUid, hoặc role trên Sheet vừa thay đổi.
-      await claimPersonnelAccess(user);
-
       const permission = await readRealtimePermission(user.uid);
       const role = String(permission.role || '').trim().toLowerCase();
 
       if (
-        permission.active !== true ||
-        !['admin', 'editor', 'viewer'].includes(role)
+        permission.active === true &&
+        ['admin', 'editor', 'viewer'].includes(role)
       ) {
-        throw new Error(
-          'Tài khoản chưa được quản trị viên cấp quyền sử dụng hệ thống.'
-        );
+        return {
+          active: true,
+          role,
+          email: permission.email || email
+        };
       }
 
+      // Tài khoản đã từng được duyệt nhưng đang bị khóa: không tự tạo yêu cầu mới.
+      if (permission.email && permission.active === false) {
+        return {
+          active: false,
+          role: 'blocked',
+          email: permission.email || email
+        };
+      }
+
+      const request = await ensureHsbaAccessRequest(user);
       return {
-        active: true,
-        role,
-        email: permission.email || email
+        active: false,
+        role: request.status === 'rejected' ? 'rejected' : 'pending',
+        email,
+        request
       };
     }
 
@@ -2534,47 +2556,53 @@
       return snapshot.val() || {};
     }
 
-    async function claimPersonnelAccess(user) {
-      const endpoint = String(CONFIG.PERSONNEL_ACCESS_URL || '').trim();
-      if (
-        !endpoint.startsWith('https://script.google.com/macros/s/') ||
-        !endpoint.endsWith('/exec')
-      ) {
+    async function readHsbaAccessRequest(uid) {
+      const snapshot = await get(
+        ref(firebaseDatabase, `${CONFIG.ACCESS_REQUEST_PATH}/${uid}`)
+      );
+      return snapshot.val() || {};
+    }
+
+    async function ensureHsbaAccessRequest(user) {
+      const uid = String(user?.uid || '').trim();
+      const email = String(user?.email || '').trim().toLowerCase();
+
+      if (!uid || !email) {
+        throw new Error('Không xác định được tài khoản Google vừa đăng nhập.');
+      }
+
+      const existing = await readHsbaAccessRequest(uid);
+      const existingStatus = String(existing.status || '').toLowerCase();
+
+      if (existingStatus === 'pending') {
+        return existing;
+      }
+
+      if (existingStatus === 'approved') {
         throw new Error(
-          'Hệ thống chưa cấu hình dịch vụ cấp quyền tự động.'
+          'Yêu cầu tài khoản đã được duyệt nhưng quyền HSBA chưa đồng bộ. Vui lòng liên hệ quản trị viên.'
         );
       }
 
-      const idToken = await user.getIdToken(true);
-      const body = new URLSearchParams({
-        action: 'claimAccess',
-        idToken
-      });
+      const provider = (user.providerData || [])
+        .map(item => String(item?.providerId || '').trim())
+        .filter(Boolean)
+        .join(',') || 'google.com';
 
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-        },
-        body: body.toString(),
-        redirect: 'follow'
-      });
+      const request = {
+        email,
+        displayName: String(user.displayName || '').trim(),
+        provider,
+        status: 'pending',
+        requestedAt: Date.now()
+      };
 
-      const text = await response.text();
-      let result = {};
-      try {
-        result = JSON.parse(text || '{}');
-      } catch (_) {
-        throw new Error('Dịch vụ cấp quyền tự động phản hồi không hợp lệ.');
-      }
+      await set(
+        ref(firebaseDatabase, `${CONFIG.ACCESS_REQUEST_PATH}/${uid}`),
+        request
+      );
 
-      if (!response.ok || result.success !== true) {
-        throw new Error(
-          result.message || 'Tài khoản chưa được cấp quyền sử dụng hệ thống.'
-        );
-      }
-
-      return result;
+      return request;
     }
 
     function canEditRecords() {
@@ -2587,26 +2615,53 @@
 
     function roleLabel(role) {
       if (role === 'admin') return 'Quản trị';
-      if (role === 'editor') return 'Cập nhật';
+      if (role === 'editor') return 'Nhập liệu';
       if (role === 'viewer') return 'Chỉ xem';
+      if (role === 'pending') return 'Chờ duyệt';
+      if (role === 'blocked') return 'Tạm khóa';
+      if (role === 'rejected') return 'Chưa được duyệt';
       return 'Xem công khai';
+    }
+
+    function updateAccountAccessNotice() {
+      const notice = $('#accountAccessNotice');
+      if (!notice) return;
+
+      let message = '';
+      if (state.currentRole === 'pending') {
+        message = '⏳ Yêu cầu sử dụng HSBA đã được ghi nhận. Bạn vẫn có thể xem danh mục công khai trong khi chờ quản trị viên duyệt; sau khi được duyệt chỉ cần tải lại trang.';
+      } else if (state.currentRole === 'blocked') {
+        message = '🔒 Tài khoản HSBA hiện đang bị khóa. Vui lòng liên hệ quản trị viên để được mở lại quyền.';
+      } else if (state.currentRole === 'rejected') {
+        message = 'ℹ️ Yêu cầu sử dụng HSBA chưa được duyệt. Đăng nhập lại sẽ tạo yêu cầu xét duyệt mới.';
+      }
+
+      notice.textContent = message;
+      notice.classList.toggle('hidden', !message);
     }
 
     function applyRoleUi() {
       const canEdit = canEditRecords();
-      const isGuest = state.currentRole === 'public' || !state.currentRole;
+      const isGuest = isPublicSession();
+      const isAdmin = state.currentRole === 'admin';
       $('#addPatientBtn')?.classList.toggle('hidden', !canEdit);
       $('#exportExcelBtn')?.classList.toggle('hidden', !canEdit);
       $('#syncPublicBtn')?.classList.toggle('hidden', !canEdit);
+      $('#adminAccountsNavBtn')?.classList.toggle('hidden', !isAdmin);
       document.body.classList.toggle('read-only-mode', !canEdit);
       document.body.classList.toggle('guest-mode', isGuest);
+      updateAccountAccessNotice();
     }
 
     function requireEditPermission() {
       if (canEditRecords()) return true;
       if (state.currentRole === 'public') {
         openLoginDialog();
-        showToast('Vui lòng đăng nhập để thực hiện thao tác chỉnh sửa.', true);
+        showToast('Vui lòng đăng nhập Google để thực hiện thao tác chỉnh sửa.', true);
+      } else if (state.currentRole === 'pending') {
+        showToast('Tài khoản đang chờ quản trị viên HSBA duyệt.', true);
+      } else if (state.currentRole === 'blocked') {
+        showToast('Tài khoản HSBA đang bị khóa.', true);
       } else {
         showToast('Tài khoản này chỉ có quyền xem dữ liệu.', true);
       }
@@ -2629,38 +2684,6 @@
       $('#closeAuthGateBtn').addEventListener('click', closeLoginDialog);
       $('#authGate').addEventListener('click', event => {
         if (event.target === $('#authGate')) closeLoginDialog();
-      });
-
-      $('#emailLoginForm').addEventListener('submit', async event => {
-        event.preventDefault();
-
-        const button = $('#emailLoginBtn');
-        const email = String($('#emailLoginInput').value || '').trim();
-        const password = String($('#passwordLoginInput').value || '');
-
-        button.disabled = true;
-        button.textContent = 'Đang đăng nhập...';
-        hideAuthError();
-        authUpgradeInProgress = true;
-
-        try {
-          const credential = await signInWithEmailAndPassword(
-            firebaseAuth,
-            email,
-            password
-          );
-
-          // Làm mới token rồi để onAuthStateChanged tự đọc phân quyền
-          // và cập nhật giao diện. Không dùng window.location.reload().
-          await credential.user.getIdToken(true);
-          closeLoginDialog();
-        } catch (error) {
-          showAuthError(firebaseError(error).message);
-        } finally {
-          authUpgradeInProgress = false;
-          button.disabled = false;
-          button.textContent = 'Đăng nhập';
-        }
       });
 
       $('#googleLoginBtn').addEventListener('click', async () => {
@@ -2748,7 +2771,7 @@
 
       requestAnimationFrame(() => {
         gate.scrollTop = 0;
-        setTimeout(() => $('#emailLoginInput')?.focus(), 80);
+        setTimeout(() => $('#googleLoginBtn')?.focus(), 80);
       });
     }
 
@@ -2762,6 +2785,7 @@
 
     function showPublicState() {
       state.currentRole = 'public';
+      state.accountAdmin.loaded = false;
       applyRoleUi();
 
       $('#authGate').classList.add('hidden');
@@ -2769,10 +2793,6 @@
       $('#openLoginBtn').textContent = '🔐 Đăng nhập chỉnh sửa';
       $('#authUserBar').classList.add('hidden');
       hideAuthError();
-
-      const emailButton = $('#emailLoginBtn');
-      emailButton.disabled = false;
-      emailButton.textContent = 'Đăng nhập';
 
       const googleButton = $('#googleLoginBtn');
       googleButton.disabled = false;
@@ -2829,6 +2849,9 @@
       $('#exportExcelBtn')?.addEventListener('click', openReportPreview);
       $('#reportPreviewExportBtn')?.addEventListener('click', exportExcelReport);
       $('#backBtn').addEventListener('click', () => switchView('patients'));
+      $('#refreshAccountsBtn')?.addEventListener('click', () => refreshAccountAdministration(true));
+      $('#accountRequestsList')?.addEventListener('click', handleAccountRequestAction);
+      $('#accountPermissionsList')?.addEventListener('click', handleAccountPermissionAction);
 
       $('#searchBtn').addEventListener('click', searchPatients);
       $('#searchInput').addEventListener('input', debounce(searchPatients, 320));
@@ -2908,7 +2931,7 @@
       });
 
       $('#patientHoTen')?.addEventListener('blur', event => {
-        event.currentTarget.value = uppercaseVietnamese(event.currentTarget.value);
+        event.currentTarget.value = formatVietnamesePersonName(event.currentTarget.value);
       });
       $('#patientForm').addEventListener('submit', submitPatient);
       $('#bookForm').addEventListener('submit', submitBook);
@@ -3073,11 +3096,9 @@
       // Bộ lọc vẫn lọc theo HỒ SƠ, nhưng số hiển thị của các trạng thái kết thúc
       // phải là tổng SỐ QUYỂN thực tế. Một hồ sơ có thể có nhiều quyển.
       const counts = {
-        all: state.patientPaging.searchActive
-          ? state.allPatients.length
-          : (Number.isFinite(state.patientPaging.totalCount)
-              ? state.patientPaging.totalCount
-              : state.allPatients.length),
+        // Số trên bộ lọc phản ánh phạm vi đang tải/tìm kiếm hiện tại.
+        // Tổng số toàn hệ thống được hiển thị riêng ở thanh phân trang.
+        all: state.allPatients.length,
         finished: 0,
         returned: 0,
         death: 0,
@@ -3162,7 +3183,7 @@
           ? 'Không tìm thấy hồ sơ phù hợp với từ khóa và điều kiện tra cứu.'
           : state.allPatients.length
             ? 'Không tìm thấy hồ sơ phù hợp với điều kiện tra cứu trong số hồ sơ đã tải.'
-            : state.currentRole === 'public'
+            : isPublicSession()
               ? 'Danh mục xem hiện chưa có hồ sơ. Người quản trị vui lòng bấm “Cập nhật danh mục xem”.'
               : 'Chưa có dữ liệu.';
         renderFilterControls();
@@ -3250,7 +3271,7 @@
       const isDeath = books.some(book => normalizeRecordStatus(book['TRẠNG THÁI HIỆN TẠI']) === CONFIG.STATUS.TU_VONG);
       const canEdit = canEditRecords();
 
-      const isPublicView = state.currentRole === 'public';
+      const isPublicView = isPublicSession();
       const detailColumnCount = isPublicView ? 7 : 10;
 
       $('#patientDetail').innerHTML = `
@@ -3273,7 +3294,7 @@
               ${(state.currentRole === 'admin' || books.length > 0)
                 ? '<button id="editPatientBtn" class="btn secondary-action">✎ Chỉnh sửa thông tin</button>'
                 : ''}
-              ${canDeleteRecords() ? `<button id="deletePatientBtn" class="btn danger-action" ${state.currentRole === 'editor' && books.length ? 'disabled title="Tài khoản cập nhật không được xóa hồ sơ đã có quyển"' : ''}>🗑 Xóa hồ sơ</button>` : ''}
+              ${canDeleteRecords() ? `<button id="deletePatientBtn" class="btn danger-action" ${state.currentRole === 'editor' && books.length ? 'disabled title="Tài khoản nhập liệu không được xóa hồ sơ đã có quyển"' : ''}>🗑 Xóa hồ sơ</button>` : ''}
               <button id="openBookBtn" class="btn primary" ${isDeath ? 'disabled title="Hồ sơ tử vong không mở thêm quyển mới"' : ''}>＋ Lưu hồ sơ</button>
             </div>` : `<span class="readonly-label">👁 ${isPublicView ? 'Xem công khai' : 'Chế độ chỉ xem'}</span>`}
           </div>
@@ -3538,7 +3559,7 @@
     }
 
     function renderDeaths() {
-      const publicView = state.currentRole === 'public';
+      const publicView = isPublicSession();
       const years = [...new Set(
         state.deaths
           .map(item => Number(item['NĂM TỬ VONG']))
@@ -3646,7 +3667,7 @@
       const unstructuredBooks = Number(storageStats.unstructuredBooks) || 0;
       const inventoryStats = storageStats.inventory || {};
 
-      const publicView = state.currentRole === 'public';
+      const publicView = isPublicSession();
 
       $('#statsGrid').innerHTML = `
         ${publicView ? '<div class="public-view-note">👁 Đang xem danh mục tra cứu công khai. Đăng nhập để xem tệp, ghi chú và thông tin nghiệp vụ đầy đủ.</div>' : ''}
@@ -3875,7 +3896,7 @@
 
       if (isEdit && state.currentRole === 'editor' && state.currentBooks.length === 0) {
         showToast(
-          'Hồ sơ chưa có quyển. Tài khoản cập nhật phải xóa hồ sơ nhập sai và tạo lại.',
+          'Hồ sơ chưa có quyển. Tài khoản nhập liệu phải xóa hồ sơ nhập sai và tạo lại.',
           true
         );
         return;
@@ -3895,7 +3916,7 @@
 
       if (isEdit && patient) {
         form.elements.soHoSo.value = formatMedicalRecordNumber(patient['SỐ HỒ SƠ']);
-        form.elements.hoTen.value = uppercaseVietnamese(patient['HỌ VÀ TÊN']);
+        form.elements.hoTen.value = formatVietnamesePersonName(patient['HỌ VÀ TÊN']);
         form.elements.namSinh.value = patient['NĂM SINH'] || '';
         form.elements.gioiTinh.value = patient['GIỚI TÍNH'] || '';
       }
@@ -4033,7 +4054,7 @@
 
       if (state.currentRole === 'editor' && state.currentBooks.length > 0) {
         showToast(
-          'Tài khoản cập nhật không được xóa hồ sơ đã có quyển. Hãy chỉnh sửa thông tin hồ sơ.',
+          'Tài khoản nhập liệu không được xóa hồ sơ đã có quyển. Hãy chỉnh sửa thông tin hồ sơ.',
           true
         );
         return;
@@ -4058,7 +4079,7 @@
       submitButton.textContent = 'Đang lưu...';
       const data = Object.fromEntries(new FormData(form).entries());
       data.soHoSo = formatMedicalRecordNumber(data.soHoSo);
-      data.hoTen = uppercaseVietnamese(data.hoTen);
+      data.hoTen = formatVietnamesePersonName(data.hoTen);
       data.originalSoHoSo = formatMedicalRecordNumber(
         data.originalSoHoSo || data.soHoSo
       );
@@ -4269,7 +4290,267 @@
       }
     }
 
+    function accountRoleOptions(selectedRole = 'editor') {
+      const roles = [
+        ['editor', 'Nhập liệu'],
+        ['viewer', 'Chỉ xem'],
+        ['admin', 'Quản trị']
+      ];
+
+      return roles.map(([value, label]) =>
+        `<option value="${value}" ${value === selectedRole ? 'selected' : ''}>${label}</option>`
+      ).join('');
+    }
+
+    function accountTimeLabel(value) {
+      const timestamp = Number(value) || 0;
+      if (!timestamp) return '—';
+      try {
+        return new Intl.DateTimeFormat('vi-VN', {
+          dateStyle: 'short',
+          timeStyle: 'short'
+        }).format(new Date(timestamp));
+      } catch (_) {
+        return new Date(timestamp).toLocaleString('vi-VN');
+      }
+    }
+
+    async function refreshAccountAdministration(force = false) {
+      if (state.currentRole !== 'admin') return;
+      if (state.accountAdmin.loaded && !force) {
+        renderAccountAdministration();
+        return;
+      }
+
+      const [requestSnapshot, permissionSnapshot] = await Promise.all([
+        get(ref(firebaseDatabase, CONFIG.ACCESS_REQUEST_PATH)),
+        get(ref(firebaseDatabase, 'phanQuyen'))
+      ]);
+
+      const requestRoot = requestSnapshot.val() || {};
+      const permissionRoot = permissionSnapshot.val() || {};
+
+      state.accountAdmin.requests = Object.entries(requestRoot)
+        .map(([uid, value]) => ({ uid, ...(value || {}) }))
+        .sort((a, b) => {
+          const ap = a.status === 'pending' ? 0 : 1;
+          const bp = b.status === 'pending' ? 0 : 1;
+          if (ap !== bp) return ap - bp;
+          return (Number(b.requestedAt) || 0) - (Number(a.requestedAt) || 0);
+        });
+
+      state.accountAdmin.permissions = Object.entries(permissionRoot)
+        .map(([uid, value]) => ({ uid, ...(value || {}) }))
+        .sort((a, b) => {
+          if ((a.active === true) !== (b.active === true)) return a.active === true ? -1 : 1;
+          return String(a.email || '').localeCompare(String(b.email || ''), 'vi');
+        });
+
+      state.accountAdmin.loaded = true;
+      renderAccountAdministration();
+    }
+
+    function renderAccountAdministration() {
+      if (state.currentRole !== 'admin') return;
+
+      const pending = state.accountAdmin.requests.filter(item => item.status === 'pending');
+      const active = state.accountAdmin.permissions.filter(item => item.active === true);
+
+      $('#pendingAccountCount').textContent = String(pending.length);
+      $('#activeAccountCount').textContent = String(active.length);
+      $('#pendingAccountBadge').textContent = String(pending.length);
+      $('#pendingAccountBadge').classList.toggle('hidden', pending.length === 0);
+
+      $('#accountRequestsList').innerHTML = pending.length
+        ? pending.map(request => `
+            <article class="account-admin-card" data-request-uid="${escapeAttr(request.uid)}">
+              <div class="account-admin-main">
+                <div class="account-avatar">${escapeHtml((request.displayName || request.email || '?').trim().charAt(0).toUpperCase() || '?')}</div>
+                <div class="account-admin-info">
+                  <strong>${escapeHtml(request.displayName || 'Chưa có tên hiển thị')}</strong>
+                  <span>${escapeHtml(request.email || '')}</span>
+                  <small>Gửi yêu cầu: ${escapeHtml(accountTimeLabel(request.requestedAt))}</small>
+                </div>
+              </div>
+              <div class="account-admin-actions">
+                <select class="account-role-select" aria-label="Vai trò cấp cho tài khoản">
+                  ${accountRoleOptions('editor')}
+                </select>
+                <button class="btn primary small" type="button" data-account-action="approve">Duyệt</button>
+                <button class="btn small" type="button" data-account-action="reject">Từ chối</button>
+              </div>
+            </article>`).join('')
+        : '<div class="account-admin-empty">Không có yêu cầu nào đang chờ duyệt.</div>';
+
+      $('#accountPermissionsList').innerHTML = state.accountAdmin.permissions.length
+        ? state.accountAdmin.permissions.map(account => {
+            const isCurrentAdmin = account.uid === firebaseAuth.currentUser?.uid;
+            return `
+              <article class="account-admin-card" data-permission-uid="${escapeAttr(account.uid)}">
+                <div class="account-admin-main">
+                  <div class="account-avatar">${escapeHtml((account.displayName || account.email || '?').trim().charAt(0).toUpperCase() || '?')}</div>
+                  <div class="account-admin-info">
+                    <strong>${escapeHtml(account.displayName || account.email || 'Tài khoản')}</strong>
+                    <span>${escapeHtml(account.email || '')}</span>
+                    <small>${account.active === true ? 'Đang hoạt động' : 'Đã khóa'} · ${escapeHtml(roleLabel(account.role))}</small>
+                  </div>
+                </div>
+                <div class="account-admin-actions">
+                  <select class="account-role-select" ${isCurrentAdmin ? 'disabled title="Không tự đổi vai trò tài khoản quản trị đang đăng nhập"' : ''}>
+                    ${accountRoleOptions(String(account.role || 'editor'))}
+                  </select>
+                  <button class="btn small" type="button" data-account-action="save-role" ${isCurrentAdmin ? 'disabled' : ''}>Lưu quyền</button>
+                  <button class="btn small ${account.active === true ? 'danger-outline' : 'primary'}" type="button" data-account-action="toggle-active" ${isCurrentAdmin ? 'disabled title="Không tự khóa tài khoản quản trị đang đăng nhập"' : ''}>
+                    ${account.active === true ? 'Khóa' : 'Mở khóa'}
+                  </button>
+                </div>
+              </article>`;
+          }).join('')
+        : '<div class="account-admin-empty">Chưa có tài khoản HSBA nào được phân quyền.</div>';
+    }
+
+    async function approveHsbaAccess(uid, role) {
+      if (state.currentRole !== 'admin') throw new Error('Chỉ quản trị viên mới được duyệt tài khoản.');
+      if (!['admin', 'editor', 'viewer'].includes(role)) throw new Error('Vai trò không hợp lệ.');
+
+      const request = state.accountAdmin.requests.find(item => item.uid === uid);
+      if (!request || request.status !== 'pending') throw new Error('Yêu cầu không còn ở trạng thái chờ duyệt.');
+
+      const existing = state.accountAdmin.permissions.find(item => item.uid === uid) || {};
+      const now = Date.now();
+      const reviewer = firebaseAuth.currentUser;
+      const permission = {
+        ...existing,
+        email: String(request.email || '').trim().toLowerCase(),
+        displayName: String(request.displayName || existing.displayName || '').trim(),
+        role,
+        active: true,
+        createdAt: Number(existing.createdAt) || now,
+        updatedAt: now,
+        approvedByUid: reviewer?.uid || '',
+        approvedByEmail: reviewer?.email || ''
+      };
+
+      const reviewedRequest = {
+        ...request,
+        status: 'approved',
+        reviewedAt: now,
+        reviewedByUid: reviewer?.uid || '',
+        reviewedByEmail: reviewer?.email || ''
+      };
+      delete reviewedRequest.uid;
+
+      await update(ref(firebaseDatabase), {
+        [`phanQuyen/${uid}`]: permission,
+        [`${CONFIG.ACCESS_REQUEST_PATH}/${uid}`]: reviewedRequest
+      });
+
+      state.accountAdmin.loaded = false;
+      await refreshAccountAdministration(true);
+      showToast(`Đã duyệt ${request.email || 'tài khoản'} với quyền ${roleLabel(role)}.`);
+    }
+
+    async function rejectHsbaAccess(uid) {
+      if (state.currentRole !== 'admin') throw new Error('Chỉ quản trị viên mới được từ chối tài khoản.');
+      const request = state.accountAdmin.requests.find(item => item.uid === uid);
+      if (!request || request.status !== 'pending') throw new Error('Yêu cầu không còn ở trạng thái chờ duyệt.');
+
+      const now = Date.now();
+      const reviewer = firebaseAuth.currentUser;
+      const next = {
+        ...request,
+        status: 'rejected',
+        reviewedAt: now,
+        reviewedByUid: reviewer?.uid || '',
+        reviewedByEmail: reviewer?.email || ''
+      };
+      delete next.uid;
+
+      await set(ref(firebaseDatabase, `${CONFIG.ACCESS_REQUEST_PATH}/${uid}`), next);
+      state.accountAdmin.loaded = false;
+      await refreshAccountAdministration(true);
+      showToast(`Đã từ chối yêu cầu của ${request.email || 'tài khoản'}.`);
+    }
+
+    async function updateHsbaPermission(uid, patch) {
+      if (state.currentRole !== 'admin') throw new Error('Chỉ quản trị viên mới được thay đổi quyền.');
+      const account = state.accountAdmin.permissions.find(item => item.uid === uid);
+      if (!account) throw new Error('Không tìm thấy tài khoản cần cập nhật.');
+      if (uid === firebaseAuth.currentUser?.uid) throw new Error('Không tự thay đổi hoặc khóa tài khoản quản trị đang đăng nhập.');
+
+      const nextRole = String(patch.role || account.role || '').trim().toLowerCase();
+      if (!['admin', 'editor', 'viewer'].includes(nextRole)) throw new Error('Vai trò không hợp lệ.');
+
+      await update(ref(firebaseDatabase, `phanQuyen/${uid}`), {
+        role: nextRole,
+        active: patch.active === undefined ? account.active === true : patch.active === true,
+        updatedAt: Date.now(),
+        approvedByUid: firebaseAuth.currentUser?.uid || '',
+        approvedByEmail: firebaseAuth.currentUser?.email || ''
+      });
+
+      state.accountAdmin.loaded = false;
+      await refreshAccountAdministration(true);
+      showToast('Đã cập nhật quyền tài khoản.');
+    }
+
+    async function handleAccountRequestAction(event) {
+      const button = event.target.closest('[data-account-action]');
+      if (!button) return;
+      const card = button.closest('[data-request-uid]');
+      const uid = card?.dataset.requestUid || '';
+      if (!uid) return;
+
+      button.disabled = true;
+      try {
+        await withLoading(async () => {
+          if (button.dataset.accountAction === 'approve') {
+            const role = card.querySelector('.account-role-select')?.value || 'editor';
+            await approveHsbaAccess(uid, role);
+          } else if (button.dataset.accountAction === 'reject') {
+            await rejectHsbaAccess(uid);
+          }
+        });
+      } catch (error) {
+        showToast(firebaseError(error).message, true);
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    async function handleAccountPermissionAction(event) {
+      const button = event.target.closest('[data-account-action]');
+      if (!button) return;
+      const card = button.closest('[data-permission-uid]');
+      const uid = card?.dataset.permissionUid || '';
+      if (!uid) return;
+
+      const account = state.accountAdmin.permissions.find(item => item.uid === uid);
+      if (!account) return;
+
+      button.disabled = true;
+      try {
+        await withLoading(async () => {
+          const role = card.querySelector('.account-role-select')?.value || account.role || 'editor';
+          if (button.dataset.accountAction === 'save-role') {
+            await updateHsbaPermission(uid, { role });
+          } else if (button.dataset.accountAction === 'toggle-active') {
+            await updateHsbaPermission(uid, { role, active: account.active !== true });
+          }
+        });
+      } catch (error) {
+        showToast(firebaseError(error).message, true);
+      } finally {
+        button.disabled = false;
+      }
+    }
+
     async function switchView(name) {
+      if (name === 'accounts' && state.currentRole !== 'admin') {
+        showToast('Chỉ quản trị viên HSBA mới được mở quản trị tài khoản.', true);
+        name = 'patients';
+      }
+
       $$('.view').forEach(view => view.classList.remove('active'));
       $$('.nav-btn').forEach(button => {
         button.classList.toggle('active', button.dataset.view === name);
@@ -4279,7 +4560,8 @@
         patients: '#patientsView',
         detail: '#detailView',
         deaths: '#deathsView',
-        dashboard: '#dashboardView'
+        dashboard: '#dashboardView',
+        accounts: '#accountsView'
       };
 
       $(map[name] || '#patientsView').classList.add('active');
@@ -4291,6 +4573,10 @@
 
       if (name === 'dashboard' && !state.storageStatsLoaded) {
         await withLoading(refreshStorageStatsSilently);
+      }
+
+      if (name === 'accounts') {
+        await withLoading(() => refreshAccountAdministration(false));
       }
     }
 

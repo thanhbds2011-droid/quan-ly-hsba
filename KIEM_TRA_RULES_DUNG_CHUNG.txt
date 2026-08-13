@@ -1,0 +1,16 @@
+HSBA 2026.08.13.1 - KIỂM TRA AN TOÀN RULES DÙNG CHUNG
+
+tongHopYTe: OLD 7278bb025a8c3025 | NEW 7278bb025a8c3025 | GIỮ NGUYÊN
+yTeApp: OLD e824cf063c5b684b | NEW e824cf063c5b684b | GIỮ NGUYÊN
+baoCaoYTe: OLD 4acaf466db048c61 | NEW 4acaf466db048c61 | GIỮ NGUYÊN
+congKhai: OLD 166f309c00f86382 | NEW 166f309c00f86382 | GIỮ NGUYÊN
+doiTuong: OLD 83317483e801ced4 | NEW 83317483e801ced4 | GIỮ NGUYÊN
+quyenHoSo: OLD eee21cb74cae532a | NEW eee21cb74cae532a | GIỮ NGUYÊN
+hoSoTuVong: OLD 94cf9a963833ea37 | NEW 94cf9a963833ea37 | GIỮ NGUYÊN
+nhatKy: OLD 2a07eca94df4e6ab | NEW 2a07eca94df4e6ab | GIỮ NGUYÊN
+khoaThaoTac: OLD 6ae7f6fdb1a1d8be | NEW 6ae7f6fdb1a1d8be | GIỮ NGUYÊN
+accessAccounts: OLD 3c56834da4f59a5c | NEW 3c56834da4f59a5c | GIỮ NGUYÊN
+phanQuyen: OLD fb0d031f9564926f | NEW d2e8cd4757018d28 | THAY ĐỔI CÓ CHỦ ĐÍCH CHO DUYỆT HSBA
+hsbaYeuCauDangKy: BỔ SUNG MỚI - chỉ phục vụ yêu cầu đăng nhập HSBA
+
+Kết quả: Các nhánh Tổng hợp số liệu, yTeApp, Báo cáo Y tế/Tử vong/Chuyển viện không thay đổi về mặt JSON Rules.
