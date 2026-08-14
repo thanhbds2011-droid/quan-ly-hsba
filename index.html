@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#5D2A42">
+  <meta name="theme-color" content="#3D6DB9">
   <meta name="description" content="Ứng dụng quản lý hồ sơ bệnh án">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.08.14.1">
+  <meta name="version" content="2026.08.14.2">
   <title>Hồ sơ bệnh án lưu trữ</title>
-  <link rel="manifest" href="./manifest.webmanifest?v=2026.08.14.1">
+  <link rel="manifest" href="./manifest.webmanifest?v=2026.08.14.2">
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -25,50 +25,55 @@
 
 <style>
     :root {
-      /* HSBA Medical Warm Palette · 2026.08.14.1
-         Nguồn màu: #5D2A42 · #FB6376 · #FCB1A6 · #FFDCCC · #FFF9EC */
-      --medical-wine: #5D2A42;
-      --medical-coral: #FB6376;
-      --medical-salmon: #FCB1A6;
-      --medical-peach: #FFDCCC;
-      --medical-cream: #FFF9EC;
+      /* HSBA Medical Balance Palette · 2026.08.14.2
+         Nguồn màu: #AEE4FF · #6A9CFD · #FFB8D0 · #FEE5E1 · #FFBFB3
+         Màu xanh là trục nghiệp vụ; hồng/coral chỉ làm điểm nhấn và nền mềm. */
+      --medical-sky: #AEE4FF;
+      --medical-blue: #6A9CFD;
+      --medical-pink: #FFB8D0;
+      --medical-blush: #FEE5E1;
+      --medical-coral: #FFBFB3;
+      --medical-blue-700: #3D6DB9;
+      --medical-blue-800: #2E5592;
+      --medical-blue-50: #F4FAFF;
+      --medical-cream: #FAFCFF;
 
-      /* Thang màu tương thích code cũ */
-      --rose-950: #431D30;
-      --rose-900: #5D2A42;
-      --rose-800: #5D2A42;
-      --rose-700: #78405A;
-      --rose-600: #A94F67;
-      --rose-500: #FB6376;
-      --rose-200: #FCB1A6;
-      --rose-150: #FFDCCC;
-      --rose-100: #FFE9DF;
-      --rose-50: #FFF9EC;
+      /* Alias tương thích toàn bộ CSS cũ */
+      --rose-950: #233F6B;
+      --rose-900: #2E5592;
+      --rose-800: #3D6DB9;
+      --rose-700: #5685D5;
+      --rose-600: #6A9CFD;
+      --rose-500: #FF8FB7;
+      --rose-200: #FFB8D0;
+      --rose-150: #FEE5E1;
+      --rose-100: #FBEFF2;
+      --rose-50: #FFF9FA;
 
-      --primary: var(--medical-wine);
-      --primary-2: #78405A;
-      --primary-3: #431D30;
-      --primary-soft: var(--medical-peach);
-      --accent: var(--medical-coral);
-      --accent-soft: var(--medical-cream);
+      --primary: var(--medical-blue-700);
+      --primary-2: var(--medical-blue);
+      --primary-3: var(--medical-blue-800);
+      --primary-soft: #EAF5FF;
+      --accent: #E8799F;
+      --accent-soft: #FFF3F7;
 
-      /* Màu trạng thái nghiệp vụ giữ độc lập để dễ nhận biết */
+      /* Màu trạng thái nghiệp vụ độc lập với màu thương hiệu */
       --success: #2F7D62;
       --success-soft: #EFF8F3;
-      --danger: #A63D40;
-      --danger-soft: #FFF1EE;
+      --danger: #B54747;
+      --danger-soft: #FFF1F1;
       --warning: #A56A24;
       --warning-soft: #FFF6E8;
-      --info: #416A7A;
-      --info-soft: #EEF6F8;
+      --info: #3D6DB9;
+      --info-soft: #EEF6FF;
 
-      --text: #35252D;
-      --muted: #786971;
-      --line: #F0D6D0;
+      --text: #263447;
+      --muted: #657383;
+      --line: #DDE7F2;
       --surface: #FFFFFF;
-      --bg: #FFF9EC;
-      --shadow: 0 16px 38px rgba(93, 42, 66, .11);
-      --shadow-soft: 0 8px 24px rgba(93, 42, 66, .07);
+      --bg: #FAFCFF;
+      --shadow: 0 16px 38px rgba(61, 109, 185, .11);
+      --shadow-soft: 0 8px 24px rgba(61, 109, 185, .07);
       --radius: 18px;
       --sidebar-width: 270px;
     }
@@ -6511,7 +6516,7 @@ html, body {
 }
 
 
-    /* ===== 2026.08.14.1 - HỆ MÀU ROSE/BORDEAUX ĐỒNG BỘ ===== */
+    /* ===== 2026.08.14.2 - HỆ MÀU ROSE/BORDEAUX ĐỒNG BỘ ===== */
     :root {
       --rose-950: #58112f;
       --rose-900: #721740;
@@ -6681,7 +6686,7 @@ html, body {
 
 
     /* ============================================================
-       HSBA 2026.08.14.1 - DESIGN SYSTEM ROSE / BORDEAUX
+       HSBA 2026.08.14.2 - DESIGN SYSTEM ROSE / BORDEAUX
        Hệ màu theo bảng: 950 → 50. Chỉ thay lớp trình bày.
        ============================================================ */
     :root {
@@ -6964,7 +6969,7 @@ html, body {
 
 
 /* ============================================================
-   HSBA 2026.08.14.1 · PROFESSIONAL UX REFINEMENT
+   HSBA 2026.08.14.2 · PROFESSIONAL UX REFINEMENT
    1) Đồng bộ icon SVG
    2) Giảm thống kê lặp trên desktop
    3) Gọn typography/khoảng trắng desktop
@@ -7255,7 +7260,7 @@ html, body {
 
 
 /* ============================================================
-   HSBA 2026.08.14.1 · DESKTOP COMPACT + REALTIME/PWA REFINEMENT
+   HSBA 2026.08.14.2 · DESKTOP COMPACT + REALTIME/PWA REFINEMENT
    ============================================================ */
 .nav-legacy-icon {
   width: 22px;
@@ -7458,7 +7463,7 @@ html, body {
 }
 
 /* ============================================================
-   HSBA 2026.08.14.1 · MOBILE FILTER RESET ICON FIX
+   HSBA 2026.08.14.2 · MOBILE FILTER RESET ICON FIX
    Chỉ dùng SVG i-reset; vô hiệu hóa ký hiệu ↺ cũ từ pseudo-element.
    ============================================================ */
 @media (max-width: 760px) {
@@ -7548,7 +7553,7 @@ html, body {
 
 
 /* ============================================================
-   HSBA 2026.08.14.1 · MOBILE/PWA AUTH TOOLBAR STABILITY
+   HSBA 2026.08.14.2 · MOBILE/PWA AUTH TOOLBAR STABILITY
    Chỉ sửa bố cục mobile. Desktop và nghiệp vụ giữ nguyên.
    - .hidden luôn thắng các rule display !important cũ.
    - Khi đã đăng nhập: chỉ 1 nút đồng bộ + 1 nút đăng xuất.
@@ -7716,119 +7721,106 @@ html, body {
 
 
 
+
 /* ============================================================
-   HSBA 2026.08.14.1 · MEDICAL WARM PALETTE
-   Palette: 5D2A42 · FB6376 · FCB1A6 · FFDCCC · FFF9EC
+   HSBA 2026.08.14.2 · MEDICAL BALANCE PALETTE + ACCOUNT ADMIN
+   Palette: AEE4FF · 6A9CFD · FFB8D0 · FEE5E1 · FFBFB3
    ============================================================ */
 body {
   background:
-    radial-gradient(circle at 10% 0%, rgba(251,99,118,.07), transparent 31rem),
-    radial-gradient(circle at 96% 12%, rgba(93,42,66,.05), transparent 28rem),
-    linear-gradient(180deg, #fffdfa 0%, var(--medical-cream) 100%) !important;
-}
-
-.sidebar,
-.topbar,
-.record-dialog,
-.account-admin-section,
-.dashboard-panel,
-.table-wrap,
-.report-preview-head,
-.report-preview-paper {
-  border-color: var(--line) !important;
+    radial-gradient(circle at 8% 0%, rgba(174,228,255,.30), transparent 30rem),
+    radial-gradient(circle at 96% 10%, rgba(255,184,208,.20), transparent 28rem),
+    linear-gradient(180deg, #ffffff 0%, #FAFCFF 100%) !important;
 }
 
 .brand-icon {
-  background: linear-gradient(145deg, var(--medical-wine), #78405A) !important;
-  box-shadow: 0 10px 24px rgba(93,42,66,.20) !important;
+  background: linear-gradient(145deg, var(--medical-blue-700), var(--medical-blue)) !important;
+  box-shadow: 0 10px 24px rgba(61,109,185,.22) !important;
 }
 
-.nav-btn { color: #68545E !important; }
+.nav-btn { color: #556476 !important; }
 .nav-btn:hover {
-  background: rgba(255,249,236,.96) !important;
-  border-color: var(--medical-peach) !important;
-  color: var(--medical-wine) !important;
+  background: #F4FAFF !important;
+  border-color: var(--medical-sky) !important;
+  color: var(--medical-blue-800) !important;
 }
 .nav-btn.active {
-  background: linear-gradient(135deg, rgba(255,220,204,.72), rgba(255,249,236,.98)) !important;
-  border-color: var(--medical-salmon) !important;
-  color: var(--medical-wine) !important;
-  box-shadow: inset 3px 0 0 var(--medical-wine) !important;
+  background: linear-gradient(135deg, rgba(174,228,255,.56), rgba(255,255,255,.98)) !important;
+  border-color: #8EC5FF !important;
+  color: var(--medical-blue-800) !important;
+  box-shadow: inset 3px 0 0 var(--medical-blue-700) !important;
 }
 
 .btn.primary {
-  background: var(--medical-wine) !important;
-  border-color: var(--medical-wine) !important;
+  background: linear-gradient(135deg, var(--medical-blue-700), #5685D5) !important;
+  border-color: var(--medical-blue-700) !important;
   color: #fff !important;
-  box-shadow: 0 9px 22px rgba(93,42,66,.20) !important;
+  box-shadow: 0 9px 22px rgba(61,109,185,.22) !important;
 }
 .btn.primary:hover:not([disabled]) {
-  background: #431D30 !important;
-  border-color: #431D30 !important;
+  background: var(--medical-blue-800) !important;
+  border-color: var(--medical-blue-800) !important;
 }
 .btn:not(.primary):not(.danger):not(.danger-outline) {
-  border-color: var(--medical-salmon) !important;
+  border-color: #C9D9EC !important;
   background: #fff !important;
-  color: var(--medical-wine) !important;
+  color: var(--medical-blue-800) !important;
 }
 .btn:not(.primary):not(.danger):not(.danger-outline):hover:not([disabled]) {
-  border-color: var(--medical-coral) !important;
-  background: var(--medical-cream) !important;
+  border-color: var(--medical-sky) !important;
+  background: #F4FAFF !important;
 }
-.btn.danger { background: var(--danger) !important; border-color: var(--danger) !important; }
 .danger-outline {
   color: var(--danger) !important;
-  border-color: #D98C89 !important;
+  border-color: #E7B7B7 !important;
   background: #fff !important;
 }
 
 .search-filter-panel,
 .search-panel,
+.filter-toolbar { border-color: #D6E7F6 !important; }
+.search-filter-panel { background: rgba(255,255,255,.97) !important; }
 .filter-toolbar {
-  border-color: var(--medical-peach) !important;
-}
-.search-filter-panel { background: rgba(255,255,255,.96) !important; }
-.filter-toolbar {
-  background: linear-gradient(135deg, rgba(255,249,236,.95), rgba(255,220,204,.34)) !important;
+  background: linear-gradient(135deg, rgba(174,228,255,.22), rgba(254,229,225,.24)) !important;
 }
 .search-leading-icon,
 .filter-toolbar-icon,
 .mobile-filter-trigger-icon {
-  background: rgba(255,220,204,.72) !important;
-  color: var(--medical-wine) !important;
+  background: rgba(174,228,255,.46) !important;
+  color: var(--medical-blue-800) !important;
 }
 .search-box input:focus,
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: var(--medical-coral) !important;
-  box-shadow: 0 0 0 4px rgba(251,99,118,.13) !important;
+  border-color: var(--medical-blue) !important;
+  box-shadow: 0 0 0 4px rgba(106,156,253,.13) !important;
 }
 
 .status-filter-btn {
-  border-color: rgba(252,177,166,.62) !important;
-  background: rgba(255,255,255,.94) !important;
-  color: #66515B !important;
+  border-color: #D7E3F1 !important;
+  background: #fff !important;
+  color: #536273 !important;
 }
 .status-filter-btn:hover {
-  border-color: var(--medical-salmon) !important;
-  background: var(--medical-cream) !important;
+  border-color: var(--medical-sky) !important;
+  background: #F6FBFF !important;
 }
 .status-filter-btn.active {
-  border-color: var(--medical-coral) !important;
-  background: linear-gradient(135deg, rgba(255,220,204,.62), rgba(255,249,236,.98)) !important;
-  color: var(--medical-wine) !important;
+  border-color: #8EB8FA !important;
+  background: linear-gradient(135deg, rgba(174,228,255,.48), rgba(255,255,255,.98)) !important;
+  color: var(--medical-blue-800) !important;
 }
 .status-filter-btn.active b {
-  background: var(--medical-wine) !important;
+  background: var(--medical-blue-700) !important;
   color: #fff !important;
 }
 
 .chip,
 .summary .chip {
-  border-color: var(--medical-salmon) !important;
-  background: rgba(255,249,236,.96) !important;
-  color: var(--medical-wine) !important;
+  border-color: #CFE4F5 !important;
+  background: #F7FBFF !important;
+  color: var(--medical-blue-800) !important;
 }
 
 .patient-card,
@@ -7836,64 +7828,52 @@ textarea:focus {
 .account-admin-card,
 .dashboard-kpi,
 .dashboard-panel {
-  border-color: rgba(252,177,166,.58) !important;
-  background: rgba(255,255,255,.96) !important;
+  border-color: #DCE6F0 !important;
+  background: rgba(255,255,255,.97) !important;
 }
 .patient-card::before,
 .detail-card::before {
-  background: linear-gradient(180deg, var(--medical-wine), var(--medical-coral)) !important;
+  background: linear-gradient(180deg, var(--medical-blue-700), var(--medical-pink)) !important;
 }
 .patient-card:hover,
 .account-admin-card:hover {
-  border-color: var(--medical-salmon) !important;
-  box-shadow: 0 14px 32px rgba(93,42,66,.10) !important;
+  border-color: #A9C8F4 !important;
+  box-shadow: 0 14px 32px rgba(61,109,185,.10) !important;
 }
 
 .badge.closed {
-  background: rgba(255,220,204,.72) !important;
-  color: var(--medical-wine) !important;
+  background: rgba(174,228,255,.38) !important;
+  color: var(--medical-blue-800) !important;
 }
-.badge.open { background: var(--success-soft) !important; color: var(--success) !important; }
-.badge.death { background: var(--danger-soft) !important; color: var(--danger) !important; }
 
 .death-overview {
-  background: linear-gradient(135deg, rgba(255,220,204,.52), rgba(255,249,236,.98)) !important;
-  border-color: var(--medical-salmon) !important;
+  background: linear-gradient(135deg, rgba(255,191,179,.24), rgba(255,255,255,.98)) !important;
+  border-color: #F3C9C1 !important;
 }
 .death-count {
-  background: linear-gradient(145deg, var(--medical-wine), #78405A) !important;
-  box-shadow: 0 10px 24px rgba(93,42,66,.18) !important;
-}
-
-.account-count-pill,
-.nav-count-badge {
-  background: var(--medical-peach) !important;
-  color: var(--medical-wine) !important;
-}
-.account-avatar {
-  background: linear-gradient(145deg, var(--medical-peach), #FFE9DF) !important;
-  color: var(--medical-wine) !important;
+  background: linear-gradient(145deg, #B54747, #D66A68) !important;
+  box-shadow: 0 10px 24px rgba(181,71,71,.18) !important;
 }
 
 .dashboard-kpi-icon,
 .management-metric-icon {
-  background: rgba(255,220,204,.68) !important;
-  color: var(--medical-wine) !important;
+  background: rgba(174,228,255,.42) !important;
+  color: var(--medical-blue-800) !important;
 }
-.dashboard-kpi::after { background: var(--medical-coral) !important; }
+.dashboard-kpi::after { background: var(--medical-pink) !important; }
 
 .auth-login-top-btn,
 .auth-sync-public-btn,
 .auth-logout-btn {
-  border-color: var(--medical-salmon) !important;
-  background: rgba(255,255,255,.96) !important;
-  color: var(--medical-wine) !important;
+  border-color: #C9D9EC !important;
+  background: rgba(255,255,255,.97) !important;
+  color: var(--medical-blue-800) !important;
 }
 .auth-sync-public-btn:hover,
 .auth-logout-btn:hover,
 .auth-login-top-btn:hover {
-  background: var(--medical-cream) !important;
-  border-color: var(--medical-coral) !important;
+  background: #F4FAFF !important;
+  border-color: var(--medical-sky) !important;
 }
 
 .report-preview-head,
@@ -7901,35 +7881,140 @@ textarea:focus {
 .report-preview-note,
 .report-preview-statline {
   background: #fff !important;
-  border-color: var(--medical-peach) !important;
+  border-color: #DDE7F2 !important;
 }
 .report-preview-head h3,
 .report-preview-title-block h2,
-.report-preview-statline strong { color: var(--medical-wine) !important; }
+.report-preview-statline strong { color: var(--medical-blue-800) !important; }
 .report-preview-table th {
-  background: var(--medical-wine) !important;
-  border-color: #78405A !important;
+  background: var(--medical-blue-700) !important;
+  border-color: #5685D5 !important;
   color: #fff !important;
 }
-.report-preview-table tbody tr:nth-child(even) td {
-  background: rgba(255,249,236,.72) !important;
-}
+.report-preview-table tbody tr:nth-child(even) td { background: #F7FBFF !important; }
 
 .app-update-banner {
-  border-color: var(--medical-salmon) !important;
-  border-left-color: var(--medical-wine) !important;
-  box-shadow: 0 18px 46px rgba(93,42,66,.18) !important;
+  border-color: var(--medical-sky) !important;
+  border-left-color: var(--medical-blue-700) !important;
+  box-shadow: 0 18px 46px rgba(61,109,185,.18) !important;
 }
-.app-update-copy strong { color: var(--medical-wine) !important; }
+.app-update-copy strong { color: var(--medical-blue-800) !important; }
 
-/* Coral #FB6376 chỉ dùng làm accent/focus; không dùng chữ trắng trên nền coral để bảo đảm độ tương phản. */
+/* Account Administration · rõ trạng thái, ưu tiên thao tác quản trị */
+.account-page-head {
+  padding: 2px 0 4px;
+}
+.account-page-head h1 { color: #24364B !important; }
+.account-page-head p { max-width: 720px; }
+.account-admin-section {
+  position: relative;
+  overflow: hidden;
+  padding: 20px !important;
+  border: 1px solid #DCE6F0 !important;
+  border-radius: 18px !important;
+  background: rgba(255,255,255,.985) !important;
+  box-shadow: 0 10px 28px rgba(49,88,142,.07) !important;
+}
+.account-admin-section::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--medical-blue-700), var(--medical-pink));
+}
+.account-admin-title {
+  margin-bottom: 14px !important;
+  padding: 0 0 14px !important;
+  border-bottom: 1px solid #E7EDF4 !important;
+}
+.account-admin-heading-copy { min-width: 0; }
+.account-admin-heading-copy h2 {
+  margin: 0 !important;
+  color: #263447;
+  font-size: 19px !important;
+}
+.account-admin-heading-copy p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.account-count-pill,
+.nav-count-badge {
+  background: #EAF5FF !important;
+  color: var(--medical-blue-800) !important;
+  box-shadow: inset 0 0 0 1px #CDE6F8 !important;
+}
+.account-admin-card {
+  padding: 14px 15px !important;
+  border: 1px solid #E0E8F0 !important;
+  border-radius: 14px !important;
+  background: #fff !important;
+}
+.account-avatar {
+  background: linear-gradient(145deg, #DDF2FF, #F9EAF0) !important;
+  color: var(--medical-blue-800) !important;
+}
+.account-role-select {
+  border-color: #CFDCE9 !important;
+  color: #2E4055;
+}
+.account-role-select:focus {
+  border-color: var(--medical-blue) !important;
+  box-shadow: 0 0 0 3px rgba(106,156,253,.12) !important;
+}
+.account-admin-empty {
+  border-color: #D9E5F0 !important;
+  background: #FAFCFF !important;
+}
+.account-admin-read-error {
+  display: grid;
+  grid-template-columns: 34px minmax(0,1fr);
+  gap: 11px;
+  align-items: start;
+  padding: 15px;
+  border: 1px solid #F0C6C1;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #FFF7F5, #FFFFFF);
+  color: #6B3A3A;
+}
+.account-admin-read-error-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #FEE5E1;
+  color: #9D4141;
+  font-weight: 900;
+}
+.account-admin-read-error strong { display: block; font-size: 13px; }
+.account-admin-read-error p {
+  margin: 4px 0 0;
+  color: #7A5A5A;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  .account-admin-section { padding: 14px !important; }
+  .account-admin-heading-copy p { font-size: 11px; }
+  .account-admin-actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 8px !important;
+  }
+  .account-role-select { grid-column: 1 / -1; width: 100%; }
+  .account-admin-actions .btn { width: 100%; }
+}
+
 
 </style>
 </head>
 
 <body>
 
-  <!-- HSBA UI icon sprite · Professional UX Refinement 2026.08.14.1 -->
+  <!-- HSBA UI icon sprite · Medical Balance 2026.08.14.2 -->
   <svg class="ui-icon-sprite" aria-hidden="true" focusable="false">
     <defs>
       <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
@@ -7978,7 +8063,7 @@ textarea:focus {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.08.14.1</small>
+        <small>Phiên bản 2026.08.14.2</small>
       </div>
     </aside>
 
@@ -8166,8 +8251,9 @@ textarea:focus {
 
           <section class="account-admin-section">
             <div class="account-admin-title">
-              <div>
+              <div class="account-admin-heading-copy">
                 <h2>Chưa được cấp quyền</h2>
+                <p>Yêu cầu đăng nhập đang chờ xét duyệt hoặc đã bị từ chối.</p>
               </div>
               <span id="pendingAccountCount" class="account-count-pill">0</span>
             </div>
@@ -8176,8 +8262,9 @@ textarea:focus {
 
           <section class="account-admin-section">
             <div class="account-admin-title">
-              <div>
+              <div class="account-admin-heading-copy">
                 <h2>Đã được phân quyền</h2>
+                <p>Quản lý vai trò, trạng thái hoạt động và quyền sử dụng HSBA.</p>
               </div>
               <span id="activeAccountCount" class="account-count-pill">0</span>
             </div>
@@ -8618,7 +8705,7 @@ textarea:focus {
 
   <script>
     (() => {
-      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.08.14.1';
+      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.08.14.2';
       const banner = () => document.getElementById('appUpdateBanner');
       const updateText = () => document.getElementById('appUpdateText');
       let registration = null;
@@ -11101,7 +11188,8 @@ textarea:focus {
       accountAdmin: {
         requests: [],
         permissions: [],
-        loaded: false
+        loaded: false,
+        errors: { requests: '', permissions: '' }
       }
     };
 
@@ -13190,29 +13278,52 @@ textarea:focus {
         return;
       }
 
-      const [requestSnapshot, permissionSnapshot] = await Promise.all([
+      const readRoots = () => Promise.allSettled([
         get(ref(firebaseDatabase, CONFIG.ACCESS_REQUEST_PATH)),
         get(ref(firebaseDatabase, 'phanQuyen'))
       ]);
 
-      const requestRoot = requestSnapshot.val() || {};
-      const permissionRoot = permissionSnapshot.val() || {};
+      let results = await readRoots();
 
-      state.accountAdmin.requests = Object.entries(requestRoot)
-        .map(([uid, value]) => ({ uid, ...(value || {}) }))
-        .sort((a, b) => {
-          const ap = a.status === 'pending' ? 0 : 1;
-          const bp = b.status === 'pending' ? 0 : 1;
-          if (ap !== bp) return ap - bp;
-          return (Number(b.requestedAt) || 0) - (Number(a.requestedAt) || 0);
-        });
+      // Một số phiên đăng nhập lâu ngày có thể giữ token cũ. Làm mới token
+      // đúng một lần trước khi kết luận cấu hình quyền truy cập bị lệch.
+      if (results.some(item => item.status === 'rejected') && firebaseAuth.currentUser) {
+        await firebaseAuth.currentUser.getIdToken(true).catch(() => {});
+        results = await readRoots();
+      }
 
-      state.accountAdmin.permissions = Object.entries(permissionRoot)
-        .map(([uid, value]) => ({ uid, ...(value || {}) }))
-        .sort((a, b) => {
-          if ((a.active === true) !== (b.active === true)) return a.active === true ? -1 : 1;
-          return String(a.email || '').localeCompare(String(b.email || ''), 'vi');
-        });
+      const [requestResult, permissionResult] = results;
+      state.accountAdmin.errors = { requests: '', permissions: '' };
+
+      if (requestResult.status === 'fulfilled') {
+        const requestRoot = requestResult.value.val() || {};
+        state.accountAdmin.requests = Object.entries(requestRoot)
+          .map(([uid, value]) => ({ uid, ...(value || {}) }))
+          .sort((a, b) => {
+            const ap = a.status === 'pending' ? 0 : 1;
+            const bp = b.status === 'pending' ? 0 : 1;
+            if (ap !== bp) return ap - bp;
+            return (Number(b.requestedAt) || 0) - (Number(a.requestedAt) || 0);
+          });
+      } else {
+        state.accountAdmin.requests = [];
+        state.accountAdmin.errors.requests = 'Không tải được danh sách yêu cầu cấp quyền.';
+        console.warn('Không tải được yêu cầu cấp quyền HSBA:', requestResult.reason);
+      }
+
+      if (permissionResult.status === 'fulfilled') {
+        const permissionRoot = permissionResult.value.val() || {};
+        state.accountAdmin.permissions = Object.entries(permissionRoot)
+          .map(([uid, value]) => ({ uid, ...(value || {}) }))
+          .sort((a, b) => {
+            if ((a.active === true) !== (b.active === true)) return a.active === true ? -1 : 1;
+            return String(a.email || '').localeCompare(String(b.email || ''), 'vi');
+          });
+      } else {
+        state.accountAdmin.permissions = [];
+        state.accountAdmin.errors.permissions = 'Không tải được danh sách tài khoản đã phân quyền.';
+        console.warn('Không tải được phân quyền HSBA:', permissionResult.reason);
+      }
 
       state.accountAdmin.loaded = true;
       renderAccountAdministration();
@@ -13223,14 +13334,20 @@ textarea:focus {
 
       const pending = state.accountAdmin.requests.filter(item => item.status === 'pending');
       const unapproved = state.accountAdmin.requests.filter(item => item.status !== 'approved');
-      const active = state.accountAdmin.permissions.filter(item => item.active === true);
+      const requestError = String(state.accountAdmin.errors?.requests || '');
+      const permissionError = String(state.accountAdmin.errors?.permissions || '');
 
-      $('#pendingAccountCount').textContent = String(unapproved.length);
-      $('#activeAccountCount').textContent = String(active.length);
+      $('#pendingAccountCount').textContent = requestError ? '—' : String(unapproved.length);
+      $('#activeAccountCount').textContent = permissionError ? '—' : String(state.accountAdmin.permissions.length);
       $('#pendingAccountBadge').textContent = String(pending.length);
-      $('#pendingAccountBadge').classList.toggle('hidden', pending.length === 0);
+      $('#pendingAccountBadge').classList.toggle('hidden', Boolean(requestError) || pending.length === 0);
 
-      $('#accountRequestsList').innerHTML = unapproved.length
+      $('#accountRequestsList').innerHTML = requestError
+        ? `<div class="account-admin-read-error">
+             <span class="account-admin-read-error-icon">!</span>
+             <div><strong>Chưa thể tải yêu cầu cấp quyền</strong><p>Quyền truy cập dữ liệu quản trị chưa được đồng bộ. Vui lòng cập nhật cấu hình quyền truy cập rồi bấm “Làm mới”.</p></div>
+           </div>`
+        : unapproved.length
         ? unapproved.map(request => {
             const isPending = request.status === 'pending';
             const statusText = isPending ? 'Đang chờ duyệt' : 'Đã từ chối';
@@ -13256,7 +13373,12 @@ textarea:focus {
           }).join('')
         : '<div class="account-admin-empty">Không có tài khoản nào đang chờ duyệt hoặc đã bị từ chối.</div>';
 
-      $('#accountPermissionsList').innerHTML = state.accountAdmin.permissions.length
+      $('#accountPermissionsList').innerHTML = permissionError
+        ? `<div class="account-admin-read-error">
+             <span class="account-admin-read-error-icon">!</span>
+             <div><strong>Chưa thể tải danh sách tài khoản</strong><p>Quyền truy cập dữ liệu quản trị chưa được đồng bộ. Vui lòng cập nhật cấu hình quyền truy cập rồi bấm “Làm mới”.</p></div>
+           </div>`
+        : state.accountAdmin.permissions.length
         ? state.accountAdmin.permissions.map(account => {
             const isCurrentAccount = account.uid === firebaseAuth.currentUser?.uid;
             const accountNote = isCurrentAccount ? ' · Tài khoản đang đăng nhập' : '';
@@ -13983,7 +14105,7 @@ textarea:focus {
             name: 'Arial',
             size: 16,
             bold: true,
-            color: { argb: 'FF5D2A42' }
+            color: { argb: 'FF3D6DB9' }
           };
           sheet.getCell('A1').alignment = {
             horizontal: 'center',
@@ -14004,7 +14126,7 @@ textarea:focus {
             name: 'Arial',
             size: 10,
             italic: true,
-            color: { argb: 'FF786971' }
+            color: { argb: 'FF657383' }
           };
 
           sheet.mergeCells(3, 1, 3, totalColumns);
@@ -14020,7 +14142,7 @@ textarea:focus {
           sheet.getCell('A3').font = {
             name: 'Arial',
             size: 9,
-            color: { argb: 'FF8D7A83' }
+            color: { argb: 'FF7B8794' }
           };
 
           const headers = [
@@ -14059,7 +14181,7 @@ textarea:focus {
             cell.fill = {
               type: 'pattern',
               pattern: 'solid',
-              fgColor: { argb: 'FF5D2A42' }
+              fgColor: { argb: 'FF3D6DB9' }
             };
             cell.alignment = {
               horizontal: 'center',
@@ -14067,10 +14189,10 @@ textarea:focus {
               wrapText: true
             };
             cell.border = {
-              top: { style: 'thin', color: { argb: 'FFFCB1A6' } },
-              left: { style: 'thin', color: { argb: 'FFFCB1A6' } },
-              bottom: { style: 'thin', color: { argb: 'FFFCB1A6' } },
-              right: { style: 'thin', color: { argb: 'FFFCB1A6' } }
+              top: { style: 'thin', color: { argb: 'FFAEE4FF' } },
+              left: { style: 'thin', color: { argb: 'FFAEE4FF' } },
+              bottom: { style: 'thin', color: { argb: 'FFAEE4FF' } },
+              right: { style: 'thin', color: { argb: 'FFAEE4FF' } }
             };
           });
 
@@ -14122,16 +14244,16 @@ textarea:focus {
                 wrapText: true
               };
               cell.border = {
-                top: { style: 'hair', color: { argb: 'FFFFDCCC' } },
-                left: { style: 'hair', color: { argb: 'FFFFDCCC' } },
-                bottom: { style: 'hair', color: { argb: 'FFFFDCCC' } },
-                right: { style: 'hair', color: { argb: 'FFFFDCCC' } }
+                top: { style: 'hair', color: { argb: 'FFFEE5E1' } },
+                left: { style: 'hair', color: { argb: 'FFFEE5E1' } },
+                bottom: { style: 'hair', color: { argb: 'FFFEE5E1' } },
+                right: { style: 'hair', color: { argb: 'FFFEE5E1' } }
               };
               if (rowIndex % 2 === 1) {
                 cell.fill = {
                   type: 'pattern',
                   pattern: 'solid',
-                  fgColor: { argb: 'FFFFF9EC' }
+                  fgColor: { argb: 'FFFAFCFF' }
                 };
               }
             });
@@ -14146,7 +14268,7 @@ textarea:focus {
                 name: 'Arial',
                 size: 9,
                 bold: true,
-                color: { argb: 'FFB54132' }
+                color: { argb: 'FFB54747' }
               };
             } else if (status === CONFIG.STATUS.HOI_GIA) {
               statusCell.font = {
@@ -14160,7 +14282,7 @@ textarea:focus {
                 name: 'Arial',
                 size: 9,
                 bold: true,
-                color: { argb: 'FF5D2A42' }
+                color: { argb: 'FF3D6DB9' }
               };
             }
           });
@@ -14196,7 +14318,7 @@ textarea:focus {
           sheet.getCell(summaryRowNumber, 1).fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: 'FF5D2A42' }
+            fgColor: { argb: 'FF3D6DB9' }
           };
           sheet.getCell(summaryRowNumber, 1).alignment = {
             horizontal: 'center',
@@ -14238,12 +14360,12 @@ textarea:focus {
               name: 'Arial',
               size: 9,
               bold: true,
-              color: { argb: 'FF35252D' }
+              color: { argb: 'FF263447' }
             };
             sheet.getCell(summaryRowNumber, column).fill = {
               type: 'pattern',
               pattern: 'solid',
-              fgColor: { argb: 'FFFFF3EE' }
+              fgColor: { argb: 'FFFFF7F8' }
             };
           });
 
