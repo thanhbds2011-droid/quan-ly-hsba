@@ -1,4 +1,4 @@
-const HSBA_SW_VERSION = '2026.08.14.5';
+const HSBA_SW_VERSION = '2026.08.14.6';
 const CACHE_NAME = `hsba-shell-${HSBA_SW_VERSION}`;
 const CORE_ASSETS = [
   './',
