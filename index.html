@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#8E515A">
+  <meta name="theme-color" content="#A4C3A2">
   <meta name="description" content="Ứng dụng quản lý hồ sơ bệnh án">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.08.14.4">
+  <meta name="version" content="2026.08.14.5">
   <title>Hồ sơ bệnh án lưu trữ</title>
-  <link rel="manifest" href="./manifest.webmanifest?v=2026.08.14.4">
+  <link rel="manifest" href="./manifest.webmanifest?v=2026.08.14.5">
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -6979,7 +6979,7 @@ html, body {
 
 
 /* ============================================================
-   HSBA 2026.08.14.4 · PROFESSIONAL UX REFINEMENT
+   HSBA 2026.08.14.5 · PROFESSIONAL UX REFINEMENT
    1) Đồng bộ icon SVG
    2) Giảm thống kê lặp trên desktop
    3) Gọn typography/khoảng trắng desktop
@@ -7270,7 +7270,7 @@ html, body {
 
 
 /* ============================================================
-   HSBA 2026.08.14.4 · DESKTOP COMPACT + REALTIME/PWA REFINEMENT
+   HSBA 2026.08.14.5 · DESKTOP COMPACT + REALTIME/PWA REFINEMENT
    ============================================================ */
 .nav-legacy-icon {
   width: 22px;
@@ -7473,7 +7473,7 @@ html, body {
 }
 
 /* ============================================================
-   HSBA 2026.08.14.4 · MOBILE FILTER RESET ICON FIX
+   HSBA 2026.08.14.5 · MOBILE FILTER RESET ICON FIX
    Chỉ dùng SVG i-reset; vô hiệu hóa ký hiệu ↺ cũ từ pseudo-element.
    ============================================================ */
 @media (max-width: 760px) {
@@ -7563,7 +7563,7 @@ html, body {
 
 
 /* ============================================================
-   HSBA 2026.08.14.4 · MOBILE/PWA AUTH TOOLBAR STABILITY
+   HSBA 2026.08.14.5 · MOBILE/PWA AUTH TOOLBAR STABILITY
    Chỉ sửa bố cục mobile. Desktop và nghiệp vụ giữ nguyên.
    - .hidden luôn thắng các rule display !important cũ.
    - Khi đã đăng nhập: chỉ 1 nút đồng bộ + 1 nút đăng xuất.
@@ -7733,7 +7733,7 @@ html, body {
 
 
 /* ============================================================
-   HSBA 2026.08.14.4 · MEDICAL BALANCE PALETTE + ACCOUNT ADMIN
+   HSBA 2026.08.14.5 · MEDICAL BALANCE PALETTE + ACCOUNT ADMIN
    Palette: AEE4FF · 6A9CFD · FFB8D0 · FEE5E1 · FFBFB3
    ============================================================ */
 body {
@@ -8022,154 +8022,164 @@ textarea:focus {
 
 
 /* ============================================================
-   HSBA 2026.08.14.4 · ROSE-FIRST MEDICAL DESIGN SYSTEM
-   Palette gốc: Sage #80A682 · Forest #597355 · Sand #D9B596 · Rose #D9A0A0 · Blush #F2D5D5
-   Chủ đạo: Rose/Blush. Green chỉ dùng cho trạng thái tích cực.
+   HSBA 2026.08.14.5 · SAGE MEDICAL DESIGN SYSTEM
+   Palette gốc: #5D7B6F · #A4C3A2 · #B0D4B8 · #EAE7D6 · #D7F9FA
+   Chủ đạo: #A4C3A2. Forest #5D7B6F dùng cho độ tương phản và hành động chính.
    ============================================================ */
 :root {
-  --medical-sage: #80A682 !important;
-  --medical-forest: #597355 !important;
-  --medical-sand: #D9B596 !important;
-  --medical-rose: #D9A0A0 !important;
-  --medical-blush: #F2D5D5 !important;
+  --medical-forest: #5D7B6F !important;
+  --medical-sage: #A4C3A2 !important;
+  --medical-mint: #B0D4B8 !important;
+  --medical-ivory: #EAE7D6 !important;
+  --medical-aqua: #D7F9FA !important;
 
-  /* Thang Rose mở rộng từ #D9A0A0 để bảo đảm độ tương phản. */
-  --rose-950: #5E353B !important;
-  --rose-900: #76424A !important;
-  --rose-800: #8E515A !important;
-  --rose-700: #A9626C !important;
-  --rose-600: #BF7B84 !important;
-  --rose-500: #D9A0A0 !important;
-  --rose-300: #E6B9B9 !important;
-  --rose-200: #EDC8C8 !important;
-  --rose-150: #F2D5D5 !important;
-  --rose-100: #F6E3E3 !important;
-  --rose-50: #FBF4F4 !important;
+  /* Thang màu mở rộng lấy #A4C3A2 làm trung tâm. */
+  --sage-950: #263D35 !important;
+  --sage-900: #365248 !important;
+  --sage-800: #49665B !important;
+  --sage-700: #5D7B6F !important;
+  --sage-600: #7A998B !important;
+  --sage-500: #A4C3A2 !important;
+  --sage-400: #B0D4B8 !important;
+  --sage-300: #C7DFC9 !important;
+  --sage-200: #DCE9DC !important;
+  --sage-100: #EEF4ED !important;
+  --sage-50: #F7FAF6 !important;
 
-  --primary: #8E515A !important;
-  --primary-2: #A9626C !important;
-  --primary-3: #5E353B !important;
-  --primary-soft: #F2D5D5 !important;
-  --accent: #D9A0A0 !important;
-  --accent-soft: #FBF4F4 !important;
+  --primary: #A4C3A2 !important;
+  --primary-2: #B0D4B8 !important;
+  --primary-3: #5D7B6F !important;
+  --primary-ink: #263D35 !important;
+  --primary-soft: #EEF4ED !important;
+  --accent: #D7F9FA !important;
+  --accent-soft: #F1FCFC !important;
 
-  --text: #34282B !important;
-  --muted: #78676B !important;
-  --line: #EBDADA !important;
+  --text: #29362F !important;
+  --text-strong: #1F2D27 !important;
+  --muted: #69766F !important;
+  --line: #DDE5DC !important;
+  --line-strong: #C9D6C8 !important;
   --surface: #FFFFFF !important;
-  --bg: #FCF8F6 !important;
+  --surface-soft: #FBFCF8 !important;
+  --bg: #F7F7F1 !important;
 
-  /* Trạng thái nghiệp vụ tách khỏi màu thương hiệu. */
-  --success: #597355 !important;
-  --success-soft: #EEF4EE !important;
-  --danger: #A33E4A !important;
+  /* Trạng thái nghiệp vụ độc lập. */
+  --success: #4F725D !important;
+  --success-soft: #EDF5EF !important;
+  --warning: #8B704A !important;
+  --warning-soft: #FBF7EA !important;
+  --danger: #A24D54 !important;
   --danger-soft: #FFF0F1 !important;
-  --warning: #946B46 !important;
-  --warning-soft: #FFF5EC !important;
+  --info: #527D83 !important;
+  --info-soft: #EAF9FA !important;
+
+  --shadow: 0 16px 38px rgba(93,123,111,.12) !important;
+  --shadow-soft: 0 8px 24px rgba(93,123,111,.075) !important;
 }
 
 html, body {
-  background-color: #FCF8F6 !important;
-  color: #34282B !important;
+  background-color: #F7F7F1 !important;
+  color: #29362F !important;
 }
 
 body {
   background:
-    radial-gradient(circle at 8% 0%, rgba(217,160,160,.19), transparent 31rem),
-    radial-gradient(circle at 96% 10%, rgba(242,213,213,.30), transparent 28rem),
-    linear-gradient(180deg, #FFFDFD 0%, #FCF8F6 100%) !important;
+    radial-gradient(circle at 7% 0%, rgba(164,195,162,.22), transparent 32rem),
+    radial-gradient(circle at 96% 10%, rgba(215,249,250,.30), transparent 27rem),
+    linear-gradient(180deg, #FFFFFF 0%, #F7F7F1 100%) !important;
 }
 
 /* Khung ứng dụng */
 .sidebar {
   background: rgba(255,255,255,.985) !important;
-  border-right-color: #EBDADA !important;
+  border-right-color: #DDE5DC !important;
 }
 .brand-icon {
-  background: linear-gradient(145deg, #76424A, #A9626C) !important;
+  background: linear-gradient(145deg, #5D7B6F, #7A998B) !important;
   color: #fff !important;
-  box-shadow: 0 10px 24px rgba(118,66,74,.22) !important;
+  box-shadow: 0 10px 24px rgba(93,123,111,.23) !important;
 }
-.nav-btn { color: #65575B !important; }
+.nav-btn {
+  color: #5E6C65 !important;
+}
 .nav-btn:hover {
-  background: #FBF4F4 !important;
-  border-color: #EDC8C8 !important;
-  color: #76424A !important;
+  background: #F3F7F2 !important;
+  border-color: #DCE9DC !important;
+  color: #365248 !important;
 }
 .nav-btn.active {
-  background: linear-gradient(135deg, #F2D5D5, #FBF4F4) !important;
-  border-color: #D9A0A0 !important;
-  color: #76424A !important;
-  box-shadow: inset 3px 0 0 #8E515A !important;
+  background: linear-gradient(135deg, #DCE9DC, #F7FAF6) !important;
+  border-color: #A4C3A2 !important;
+  color: #365248 !important;
+  box-shadow: inset 3px 0 0 #5D7B6F !important;
 }
 .topbar {
-  background: rgba(255,255,255,.955) !important;
-  border-bottom-color: #EBDADA !important;
-  box-shadow: 0 5px 18px rgba(118,66,74,.05) !important;
+  background: rgba(255,255,255,.96) !important;
+  border-bottom-color: #DDE5DC !important;
+  box-shadow: 0 5px 18px rgba(93,123,111,.055) !important;
 }
 .page-head h1,
 .detail-card h2,
 .account-admin-section h2,
 .report-preview-head h3 {
-  color: #34282B !important;
+  color: #1F2D27 !important;
 }
-.page-head h1::after,
 .page-head > div:first-child::after {
-  background: linear-gradient(90deg,#8E515A,#D9A0A0) !important;
+  background: linear-gradient(90deg,#5D7B6F,#A4C3A2) !important;
 }
 
-/* Nút */
+/* Nút: A4C3A2 là chủ đạo, chữ tối để bảo đảm độ tương phản */
 .btn.primary,
 .google-login-btn {
-  border-color: #8E515A !important;
-  background: linear-gradient(135deg, #8E515A, #A9626C) !important;
-  color: #fff !important;
-  box-shadow: 0 9px 22px rgba(142,81,90,.20) !important;
+  border-color: #8EAE8C !important;
+  background: linear-gradient(135deg, #A4C3A2, #B0D4B8) !important;
+  color: #263D35 !important;
+  box-shadow: 0 9px 22px rgba(93,123,111,.18) !important;
 }
 .btn.primary:hover:not([disabled]),
 .google-login-btn:hover:not(:disabled) {
-  border-color: #76424A !important;
-  background: linear-gradient(135deg, #76424A, #8E515A) !important;
-  color: #fff !important;
+  border-color: #5D7B6F !important;
+  background: linear-gradient(135deg, #8FAE8D, #A4C3A2) !important;
+  color: #1F2D27 !important;
 }
 .btn:not(.primary):not(.danger):not(.danger-primary),
 .auth-login-top-btn,
 .auth-sync-public-btn,
 .auth-logout-btn {
-  border-color: #E4CDCD !important;
+  border-color: #D5DFD4 !important;
   background: #fff !important;
-  color: #76424A !important;
+  color: #365248 !important;
 }
 .btn:not(.primary):not(.danger):not(.danger-primary):hover:not([disabled]),
 .auth-login-top-btn:hover,
 .auth-sync-public-btn:hover,
 .auth-logout-btn:hover {
-  border-color: #D9A0A0 !important;
-  background: #FBF4F4 !important;
-  color: #5E353B !important;
+  border-color: #A4C3A2 !important;
+  background: #F3F7F2 !important;
+  color: #263D35 !important;
 }
 .btn.danger,
 .btn.danger-primary {
-  border-color: #A33E4A !important;
-  background: #A33E4A !important;
+  border-color: #A24D54 !important;
+  background: #A24D54 !important;
   color: #fff !important;
 }
 .btn.danger:hover:not([disabled]),
 .btn.danger-primary:hover:not([disabled]) {
-  background: #85323C !important;
-  border-color: #85323C !important;
+  border-color: #843B42 !important;
+  background: #843B42 !important;
 }
 .danger-outline {
-  border-color:#D9A0A0 !important;
-  color:#8C3742 !important;
+  border-color:#D7A8AC !important;
+  color:#8B4148 !important;
   background:#fff !important;
 }
 .danger-outline:hover {
   background:#FFF0F1 !important;
-  border-color:#A33E4A !important;
+  border-color:#A24D54 !important;
 }
 
-/* Card / panel / form */
+/* Card / panel / input */
 .search-filter-panel,
 .search-panel,
 .filter-toolbar,
@@ -8177,173 +8187,191 @@ body {
 .dashboard-card,
 .death-table-wrap,
 .management-panel {
-  border-color: #EBDADA !important;
-  background: rgba(255,255,255,.98) !important;
-  box-shadow: 0 10px 28px rgba(118,66,74,.07) !important;
+  border-color: #DDE5DC !important;
+  background: rgba(255,255,255,.985) !important;
+  box-shadow: 0 10px 28px rgba(93,123,111,.075) !important;
 }
 .search-leading-icon,
 .filter-toolbar-icon,
 .mobile-filter-trigger-icon {
-  background: #F2D5D5 !important;
-  color: #76424A !important;
+  background: #DCE9DC !important;
+  color: #365248 !important;
 }
 .search-box input:focus,
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: #D9A0A0 !important;
-  box-shadow: 0 0 0 4px rgba(217,160,160,.20) !important;
+  border-color: #A4C3A2 !important;
+  box-shadow: 0 0 0 4px rgba(164,195,162,.22) !important;
 }
 
 /* Bộ lọc */
 .status-filter-btn {
-  border-color:#EBDADA !important;
+  border-color:#DDE5DC !important;
   background:#fff !important;
-  color:#65575B !important;
+  color:#5E6C65 !important;
 }
 .status-filter-btn:hover {
-  border-color:#D9A0A0 !important;
-  background:#FBF4F4 !important;
-  color:#76424A !important;
+  border-color:#A4C3A2 !important;
+  background:#F3F7F2 !important;
+  color:#365248 !important;
 }
 .status-filter-btn.active {
-  border-color:#D9A0A0 !important;
-  background: linear-gradient(135deg,#F2D5D5,#FBF4F4) !important;
-  color:#5E353B !important;
-  box-shadow: 0 7px 18px rgba(142,81,90,.10) !important;
+  border-color:#A4C3A2 !important;
+  background: linear-gradient(135deg,#DCE9DC,#F7FAF6) !important;
+  color:#263D35 !important;
+  box-shadow: 0 7px 18px rgba(93,123,111,.11) !important;
 }
 .status-filter-btn.active b,
 .mobile-filter-trigger b,
 .nav-count-badge {
-  background:#8E515A !important;
+  background:#5D7B6F !important;
   color:#fff !important;
 }
 .summary .chip,
 .filter-result-chip {
-  border-color:#EDC8C8 !important;
-  background:#FBF4F4 !important;
-  color:#76424A !important;
+  border-color:#C9D6C8 !important;
+  background:#EEF4ED !important;
+  color:#365248 !important;
 }
 
 /* Hồ sơ */
 .patient-card {
-  border-color:#EBDADA !important;
-  background: rgba(255,255,255,.985) !important;
-  box-shadow: 0 9px 25px rgba(118,66,74,.07) !important;
+  border-color:#DDE5DC !important;
+  background: rgba(255,255,255,.99) !important;
+  box-shadow: 0 9px 25px rgba(93,123,111,.075) !important;
 }
 .patient-card::before {
-  background: linear-gradient(180deg,#8E515A,#D9A0A0) !important;
+  background: linear-gradient(180deg,#5D7B6F,#A4C3A2) !important;
 }
 .patient-card:hover {
-  border-color:#D9A0A0 !important;
-  box-shadow:0 15px 34px rgba(118,66,74,.12) !important;
+  border-color:#A4C3A2 !important;
+  box-shadow:0 15px 34px rgba(93,123,111,.13) !important;
 }
 .avatar,
 .detail-avatar {
-  background: linear-gradient(145deg,#F2D5D5,#F8E9E9) !important;
-  color:#76424A !important;
+  background: linear-gradient(145deg,#DCE9DC,#EEF4ED) !important;
+  color:#365248 !important;
   box-shadow:none !important;
 }
 .avatar.female,
 .patient-avatar.female,
 .detail-avatar.female {
-  background: linear-gradient(145deg,#EDC8C8,#F6E3E3) !important;
-  color:#8E515A !important;
+  background: linear-gradient(145deg,#D7F9FA,#EAF9FA) !important;
+  color:#527D83 !important;
 }
 .badge.closed,
 .badge.finished {
-  background:#F2D5D5 !important;
-  color:#76424A !important;
+  background:#EAE7D6 !important;
+  color:#6B6047 !important;
 }
 .badge.open,
 .badge.active {
-  background:#EEF4EE !important;
-  color:#597355 !important;
+  background:#EDF5EF !important;
+  color:#4F725D !important;
+}
+.badge.death {
+  background:#FFF0F1 !important;
+  color:#A24D54 !important;
 }
 .detail-card {
-  border-color:#EDC8C8 !important;
-  background: linear-gradient(135deg,#FBF4F4,#fff 72%) !important;
+  border-color:#C9D6C8 !important;
+  background: linear-gradient(135deg,#F3F7F2,#fff 72%) !important;
 }
 .detail-card::before {
-  background: linear-gradient(180deg,#8E515A,#D9A0A0) !important;
+  background: linear-gradient(180deg,#5D7B6F,#A4C3A2) !important;
 }
 .book-card,
 .storage-card,
 .account-admin-card {
-  border-color:#EBDADA !important;
+  border-color:#DDE5DC !important;
   background:#fff !important;
 }
 
 /* Quản trị tài khoản */
 .account-admin-card:hover {
-  border-color:#D9A0A0 !important;
-  background:#FFFDFD !important;
-  box-shadow:0 8px 22px rgba(118,66,74,.08) !important;
+  border-color:#A4C3A2 !important;
+  background:#FCFDFC !important;
+  box-shadow:0 8px 22px rgba(93,123,111,.09) !important;
 }
 .account-avatar {
-  background:#F2D5D5 !important;
-  color:#76424A !important;
+  background:#DCE9DC !important;
+  color:#365248 !important;
 }
 .account-admin-count {
-  background:#F2D5D5 !important;
-  color:#76424A !important;
+  background:#A4C3A2 !important;
+  color:#263D35 !important;
 }
 .auth-user-summary {
-  background:#FBF4F4 !important;
-  border-color:#EDC8C8 !important;
-  color:#76424A !important;
+  background:#F3F7F2 !important;
+  border-color:#C9D6C8 !important;
+  color:#365248 !important;
 }
-/* Chấm xanh chỉ biểu thị đang hoạt động/online. */
 .auth-user-dot {
-  background:#597355 !important;
-  box-shadow:0 0 0 4px rgba(89,115,85,.12) !important;
+  background:#5D7B6F !important;
+  box-shadow:0 0 0 4px rgba(93,123,111,.14) !important;
 }
 .firebase-test-badge {
-  background:#FFF5EC !important;
-  color:#946B46 !important;
-  border-color:#E4C8AE !important;
+  background:#FBF7EA !important;
+  color:#8B704A !important;
+  border-color:#DDD4B5 !important;
 }
 
 /* Báo cáo */
 .report-preview-head {
   background:rgba(255,255,255,.99) !important;
-  border-bottom-color:#EBDADA !important;
+  border-bottom-color:#DDE5DC !important;
 }
 .report-preview-paper {
-  border-color:#EBDADA !important;
-  box-shadow:0 12px 30px rgba(118,66,74,.09) !important;
+  border-color:#DDE5DC !important;
+  box-shadow:0 12px 30px rgba(93,123,111,.10) !important;
 }
 .report-preview-title-block h2 {
-  color:#76424A !important;
+  color:#365248 !important;
 }
 .report-preview-table th {
-  background:#8E515A !important;
-  border-color:#A9626C !important;
+  background:#5D7B6F !important;
+  border-color:#78978A !important;
   color:#fff !important;
 }
 .report-preview-table tbody tr:nth-child(even) td {
-  background:#FCF7F7 !important;
+  background:#F7FAF6 !important;
 }
 .report-preview-table td {
-  border-color:#EBDADA !important;
-  color:#34282B !important;
+  border-color:#DDE5DC !important;
+  color:#29362F !important;
+}
+
+/* Dashboard */
+.dashboard-kpi,
+.management-metric,
+.dashboard-alert-card {
+  border-color:#DDE5DC !important;
+}
+.dashboard-kpi-icon,
+.management-metric-icon {
+  background:#DCE9DC !important;
+  color:#365248 !important;
+}
+.dashboard-kpi-value {
+  color:#263D35 !important;
 }
 
 /* Modal / PWA */
 .modal-card,
 dialog,
 .confirm-dialog-card {
-  border-color:#EBDADA !important;
+  border-color:#DDE5DC !important;
   background:#fff !important;
 }
 .app-update-banner {
-  border-color:#D9A0A0 !important;
-  border-left-color:#8E515A !important;
-  box-shadow:0 18px 46px rgba(118,66,74,.19) !important;
+  border-color:#A4C3A2 !important;
+  border-left-color:#5D7B6F !important;
+  box-shadow:0 18px 46px rgba(93,123,111,.20) !important;
 }
 .loading-bar,
 .page-accent-line {
-  background:linear-gradient(90deg,#8E515A,#D9A0A0,#D9B596) !important;
+  background:linear-gradient(90deg,#5D7B6F,#A4C3A2,#D7F9FA) !important;
 }
 
 @media (max-width:760px) {
@@ -8351,17 +8379,18 @@ dialog,
     background:rgba(255,255,255,.985) !important;
   }
   .page-actions .btn.primary {
-    background:linear-gradient(135deg,#8E515A,#A9626C) !important;
+    background:linear-gradient(135deg,#A4C3A2,#B0D4B8) !important;
+    color:#263D35 !important;
   }
   .mobile-filter-trigger {
-    border-color:#EDC8C8 !important;
-    background:#FBF4F4 !important;
-    color:#5E353B !important;
+    border-color:#C9D6C8 !important;
+    background:#F3F7F2 !important;
+    color:#263D35 !important;
   }
   .summary .chip {
-    background:#FBF4F4 !important;
-    border-color:#EDC8C8 !important;
-    color:#76424A !important;
+    background:#EEF4ED !important;
+    border-color:#C9D6C8 !important;
+    color:#365248 !important;
   }
 }
 
@@ -8419,7 +8448,7 @@ dialog,
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.08.14.4</small>
+        <small>Phiên bản 2026.08.14.5</small>
       </div>
     </aside>
 
@@ -9061,7 +9090,7 @@ dialog,
 
   <script>
     (() => {
-      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.08.14.4';
+      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.08.14.5';
       const banner = () => document.getElementById('appUpdateBanner');
       const updateText = () => document.getElementById('appUpdateText');
       let registration = null;
@@ -12977,8 +13006,8 @@ dialog,
       $('#statsGrid').innerHTML = `
         ${publicView ? `<div class="public-view-note">${uiIcon('eye')}<span>Đang xem danh mục tra cứu công khai. Đăng nhập để xem tệp, ghi chú và thông tin nghiệp vụ đầy đủ.</span></div>` : ''}
         <div class="dashboard-kpi-grid">
-          ${dashboardKpiHtml({icon:'users',label:'Tổng hồ sơ',value:totalPatients,note:'Số đối tượng đã tạo hồ sơ lưu trữ',color:'#8E515A',bg:'#FBF4F4',soft:'rgba(54,194,180,.13)'})}
-          ${dashboardKpiHtml({icon:'book',label:'Tổng quyển lưu',value:totalBooks,note:`Bình quân ${averageBooks} quyển/hồ sơ`,color:'#8E515A',bg:'#FBF4F4',soft:'rgba(91,99,183,.11)'})}
+          ${dashboardKpiHtml({icon:'users',label:'Tổng hồ sơ',value:totalPatients,note:'Số đối tượng đã tạo hồ sơ lưu trữ',color:'#5D7B6F',bg:'#EEF4ED',soft:'rgba(54,194,180,.13)'})}
+          ${dashboardKpiHtml({icon:'book',label:'Tổng quyển lưu',value:totalBooks,note:`Bình quân ${averageBooks} quyển/hồ sơ`,color:'#5D7B6F',bg:'#EEF4ED',soft:'rgba(91,99,183,.11)'})}
           ${dashboardKpiHtml({icon:'check',label:'Hết quyển',value:finishedBooks,note:`${rate(finishedBooks)}% tổng số quyển`,color:'#1c9664',bg:'#EDF5EE',soft:'rgba(46,182,125,.12)'})}
           ${dashboardKpiHtml({icon:'home',label:'Đối tượng hồi gia',value:returnedBooks,note:`${rate(returnedBooks)}% tổng số quyển`,color:'#c47b13',bg:'#fff3db',soft:'rgba(249,176,65,.13)'})}
           ${dashboardKpiHtml({icon:'box',label:'Tổng thùng lưu trữ',value:totalBoxes,note:`${structuredBooks} quyển đã xác định vị trí`,color:'#956B3D',bg:'#FFF5E9',soft:'rgba(202,139,54,.13)'})}
@@ -13001,7 +13030,7 @@ dialog,
           <article class="dashboard-panel">
             <div class="dashboard-panel-head"><div><h3 class="dashboard-panel-title">Chỉ số quản lý</h3><p class="dashboard-panel-subtitle">Các chỉ số phục vụ kiểm tra hồ sơ lưu trữ</p></div></div>
             <div class="management-metrics">
-              ${managementMetricHtml('book','Bình quân quyển',`${averageBooks}`,'Mỗi hồ sơ','#8E515A','#FBF4F4')}
+              ${managementMetricHtml('book','Bình quân quyển',`${averageBooks}`,'Mỗi hồ sơ','#5D7B6F','#EEF4ED')}
               ${managementMetricHtml('folder','Hồ sơ tử vong',`${deathBooks}`,'Quyển hồ sơ','#b94747','#fdebec')}
               ${managementMetricHtml('paperclip','File còn thiếu',`${unscannedBooks}`,'Quyển cần bổ sung','#d36a3d','#fff0e8')}
             </div>
@@ -14461,7 +14490,7 @@ dialog,
             name: 'Arial',
             size: 16,
             bold: true,
-            color: { argb: 'FF8E515A' }
+            color: { argb: 'FF5D7B6F' }
           };
           sheet.getCell('A1').alignment = {
             horizontal: 'center',
@@ -14537,7 +14566,7 @@ dialog,
             cell.fill = {
               type: 'pattern',
               pattern: 'solid',
-              fgColor: { argb: 'FF8E515A' }
+              fgColor: { argb: 'FF5D7B6F' }
             };
             cell.alignment = {
               horizontal: 'center',
@@ -14638,7 +14667,7 @@ dialog,
                 name: 'Arial',
                 size: 9,
                 bold: true,
-                color: { argb: 'FF8E515A' }
+                color: { argb: 'FF5D7B6F' }
               };
             }
           });
@@ -14674,7 +14703,7 @@ dialog,
           sheet.getCell(summaryRowNumber, 1).fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: 'FF8E515A' }
+            fgColor: { argb: 'FF5D7B6F' }
           };
           sheet.getCell(summaryRowNumber, 1).alignment = {
             horizontal: 'center',
