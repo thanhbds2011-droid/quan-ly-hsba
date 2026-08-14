@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#597355">
+  <meta name="theme-color" content="#8E515A">
   <meta name="description" content="Ứng dụng quản lý hồ sơ bệnh án">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.08.14.3">
+  <meta name="version" content="2026.08.14.4">
   <title>Hồ sơ bệnh án lưu trữ</title>
-  <link rel="manifest" href="./manifest.webmanifest?v=2026.08.14.3">
+  <link rel="manifest" href="./manifest.webmanifest?v=2026.08.14.4">
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -6979,7 +6979,7 @@ html, body {
 
 
 /* ============================================================
-   HSBA 2026.08.14.3 · PROFESSIONAL UX REFINEMENT
+   HSBA 2026.08.14.4 · PROFESSIONAL UX REFINEMENT
    1) Đồng bộ icon SVG
    2) Giảm thống kê lặp trên desktop
    3) Gọn typography/khoảng trắng desktop
@@ -7270,7 +7270,7 @@ html, body {
 
 
 /* ============================================================
-   HSBA 2026.08.14.3 · DESKTOP COMPACT + REALTIME/PWA REFINEMENT
+   HSBA 2026.08.14.4 · DESKTOP COMPACT + REALTIME/PWA REFINEMENT
    ============================================================ */
 .nav-legacy-icon {
   width: 22px;
@@ -7473,7 +7473,7 @@ html, body {
 }
 
 /* ============================================================
-   HSBA 2026.08.14.3 · MOBILE FILTER RESET ICON FIX
+   HSBA 2026.08.14.4 · MOBILE FILTER RESET ICON FIX
    Chỉ dùng SVG i-reset; vô hiệu hóa ký hiệu ↺ cũ từ pseudo-element.
    ============================================================ */
 @media (max-width: 760px) {
@@ -7563,7 +7563,7 @@ html, body {
 
 
 /* ============================================================
-   HSBA 2026.08.14.3 · MOBILE/PWA AUTH TOOLBAR STABILITY
+   HSBA 2026.08.14.4 · MOBILE/PWA AUTH TOOLBAR STABILITY
    Chỉ sửa bố cục mobile. Desktop và nghiệp vụ giữ nguyên.
    - .hidden luôn thắng các rule display !important cũ.
    - Khi đã đăng nhập: chỉ 1 nút đồng bộ + 1 nút đăng xuất.
@@ -7733,7 +7733,7 @@ html, body {
 
 
 /* ============================================================
-   HSBA 2026.08.14.3 · MEDICAL BALANCE PALETTE + ACCOUNT ADMIN
+   HSBA 2026.08.14.4 · MEDICAL BALANCE PALETTE + ACCOUNT ADMIN
    Palette: AEE4FF · 6A9CFD · FFB8D0 · FEE5E1 · FFBFB3
    ============================================================ */
 body {
@@ -8022,170 +8022,349 @@ textarea:focus {
 
 
 /* ============================================================
-   HSBA 2026.08.14.3 · BOTANICAL MEDICAL DESIGN SYSTEM
-   Palette: Sage #80A682 · Forest #597355 · Sand #D9B596 · Rose #D9A0A0 · Blush #F2D5D5
+   HSBA 2026.08.14.4 · ROSE-FIRST MEDICAL DESIGN SYSTEM
+   Palette gốc: Sage #80A682 · Forest #597355 · Sand #D9B596 · Rose #D9A0A0 · Blush #F2D5D5
+   Chủ đạo: Rose/Blush. Green chỉ dùng cho trạng thái tích cực.
    ============================================================ */
 :root {
-  --rose-950: #31422F !important;
-  --rose-900: #40543E !important;
-  --rose-800: #597355 !important;
-  --rose-700: #6F8B70 !important;
-  --rose-600: #80A682 !important;
+  --medical-sage: #80A682 !important;
+  --medical-forest: #597355 !important;
+  --medical-sand: #D9B596 !important;
+  --medical-rose: #D9A0A0 !important;
+  --medical-blush: #F2D5D5 !important;
+
+  /* Thang Rose mở rộng từ #D9A0A0 để bảo đảm độ tương phản. */
+  --rose-950: #5E353B !important;
+  --rose-900: #76424A !important;
+  --rose-800: #8E515A !important;
+  --rose-700: #A9626C !important;
+  --rose-600: #BF7B84 !important;
   --rose-500: #D9A0A0 !important;
-  --rose-200: #E7BDBD !important;
+  --rose-300: #E6B9B9 !important;
+  --rose-200: #EDC8C8 !important;
   --rose-150: #F2D5D5 !important;
-  --rose-100: #F6E7E4 !important;
-  --rose-50: #FCF8F3 !important;
-  --primary: #597355 !important;
-  --primary-2: #80A682 !important;
-  --primary-3: #31422F !important;
-  --primary-soft: #E8F0E8 !important;
+  --rose-100: #F6E3E3 !important;
+  --rose-50: #FBF4F4 !important;
+
+  --primary: #8E515A !important;
+  --primary-2: #A9626C !important;
+  --primary-3: #5E353B !important;
+  --primary-soft: #F2D5D5 !important;
   --accent: #D9A0A0 !important;
-  --accent-soft: #F2D5D5 !important;
-  --text: #29332C !important;
-  --muted: #687169 !important;
-  --line: #E6DDD7 !important;
+  --accent-soft: #FBF4F4 !important;
+
+  --text: #34282B !important;
+  --muted: #78676B !important;
+  --line: #EBDADA !important;
   --surface: #FFFFFF !important;
-  --bg: #FAF8F4 !important;
-  --success: #4F7B59 !important;
-  --success-soft: #EDF5EE !important;
-  --danger: #A45157 !important;
-  --danger-soft: #FFF1F1 !important;
-  --warning: #956B3D !important;
-  --warning-soft: #FFF5E9 !important;
+  --bg: #FCF8F6 !important;
+
+  /* Trạng thái nghiệp vụ tách khỏi màu thương hiệu. */
+  --success: #597355 !important;
+  --success-soft: #EEF4EE !important;
+  --danger: #A33E4A !important;
+  --danger-soft: #FFF0F1 !important;
+  --warning: #946B46 !important;
+  --warning-soft: #FFF5EC !important;
 }
-html, body { background-color: #FAF8F4 !important; color: #29332C !important; }
+
+html, body {
+  background-color: #FCF8F6 !important;
+  color: #34282B !important;
+}
+
 body {
   background:
-    radial-gradient(circle at 10% 0%, rgba(128,166,130,.13), transparent 31rem),
-    radial-gradient(circle at 96% 8%, rgba(217,160,160,.11), transparent 27rem),
-    linear-gradient(180deg, #FFFDF9 0%, #FAF8F4 100%) !important;
+    radial-gradient(circle at 8% 0%, rgba(217,160,160,.19), transparent 31rem),
+    radial-gradient(circle at 96% 10%, rgba(242,213,213,.30), transparent 28rem),
+    linear-gradient(180deg, #FFFDFD 0%, #FCF8F6 100%) !important;
 }
-.sidebar { background: rgba(255,255,255,.98) !important; border-right-color: #E6DDD7 !important; }
+
+/* Khung ứng dụng */
+.sidebar {
+  background: rgba(255,255,255,.985) !important;
+  border-right-color: #EBDADA !important;
+}
 .brand-icon {
-  background: linear-gradient(145deg, #40543E, #597355) !important;
-  box-shadow: 0 10px 24px rgba(49,66,47,.20) !important;
+  background: linear-gradient(145deg, #76424A, #A9626C) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 24px rgba(118,66,74,.22) !important;
 }
-.nav-btn { color: #566159 !important; }
-.nav-btn:hover { background: #F4F8F4 !important; border-color: #D8E5D9 !important; color: #40543E !important; }
+.nav-btn { color: #65575B !important; }
+.nav-btn:hover {
+  background: #FBF4F4 !important;
+  border-color: #EDC8C8 !important;
+  color: #76424A !important;
+}
 .nav-btn.active {
-  background: linear-gradient(135deg, #E8F0E8, #F4F8F4) !important;
-  border-color: #BCD0BE !important;
-  color: #40543E !important;
-  box-shadow: inset 3px 0 0 #597355 !important;
+  background: linear-gradient(135deg, #F2D5D5, #FBF4F4) !important;
+  border-color: #D9A0A0 !important;
+  color: #76424A !important;
+  box-shadow: inset 3px 0 0 #8E515A !important;
 }
 .topbar {
-  background: rgba(255,255,255,.94) !important;
-  border-bottom-color: #E6DDD7 !important;
-  box-shadow: 0 5px 18px rgba(49,66,47,.045) !important;
+  background: rgba(255,255,255,.955) !important;
+  border-bottom-color: #EBDADA !important;
+  box-shadow: 0 5px 18px rgba(118,66,74,.05) !important;
 }
-.page-head h1, .detail-card h2, .account-admin-section h2, .report-preview-head h3 { color: #29332C !important; }
-.page-head h1::after, .page-head > div:first-child::after { background: linear-gradient(90deg,#597355,#80A682) !important; }
-.btn.primary, .google-login-btn {
-  border-color: #597355 !important;
-  background: linear-gradient(135deg, #597355, #6F8B70) !important;
+.page-head h1,
+.detail-card h2,
+.account-admin-section h2,
+.report-preview-head h3 {
+  color: #34282B !important;
+}
+.page-head h1::after,
+.page-head > div:first-child::after {
+  background: linear-gradient(90deg,#8E515A,#D9A0A0) !important;
+}
+
+/* Nút */
+.btn.primary,
+.google-login-btn {
+  border-color: #8E515A !important;
+  background: linear-gradient(135deg, #8E515A, #A9626C) !important;
   color: #fff !important;
-  box-shadow: 0 9px 22px rgba(49,66,47,.18) !important;
+  box-shadow: 0 9px 22px rgba(142,81,90,.20) !important;
 }
-.btn.primary:hover:not([disabled]), .google-login-btn:hover:not(:disabled) {
-  border-color: #40543E !important;
-  background: linear-gradient(135deg, #40543E, #597355) !important;
+.btn.primary:hover:not([disabled]),
+.google-login-btn:hover:not(:disabled) {
+  border-color: #76424A !important;
+  background: linear-gradient(135deg, #76424A, #8E515A) !important;
   color: #fff !important;
 }
 .btn:not(.primary):not(.danger):not(.danger-primary),
-.auth-login-top-btn, .auth-sync-public-btn, .auth-logout-btn {
-  border-color: #D8CAC1 !important;
+.auth-login-top-btn,
+.auth-sync-public-btn,
+.auth-logout-btn {
+  border-color: #E4CDCD !important;
   background: #fff !important;
-  color: #40543E !important;
+  color: #76424A !important;
 }
 .btn:not(.primary):not(.danger):not(.danger-primary):hover:not([disabled]),
-.auth-login-top-btn:hover, .auth-sync-public-btn:hover, .auth-logout-btn:hover {
-  border-color: #BCD0BE !important;
-  background: #F4F8F4 !important;
-  color: #31422F !important;
+.auth-login-top-btn:hover,
+.auth-sync-public-btn:hover,
+.auth-logout-btn:hover {
+  border-color: #D9A0A0 !important;
+  background: #FBF4F4 !important;
+  color: #5E353B !important;
 }
-.btn.danger, .btn.danger-primary {
-  border-color: #A45157 !important;
-  background: #A45157 !important;
+.btn.danger,
+.btn.danger-primary {
+  border-color: #A33E4A !important;
+  background: #A33E4A !important;
   color: #fff !important;
 }
-.btn.danger:hover:not([disabled]), .btn.danger-primary:hover:not([disabled]) { background: #873F44 !important; border-color:#873F44 !important; }
-.danger-outline { border-color:#D9A0A0 !important; color:#873F44 !important; background:#fff !important; }
-.danger-outline:hover { background:#FFF1F1 !important; border-color:#A45157 !important; }
-.search-filter-panel, .search-panel, .filter-toolbar, .account-admin-section, .dashboard-card, .death-table-wrap, .management-panel {
-  border-color: #E6DDD7 !important;
-  background: rgba(255,255,255,.97) !important;
-  box-shadow: 0 10px 28px rgba(49,66,47,.065) !important;
+.btn.danger:hover:not([disabled]),
+.btn.danger-primary:hover:not([disabled]) {
+  background: #85323C !important;
+  border-color: #85323C !important;
 }
-.search-leading-icon, .filter-toolbar-icon, .mobile-filter-trigger-icon {
-  background: #E8F0E8 !important; color:#40543E !important;
-}
-.search-box input:focus, input:focus, select:focus, textarea:focus {
-  border-color: #80A682 !important;
-  box-shadow: 0 0 0 4px rgba(128,166,130,.16) !important;
-}
-.status-filter-btn { border-color:#E6DDD7 !important; background:#fff !important; color:#566159 !important; }
-.status-filter-btn:hover { border-color:#BCD0BE !important; background:#F4F8F4 !important; color:#40543E !important; }
-.status-filter-btn.active {
-  border-color:#80A682 !important;
-  background: linear-gradient(135deg,#E8F0E8,#F4F8F4) !important;
-  color:#31422F !important;
-  box-shadow: 0 7px 18px rgba(49,66,47,.08) !important;
-}
-.status-filter-btn.active b, .mobile-filter-trigger b, .nav-count-badge { background:#597355 !important; color:#fff !important; }
-.summary .chip, .filter-result-chip {
-  border-color:#E7BDBD !important;
-  background:#FCF8F3 !important;
-  color:#40543E !important;
-}
-.patient-card {
-  border-color:#E6DDD7 !important;
-  background: rgba(255,255,255,.98) !important;
-  box-shadow: 0 9px 25px rgba(49,66,47,.065) !important;
-}
-.patient-card::before { background: linear-gradient(180deg,#597355,#80A682) !important; }
-.patient-card:hover { border-color:#BCD0BE !important; box-shadow:0 15px 34px rgba(49,66,47,.11) !important; }
-.avatar, .detail-avatar {
-  background: linear-gradient(145deg,#E8F0E8,#D8E5D9) !important;
-  color:#40543E !important;
-  box-shadow:none !important;
-}
-.avatar.female, .patient-avatar.female, .detail-avatar.female {
-  background: linear-gradient(145deg,#F2D5D5,#F6E7E4) !important;
-  color:#873F44 !important;
-}
-.badge.closed, .badge.finished { background:#F2D5D5 !important; color:#873F44 !important; }
-.badge.open, .badge.active { background:#EDF5EE !important; color:#4F7B59 !important; }
-.detail-card {
-  border-color:#D8E5D9 !important;
-  background: linear-gradient(135deg,#F4F8F4,#fff 72%) !important;
-}
-.detail-card::before { background: linear-gradient(180deg,#597355,#80A682) !important; }
-.book-card, .storage-card, .account-admin-card {
-  border-color:#E6DDD7 !important;
+.danger-outline {
+  border-color:#D9A0A0 !important;
+  color:#8C3742 !important;
   background:#fff !important;
 }
-.account-admin-card:hover { border-color:#BCD0BE !important; background:#FDFCF9 !important; box-shadow:0 8px 22px rgba(49,66,47,.07) !important; }
-.account-avatar { background:#E8F0E8 !important; color:#40543E !important; }
-.account-admin-count { background:#F2D5D5 !important; color:#873F44 !important; }
-.firebase-test-badge { background:#FFF5E9 !important; color:#956B3D !important; border-color:#E9D0B7 !important; }
-.auth-user-summary { background:#F4F8F4 !important; border-color:#D8E5D9 !important; color:#40543E !important; }
-.auth-user-dot { background:#4F7B59 !important; box-shadow:0 0 0 4px rgba(79,123,89,.12) !important; }
-.report-preview-head { background:rgba(255,255,255,.985) !important; border-bottom-color:#E6DDD7 !important; }
-.report-preview-paper { border-color:#E6DDD7 !important; box-shadow:0 12px 30px rgba(49,66,47,.08) !important; }
-.report-preview-title-block h2 { color:#40543E !important; }
-.report-preview-table th { background:#597355 !important; border-color:#6F8B70 !important; color:#fff !important; }
-.report-preview-table tbody tr:nth-child(even) td { background:#F9F6F1 !important; }
-.report-preview-table td { border-color:#E6DDD7 !important; color:#29332C !important; }
-.modal-card, dialog, .confirm-dialog-card { border-color:#E6DDD7 !important; background:#fff !important; }
-.app-update-banner { border-color:#BCD0BE !important; border-left-color:#597355 !important; box-shadow:0 18px 46px rgba(49,66,47,.18) !important; }
-.loading-bar, .page-accent-line { background:linear-gradient(90deg,#597355,#80A682,#D9B596) !important; }
-@media (max-width:760px) {
-  .topbar { background:rgba(255,255,255,.98) !important; }
-  .page-actions .btn.primary { background:linear-gradient(135deg,#597355,#6F8B70) !important; }
-  .mobile-filter-trigger { border-color:#D8E5D9 !important; background:#F4F8F4 !important; color:#31422F !important; }
-  .summary .chip { background:#FCF8F3 !important; border-color:#E7BDBD !important; color:#40543E !important; }
+.danger-outline:hover {
+  background:#FFF0F1 !important;
+  border-color:#A33E4A !important;
 }
+
+/* Card / panel / form */
+.search-filter-panel,
+.search-panel,
+.filter-toolbar,
+.account-admin-section,
+.dashboard-card,
+.death-table-wrap,
+.management-panel {
+  border-color: #EBDADA !important;
+  background: rgba(255,255,255,.98) !important;
+  box-shadow: 0 10px 28px rgba(118,66,74,.07) !important;
+}
+.search-leading-icon,
+.filter-toolbar-icon,
+.mobile-filter-trigger-icon {
+  background: #F2D5D5 !important;
+  color: #76424A !important;
+}
+.search-box input:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #D9A0A0 !important;
+  box-shadow: 0 0 0 4px rgba(217,160,160,.20) !important;
+}
+
+/* Bộ lọc */
+.status-filter-btn {
+  border-color:#EBDADA !important;
+  background:#fff !important;
+  color:#65575B !important;
+}
+.status-filter-btn:hover {
+  border-color:#D9A0A0 !important;
+  background:#FBF4F4 !important;
+  color:#76424A !important;
+}
+.status-filter-btn.active {
+  border-color:#D9A0A0 !important;
+  background: linear-gradient(135deg,#F2D5D5,#FBF4F4) !important;
+  color:#5E353B !important;
+  box-shadow: 0 7px 18px rgba(142,81,90,.10) !important;
+}
+.status-filter-btn.active b,
+.mobile-filter-trigger b,
+.nav-count-badge {
+  background:#8E515A !important;
+  color:#fff !important;
+}
+.summary .chip,
+.filter-result-chip {
+  border-color:#EDC8C8 !important;
+  background:#FBF4F4 !important;
+  color:#76424A !important;
+}
+
+/* Hồ sơ */
+.patient-card {
+  border-color:#EBDADA !important;
+  background: rgba(255,255,255,.985) !important;
+  box-shadow: 0 9px 25px rgba(118,66,74,.07) !important;
+}
+.patient-card::before {
+  background: linear-gradient(180deg,#8E515A,#D9A0A0) !important;
+}
+.patient-card:hover {
+  border-color:#D9A0A0 !important;
+  box-shadow:0 15px 34px rgba(118,66,74,.12) !important;
+}
+.avatar,
+.detail-avatar {
+  background: linear-gradient(145deg,#F2D5D5,#F8E9E9) !important;
+  color:#76424A !important;
+  box-shadow:none !important;
+}
+.avatar.female,
+.patient-avatar.female,
+.detail-avatar.female {
+  background: linear-gradient(145deg,#EDC8C8,#F6E3E3) !important;
+  color:#8E515A !important;
+}
+.badge.closed,
+.badge.finished {
+  background:#F2D5D5 !important;
+  color:#76424A !important;
+}
+.badge.open,
+.badge.active {
+  background:#EEF4EE !important;
+  color:#597355 !important;
+}
+.detail-card {
+  border-color:#EDC8C8 !important;
+  background: linear-gradient(135deg,#FBF4F4,#fff 72%) !important;
+}
+.detail-card::before {
+  background: linear-gradient(180deg,#8E515A,#D9A0A0) !important;
+}
+.book-card,
+.storage-card,
+.account-admin-card {
+  border-color:#EBDADA !important;
+  background:#fff !important;
+}
+
+/* Quản trị tài khoản */
+.account-admin-card:hover {
+  border-color:#D9A0A0 !important;
+  background:#FFFDFD !important;
+  box-shadow:0 8px 22px rgba(118,66,74,.08) !important;
+}
+.account-avatar {
+  background:#F2D5D5 !important;
+  color:#76424A !important;
+}
+.account-admin-count {
+  background:#F2D5D5 !important;
+  color:#76424A !important;
+}
+.auth-user-summary {
+  background:#FBF4F4 !important;
+  border-color:#EDC8C8 !important;
+  color:#76424A !important;
+}
+/* Chấm xanh chỉ biểu thị đang hoạt động/online. */
+.auth-user-dot {
+  background:#597355 !important;
+  box-shadow:0 0 0 4px rgba(89,115,85,.12) !important;
+}
+.firebase-test-badge {
+  background:#FFF5EC !important;
+  color:#946B46 !important;
+  border-color:#E4C8AE !important;
+}
+
+/* Báo cáo */
+.report-preview-head {
+  background:rgba(255,255,255,.99) !important;
+  border-bottom-color:#EBDADA !important;
+}
+.report-preview-paper {
+  border-color:#EBDADA !important;
+  box-shadow:0 12px 30px rgba(118,66,74,.09) !important;
+}
+.report-preview-title-block h2 {
+  color:#76424A !important;
+}
+.report-preview-table th {
+  background:#8E515A !important;
+  border-color:#A9626C !important;
+  color:#fff !important;
+}
+.report-preview-table tbody tr:nth-child(even) td {
+  background:#FCF7F7 !important;
+}
+.report-preview-table td {
+  border-color:#EBDADA !important;
+  color:#34282B !important;
+}
+
+/* Modal / PWA */
+.modal-card,
+dialog,
+.confirm-dialog-card {
+  border-color:#EBDADA !important;
+  background:#fff !important;
+}
+.app-update-banner {
+  border-color:#D9A0A0 !important;
+  border-left-color:#8E515A !important;
+  box-shadow:0 18px 46px rgba(118,66,74,.19) !important;
+}
+.loading-bar,
+.page-accent-line {
+  background:linear-gradient(90deg,#8E515A,#D9A0A0,#D9B596) !important;
+}
+
+@media (max-width:760px) {
+  .topbar {
+    background:rgba(255,255,255,.985) !important;
+  }
+  .page-actions .btn.primary {
+    background:linear-gradient(135deg,#8E515A,#A9626C) !important;
+  }
+  .mobile-filter-trigger {
+    border-color:#EDC8C8 !important;
+    background:#FBF4F4 !important;
+    color:#5E353B !important;
+  }
+  .summary .chip {
+    background:#FBF4F4 !important;
+    border-color:#EDC8C8 !important;
+    color:#76424A !important;
+  }
+}
+
 </style>
 </head>
 
@@ -8240,7 +8419,7 @@ body {
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.08.14.3</small>
+        <small>Phiên bản 2026.08.14.4</small>
       </div>
     </aside>
 
@@ -8882,7 +9061,7 @@ body {
 
   <script>
     (() => {
-      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.08.14.3';
+      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.08.14.4';
       const banner = () => document.getElementById('appUpdateBanner');
       const updateText = () => document.getElementById('appUpdateText');
       let registration = null;
@@ -12798,8 +12977,8 @@ body {
       $('#statsGrid').innerHTML = `
         ${publicView ? `<div class="public-view-note">${uiIcon('eye')}<span>Đang xem danh mục tra cứu công khai. Đăng nhập để xem tệp, ghi chú và thông tin nghiệp vụ đầy đủ.</span></div>` : ''}
         <div class="dashboard-kpi-grid">
-          ${dashboardKpiHtml({icon:'users',label:'Tổng hồ sơ',value:totalPatients,note:'Số đối tượng đã tạo hồ sơ lưu trữ',color:'#40543E',bg:'#EDF5EE',soft:'rgba(54,194,180,.13)'})}
-          ${dashboardKpiHtml({icon:'book',label:'Tổng quyển lưu',value:totalBooks,note:`Bình quân ${averageBooks} quyển/hồ sơ`,color:'#597355',bg:'#F4F8F4',soft:'rgba(91,99,183,.11)'})}
+          ${dashboardKpiHtml({icon:'users',label:'Tổng hồ sơ',value:totalPatients,note:'Số đối tượng đã tạo hồ sơ lưu trữ',color:'#8E515A',bg:'#FBF4F4',soft:'rgba(54,194,180,.13)'})}
+          ${dashboardKpiHtml({icon:'book',label:'Tổng quyển lưu',value:totalBooks,note:`Bình quân ${averageBooks} quyển/hồ sơ`,color:'#8E515A',bg:'#FBF4F4',soft:'rgba(91,99,183,.11)'})}
           ${dashboardKpiHtml({icon:'check',label:'Hết quyển',value:finishedBooks,note:`${rate(finishedBooks)}% tổng số quyển`,color:'#1c9664',bg:'#EDF5EE',soft:'rgba(46,182,125,.12)'})}
           ${dashboardKpiHtml({icon:'home',label:'Đối tượng hồi gia',value:returnedBooks,note:`${rate(returnedBooks)}% tổng số quyển`,color:'#c47b13',bg:'#fff3db',soft:'rgba(249,176,65,.13)'})}
           ${dashboardKpiHtml({icon:'box',label:'Tổng thùng lưu trữ',value:totalBoxes,note:`${structuredBooks} quyển đã xác định vị trí`,color:'#956B3D',bg:'#FFF5E9',soft:'rgba(202,139,54,.13)'})}
@@ -12822,7 +13001,7 @@ body {
           <article class="dashboard-panel">
             <div class="dashboard-panel-head"><div><h3 class="dashboard-panel-title">Chỉ số quản lý</h3><p class="dashboard-panel-subtitle">Các chỉ số phục vụ kiểm tra hồ sơ lưu trữ</p></div></div>
             <div class="management-metrics">
-              ${managementMetricHtml('book','Bình quân quyển',`${averageBooks}`,'Mỗi hồ sơ','#597355','#F4F8F4')}
+              ${managementMetricHtml('book','Bình quân quyển',`${averageBooks}`,'Mỗi hồ sơ','#8E515A','#FBF4F4')}
               ${managementMetricHtml('folder','Hồ sơ tử vong',`${deathBooks}`,'Quyển hồ sơ','#b94747','#fdebec')}
               ${managementMetricHtml('paperclip','File còn thiếu',`${unscannedBooks}`,'Quyển cần bổ sung','#d36a3d','#fff0e8')}
             </div>
@@ -14282,7 +14461,7 @@ body {
             name: 'Arial',
             size: 16,
             bold: true,
-            color: { argb: 'FF597355' }
+            color: { argb: 'FF8E515A' }
           };
           sheet.getCell('A1').alignment = {
             horizontal: 'center',
@@ -14358,7 +14537,7 @@ body {
             cell.fill = {
               type: 'pattern',
               pattern: 'solid',
-              fgColor: { argb: 'FF597355' }
+              fgColor: { argb: 'FF8E515A' }
             };
             cell.alignment = {
               horizontal: 'center',
@@ -14459,7 +14638,7 @@ body {
                 name: 'Arial',
                 size: 9,
                 bold: true,
-                color: { argb: 'FF597355' }
+                color: { argb: 'FF8E515A' }
               };
             }
           });
@@ -14495,7 +14674,7 @@ body {
           sheet.getCell(summaryRowNumber, 1).fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: 'FF597355' }
+            fgColor: { argb: 'FF8E515A' }
           };
           sheet.getCell(summaryRowNumber, 1).alignment = {
             horizontal: 'center',
