@@ -9,9 +9,9 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.08.14.7">
+  <meta name="version" content="2026.08.14.8">
   <title>Hồ sơ bệnh án lưu trữ</title>
-  <link rel="manifest" href="./manifest.webmanifest?v=2026.08.14.7">
+  <link rel="manifest" href="./manifest.webmanifest?v=2026.08.14.8">
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -8360,7 +8360,7 @@ dialog,
 
 
 /* ============================================================
-   HSBA 2026.08.14.7 · DASHBOARD KPI COLOR REFINEMENT
+   HSBA 2026.08.14.8 · DASHBOARD KPI COLOR REFINEMENT
    Chỉ tinh chỉnh Thống kê tổng quan; không thay nghiệp vụ.
    ============================================================ */
 #dashboardView .dashboard-kpi {
@@ -8374,18 +8374,6 @@ dialog,
     transform .18s ease,
     box-shadow .18s ease,
     border-color .18s ease !important;
-}
-
-#dashboardView .dashboard-kpi::before {
-  content: "" !important;
-  position: absolute !important;
-  left: 0 !important;
-  top: 18px !important;
-  bottom: 18px !important;
-  width: 4px !important;
-  border-radius: 0 999px 999px 0 !important;
-  background: var(--kpi-accent, #FFB6AF) !important;
-  z-index: 2 !important;
 }
 
 #dashboardView .dashboard-kpi::after {
@@ -8403,7 +8391,6 @@ dialog,
   --kpi-color: #D95F57 !important;
   --kpi-bg: #FFDDD8 !important;
   --kpi-soft: rgba(242,128,118,.16) !important;
-  --kpi-accent: #F28076 !important;
   border-color: #F4D0CB !important;
   background: linear-gradient(145deg, #FFFFFF 25%, #FFF1EF 100%) !important;
 }
@@ -8413,7 +8400,6 @@ dialog,
   --kpi-color: #A66F48 !important;
   --kpi-bg: #FAE0C7 !important;
   --kpi-soft: rgba(251,193,147,.19) !important;
-  --kpi-accent: #FBC193 !important;
   border-color: #F1D8BE !important;
   background: linear-gradient(145deg, #FFFFFF 25%, #FFF7EE 100%) !important;
 }
@@ -8423,7 +8409,6 @@ dialog,
   --kpi-color: #C94F49 !important;
   --kpi-bg: #FFD8D3 !important;
   --kpi-soft: rgba(255,182,175,.19) !important;
-  --kpi-accent: #FF9F96 !important;
   border-color: #F4CDC8 !important;
   background: linear-gradient(145deg, #FFFFFF 25%, #FFF0EE 100%) !important;
 }
@@ -8433,7 +8418,6 @@ dialog,
   --kpi-color: #388D7B !important;
   --kpi-bg: #DDF3EE !important;
   --kpi-soft: rgba(78,176,155,.16) !important;
-  --kpi-accent: #4EB09B !important;
   border-color: #CFE8E2 !important;
   background: linear-gradient(145deg, #FFFFFF 25%, #EFFAF7 100%) !important;
 }
@@ -8443,7 +8427,6 @@ dialog,
   --kpi-color: #A86B3C !important;
   --kpi-bg: #F9DDC2 !important;
   --kpi-soft: rgba(250,224,199,.25) !important;
-  --kpi-accent: #E9A76D !important;
   border-color: #EED8C5 !important;
   background: linear-gradient(145deg, #FFFFFF 25%, #FFF5EA 100%) !important;
 }
@@ -8474,12 +8457,6 @@ dialog,
 @media (max-width: 760px) {
   #dashboardView .dashboard-kpi {
     box-shadow: 0 8px 20px rgba(91,48,46,.065) !important;
-  }
-
-  #dashboardView .dashboard-kpi::before {
-    top: 14px !important;
-    bottom: 14px !important;
-    width: 3px !important;
   }
 
   #dashboardView .dashboard-kpi:hover {
@@ -8541,7 +8518,7 @@ dialog,
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.08.14.7</small>
+        <small>Phiên bản 2026.08.14.8</small>
       </div>
     </aside>
 
@@ -8939,7 +8916,7 @@ dialog,
         <div class="form-field">
           <label for="bookViTriSo">Vị trí số</label>
           <input id="bookViTriSo" name="viTriSo" type="number" min="1" step="1" inputmode="numeric" required placeholder="Ví dụ: 10">
-          <small class="field-hint">Nhập số thứ tự của quyển bên trong thùng.</small>
+          <small class="field-hint">Mỗi vị trí chỉ được lưu 01 quyển. Hệ thống sẽ chặn nếu Thùng + Vị trí đã được sử dụng.</small>
         </div>
 
         <div id="storageLocationPreview" class="storage-location-preview full-span">
@@ -9183,7 +9160,7 @@ dialog,
 
   <script>
     (() => {
-      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.08.14.7';
+      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.08.14.8';
       const banner = () => document.getElementById('appUpdateBanner');
       const updateText = () => document.getElementById('appUpdateText');
       let registration = null;
@@ -9377,6 +9354,7 @@ dialog,
     const CONFIG = Object.freeze({
       OWNER_EMAIL: 'thanhbds2011@gmail.com',
       ACCESS_REQUEST_PATH: 'hsbaYeuCauDangKy',
+      STORAGE_INDEX_PATH: 'hsbaViTriLuuTru',
 
       // Apps Script này chỉ dùng upload Google Drive; cấp quyền HSBA không còn phụ thuộc Apps Script/Google Sheet.
       DRIVE_UPLOAD_URL:
@@ -9589,6 +9567,20 @@ dialog,
       return `Thùng ${box} - Vị trí ${position}`;
     }
 
+    function storageLocationKey(thungSo, viTriSo) {
+      const box = Number(thungSo);
+      const position = Number(viTriSo);
+
+      if (
+        !Number.isInteger(box) || box < 1 ||
+        !Number.isInteger(position) || position < 1
+      ) {
+        return '';
+      }
+
+      return `t_${String(box).padStart(6, '0')}_v_${String(position).padStart(6, '0')}`;
+    }
+
     function parseStorageLocation(source = {}) {
       const directBox = Number(source.thungSo ?? source['THÙNG SỐ']);
       const directPosition = Number(source.viTriSo ?? source['VỊ TRÍ SỐ']);
@@ -9624,6 +9616,66 @@ dialog,
         label: legacy,
         structured: false
       };
+    }
+
+    function findStorageLocationConflict(
+      booksRoot,
+      thungSo,
+      viTriSo,
+      ignorePatientId = '',
+      ignoreBookKey = ''
+    ) {
+      const targetBox = Number(thungSo);
+      const targetPosition = Number(viTriSo);
+
+      for (const [patientId, patientBooks] of Object.entries(booksRoot || {})) {
+        if (!patientBooks || typeof patientBooks !== 'object') continue;
+
+        for (const [candidateBookKey, book] of Object.entries(patientBooks)) {
+          if (!book || typeof book !== 'object') continue;
+
+          if (
+            patientId === ignorePatientId &&
+            candidateBookKey === ignoreBookKey
+          ) {
+            continue;
+          }
+
+          const storage = parseStorageLocation(book);
+          if (
+            Number(storage.thungSo) === targetBox &&
+            Number(storage.viTriSo) === targetPosition
+          ) {
+            return {
+              patientId,
+              bookKey: candidateBookKey,
+              soHoSo: String(book.soHoSo || ''),
+              quyenSo: Number(book.quyenSo) || 0,
+              thungSo: targetBox,
+              viTriSo: targetPosition
+            };
+          }
+        }
+      }
+
+      return null;
+    }
+
+    function storageConflictMessage(conflict, thungSo, viTriSo) {
+      const location = storageLocationLabel(thungSo, viTriSo);
+      if (!conflict) {
+        return `${location} đã được sử dụng. Vui lòng chọn vị trí khác.`;
+      }
+
+      const recordLabel = conflict.soHoSo
+        ? `hồ sơ ${conflict.soHoSo}`
+        : 'một hồ sơ khác';
+      const bookLabel = conflict.quyenSo
+        ? `, quyển ${conflict.quyenSo}`
+        : '';
+
+      return `${location} đã được sử dụng bởi ${recordLabel}${bookLabel}. `
+        + 'Mỗi vị trí chỉ được lưu một quyển hồ sơ. Vui lòng chọn vị trí khác.';
     }
 
     const INVENTORY_FIELDS = [
@@ -11410,6 +11462,205 @@ dialog,
         };
       }
 
+      async reserveStorageLocation({
+        patientId,
+        targetBookKey,
+        originalBookKey = '',
+        soHoSo,
+        quyenSo,
+        thungSo,
+        viTriSo
+      }) {
+        const locationKey = storageLocationKey(thungSo, viTriSo);
+        if (!locationKey) {
+          throw new Error('Vị trí lưu trữ không hợp lệ.');
+        }
+
+        // Kiểm tra toàn bộ dữ liệu hiện hữu trước để chặn cả các quyển cũ
+        // chưa có trong chỉ mục vị trí.
+        const booksRoot = await readBooksRootCached(true);
+        const conflict = findStorageLocationConflict(
+          booksRoot,
+          thungSo,
+          viTriSo,
+          patientId,
+          originalBookKey
+        );
+
+        if (conflict) {
+          throw new Error(storageConflictMessage(conflict, thungSo, viTriSo));
+        }
+
+        const indexReference = ref(
+          this.database,
+          `${CONFIG.STORAGE_INDEX_PATH}/${locationKey}`
+        );
+
+        // Nếu chỉ mục cũ bị sót nhưng quyển tham chiếu không còn ở vị trí đó,
+        // dọn chỉ mục trước khi giữ chỗ mới.
+        const existingSnapshot = await get(indexReference);
+        const existingIndex = existingSnapshot.val() || null;
+        const allowedBookKeys = new Set(
+          [targetBookKey, originalBookKey].filter(Boolean)
+        );
+
+        if (
+          existingIndex &&
+          !(
+            String(existingIndex.patientId || '') === patientId &&
+            allowedBookKeys.has(String(existingIndex.bookKey || ''))
+          )
+        ) {
+          const indexedPatientId = String(existingIndex.patientId || '');
+          const indexedBookKey = String(existingIndex.bookKey || '');
+          const indexedBookSnapshot =
+            indexedPatientId && indexedBookKey
+              ? await get(
+                  ref(
+                    this.database,
+                    `quyenHoSo/${indexedPatientId}/${indexedBookKey}`
+                  )
+                )
+              : null;
+          const indexedBook = indexedBookSnapshot?.exists()
+            ? indexedBookSnapshot.val()
+            : null;
+          const indexedStorage = parseStorageLocation(indexedBook || {});
+
+          if (
+            indexedBook &&
+            Number(indexedStorage.thungSo) === Number(thungSo) &&
+            Number(indexedStorage.viTriSo) === Number(viTriSo)
+          ) {
+            throw new Error(
+              storageConflictMessage(
+                {
+                  soHoSo: indexedBook.soHoSo || existingIndex.soHoSo || '',
+                  quyenSo:
+                    Number(indexedBook.quyenSo) ||
+                    Number(existingIndex.quyenSo) ||
+                    0
+                },
+                thungSo,
+                viTriSo
+              )
+            );
+          }
+
+          // Chỉ mục mồ côi: chỉ xóa nếu nó vẫn đúng bản ghi vừa kiểm tra.
+          await runTransaction(
+            indexReference,
+            current => {
+              if (
+                current &&
+                String(current.patientId || '') === indexedPatientId &&
+                String(current.bookKey || '') === indexedBookKey
+              ) {
+                return null;
+              }
+              return current;
+            },
+            { applyLocally: false }
+          );
+        }
+
+        const reservationToken = this.makeOperationToken();
+        const now = Date.now();
+        const reservation = {
+          locationKey,
+          patientId,
+          bookKey: targetBookKey,
+          soHoSo,
+          quyenSo: Number(quyenSo),
+          thungSo: Number(thungSo),
+          viTriSo: Number(viTriSo),
+          reservationToken,
+          updatedAt: now,
+          updatedByUid: this.auth.currentUser?.uid || '',
+          updatedByEmail: this.auth.currentUser?.email || ''
+        };
+
+        const result = await runTransaction(
+          indexReference,
+          current => {
+            if (!current) {
+              return reservation;
+            }
+
+            const samePatient =
+              String(current.patientId || '') === patientId;
+            const currentBookKey = String(current.bookKey || '');
+
+            if (samePatient && allowedBookKeys.has(currentBookKey)) {
+              // Đây chính là quyển đang chỉnh sửa; giữ nguyên chỉ mục cũ
+              // cho đến khi ghi dữ liệu chính thức thành công.
+              return current;
+            }
+
+            return;
+          },
+          { applyLocally: false }
+        );
+
+        if (!result.committed) {
+          const current = result.snapshot?.val() || null;
+          throw new Error(
+            storageConflictMessage(current, thungSo, viTriSo)
+          );
+        }
+
+        const committedIndex = result.snapshot?.val() || {};
+        const acquiredByThisAttempt =
+          String(committedIndex.reservationToken || '') === reservationToken;
+
+        return {
+          locationKey,
+          reservation,
+          reservationToken,
+          acquiredByThisAttempt
+        };
+      }
+
+      async releaseStorageLocationReservation(
+        locationKey,
+        patientId,
+        allowedBookKeys = [],
+        reservationToken = ''
+      ) {
+        if (!locationKey) return;
+
+        const acceptedKeys = new Set(
+          (Array.isArray(allowedBookKeys) ? allowedBookKeys : [allowedBookKeys])
+            .filter(Boolean)
+            .map(String)
+        );
+
+        await runTransaction(
+          ref(this.database, `${CONFIG.STORAGE_INDEX_PATH}/${locationKey}`),
+          current => {
+            if (!current) return null;
+            if (String(current.patientId || '') !== String(patientId || '')) {
+              return current;
+            }
+
+            const currentBookKey = String(current.bookKey || '');
+            if (acceptedKeys.size && !acceptedKeys.has(currentBookKey)) {
+              return current;
+            }
+
+            if (
+              reservationToken &&
+              String(current.reservationToken || '') !== reservationToken
+            ) {
+              return current;
+            }
+
+            return null;
+          },
+          { applyLocally: false }
+        );
+      }
+
       async saveBook(payload, file) {
         const soHoSo = String(payload.soHoSo || '').trim();
         const mode = String(payload.mode || 'add');
@@ -11473,6 +11724,9 @@ dialog,
         const id = firebaseKey(soHoSo);
         const lockToken = await this.acquirePatientLock(id, mode === 'edit' ? 'SUA_QUYEN' : 'LUU_QUYEN');
         let uploadedFileId = '';
+        let storageReservation = null;
+        let previousLocationKey = '';
+        let dataCommitted = false;
 
         try {
           const [patientSnapshot, booksSnapshot] = await Promise.all([
@@ -11492,6 +11746,24 @@ dialog,
           if (mode === 'edit' && quyenSo !== originalQuyenSo && bookMap[targetKey]) {
             throw new Error(`Quyển ${quyenSo} đã tồn tại.`);
           }
+
+          if (previousBook) {
+            const previousStorage = parseStorageLocation(previousBook);
+            previousLocationKey = storageLocationKey(
+              previousStorage.thungSo,
+              previousStorage.viTriSo
+            );
+          }
+
+          storageReservation = await this.reserveStorageLocation({
+            patientId: id,
+            targetBookKey: targetKey,
+            originalBookKey: mode === 'edit' ? originalKey : '',
+            soHoSo,
+            quyenSo,
+            thungSo,
+            viTriSo
+          });
 
           let fileDinhKem = previousBook?.fileDinhKem || existingFileUrl || '';
           if (file) {
@@ -11560,6 +11832,8 @@ dialog,
             [`congKhai/_meta/schemaVersion`]: CONFIG.PUBLIC_SCHEMA_VERSION,
             [`congKhai/_meta/sourceUpdatedAt`]: Date.now(),
             [`congKhai/_meta/updatedAt`]: Date.now(),
+            [`${CONFIG.STORAGE_INDEX_PATH}/${storageReservation.locationKey}`]:
+              storageReservation.reservation,
             [`nhatKy/${logKey}`]: this.makeLog(
               mode === 'edit' ? 'CHỈNH SỬA QUYỂN HỒ SƠ' : 'LƯU QUYỂN HỒ SƠ',
               {
@@ -11577,8 +11851,7 @@ dialog,
                 ...inventoryValues,
                 tongSoGiayTo
               }
-            ),
-            [`khoaThaoTac/${id}`]: null
+            )
           };
 
           if (mode === 'edit' && originalKey !== targetKey) {
@@ -11614,6 +11887,35 @@ dialog,
           }
 
           await update(ref(this.database), updates);
+          dataCommitted = true;
+
+          if (
+            previousLocationKey &&
+            previousLocationKey !== storageReservation.locationKey
+          ) {
+            try {
+              await this.releaseStorageLocationReservation(
+                previousLocationKey,
+                id,
+                [originalKey, targetKey]
+              );
+            } catch (releaseOldLocationError) {
+              console.warn(
+                'Đã lưu quyển nhưng chưa dọn được chỉ mục vị trí cũ:',
+                releaseOldLocationError
+              );
+            }
+          }
+
+          try {
+            await this.releasePatientLock(id, lockToken);
+          } catch (releaseLockError) {
+            console.warn(
+              'Đã lưu quyển nhưng chưa giải phóng được khóa thao tác:',
+              releaseLockError
+            );
+          }
+
           patchBooksRootCache(id, id, nextBookMap);
 
           return {
@@ -11622,8 +11924,35 @@ dialog,
             data: bookToUi(patient, { ...savedBook, updatedAt: Date.now() })
           };
         } catch (error) {
-          await this.releasePatientLock(id, lockToken);
-          if (uploadedFileId) await this.driveUploader.removeTemporary(uploadedFileId);
+          if (
+            !dataCommitted &&
+            storageReservation?.acquiredByThisAttempt &&
+            storageReservation?.locationKey
+          ) {
+            try {
+              await this.releaseStorageLocationReservation(
+                storageReservation.locationKey,
+                id,
+                [bookKey(quyenSo)],
+                storageReservation.reservationToken
+              );
+            } catch (releaseLocationError) {
+              console.warn(
+                'Không giải phóng được vị trí tạm sau khi lưu thất bại:',
+                releaseLocationError
+              );
+            }
+          }
+
+          try {
+            await this.releasePatientLock(id, lockToken);
+          } catch (releaseLockError) {
+            console.warn('Không giải phóng được khóa thao tác:', releaseLockError);
+          }
+
+          if (!dataCommitted && uploadedFileId) {
+            await this.driveUploader.removeTemporary(uploadedFileId);
+          }
           throw error;
         }
       }
