@@ -9,9 +9,9 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.08.14.6">
+  <meta name="version" content="2026.08.14.7">
   <title>Hồ sơ bệnh án lưu trữ</title>
-  <link rel="manifest" href="./manifest.webmanifest?v=2026.08.14.6">
+  <link rel="manifest" href="./manifest.webmanifest?v=2026.08.14.7">
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -8358,6 +8358,135 @@ dialog,
   }
 }
 
+
+/* ============================================================
+   HSBA 2026.08.14.7 · DASHBOARD KPI COLOR REFINEMENT
+   Chỉ tinh chỉnh Thống kê tổng quan; không thay nghiệp vụ.
+   ============================================================ */
+#dashboardView .dashboard-kpi {
+  position: relative !important;
+  isolation: isolate;
+  overflow: hidden !important;
+  border-width: 1px !important;
+  border-style: solid !important;
+  box-shadow: 0 10px 28px rgba(91,48,46,.07) !important;
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease,
+    border-color .18s ease !important;
+}
+
+#dashboardView .dashboard-kpi::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 18px !important;
+  bottom: 18px !important;
+  width: 4px !important;
+  border-radius: 0 999px 999px 0 !important;
+  background: var(--kpi-accent, #FFB6AF) !important;
+  z-index: 2 !important;
+}
+
+#dashboardView .dashboard-kpi::after {
+  opacity: .72 !important;
+  transform: scale(1.04);
+}
+
+#dashboardView .dashboard-kpi:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 17px 36px rgba(91,48,46,.12) !important;
+}
+
+/* 1. Tổng hồ sơ – Coral */
+#dashboardView .dashboard-kpi:nth-child(1) {
+  --kpi-color: #D95F57 !important;
+  --kpi-bg: #FFDDD8 !important;
+  --kpi-soft: rgba(242,128,118,.16) !important;
+  --kpi-accent: #F28076 !important;
+  border-color: #F4D0CB !important;
+  background: linear-gradient(145deg, #FFFFFF 25%, #FFF1EF 100%) !important;
+}
+
+/* 2. Tổng quyển lưu – Apricot */
+#dashboardView .dashboard-kpi:nth-child(2) {
+  --kpi-color: #A66F48 !important;
+  --kpi-bg: #FAE0C7 !important;
+  --kpi-soft: rgba(251,193,147,.19) !important;
+  --kpi-accent: #FBC193 !important;
+  border-color: #F1D8BE !important;
+  background: linear-gradient(145deg, #FFFFFF 25%, #FFF7EE 100%) !important;
+}
+
+/* 3. Hết quyển – Blush đậm */
+#dashboardView .dashboard-kpi:nth-child(3) {
+  --kpi-color: #C94F49 !important;
+  --kpi-bg: #FFD8D3 !important;
+  --kpi-soft: rgba(255,182,175,.19) !important;
+  --kpi-accent: #FF9F96 !important;
+  border-color: #F4CDC8 !important;
+  background: linear-gradient(145deg, #FFFFFF 25%, #FFF0EE 100%) !important;
+}
+
+/* 4. Hồi gia – Teal, chỉ dùng cho trạng thái tích cực */
+#dashboardView .dashboard-kpi:nth-child(4) {
+  --kpi-color: #388D7B !important;
+  --kpi-bg: #DDF3EE !important;
+  --kpi-soft: rgba(78,176,155,.16) !important;
+  --kpi-accent: #4EB09B !important;
+  border-color: #CFE8E2 !important;
+  background: linear-gradient(145deg, #FFFFFF 25%, #EFFAF7 100%) !important;
+}
+
+/* 5. Thùng lưu trữ – Cream/Apricot */
+#dashboardView .dashboard-kpi:nth-child(5) {
+  --kpi-color: #A86B3C !important;
+  --kpi-bg: #F9DDC2 !important;
+  --kpi-soft: rgba(250,224,199,.25) !important;
+  --kpi-accent: #E9A76D !important;
+  border-color: #EED8C5 !important;
+  background: linear-gradient(145deg, #FFFFFF 25%, #FFF5EA 100%) !important;
+}
+
+#dashboardView .dashboard-kpi-icon {
+  background: var(--kpi-bg) !important;
+  color: var(--kpi-color) !important;
+  border: 1px solid rgba(255,255,255,.88) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.62),
+    0 7px 16px rgba(91,48,46,.05) !important;
+}
+
+#dashboardView .dashboard-kpi-value {
+  color: #5B302E !important;
+  font-weight: 850 !important;
+}
+
+#dashboardView .dashboard-kpi-label {
+  color: #715A56 !important;
+}
+
+#dashboardView .dashboard-kpi-note {
+  color: #806B68 !important;
+}
+
+/* Giữ dashboard mobile gọn, màu không làm thay đổi bố cục. */
+@media (max-width: 760px) {
+  #dashboardView .dashboard-kpi {
+    box-shadow: 0 8px 20px rgba(91,48,46,.065) !important;
+  }
+
+  #dashboardView .dashboard-kpi::before {
+    top: 14px !important;
+    bottom: 14px !important;
+    width: 3px !important;
+  }
+
+  #dashboardView .dashboard-kpi:hover {
+    transform: none !important;
+  }
+}
+
 </style>
 </head>
 
@@ -8412,7 +8541,7 @@ dialog,
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.08.14.6</small>
+        <small>Phiên bản 2026.08.14.7</small>
       </div>
     </aside>
 
@@ -9054,7 +9183,7 @@ dialog,
 
   <script>
     (() => {
-      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.08.14.6';
+      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.08.14.7';
       const banner = () => document.getElementById('appUpdateBanner');
       const updateText = () => document.getElementById('appUpdateText');
       let registration = null;
@@ -12970,11 +13099,11 @@ dialog,
       $('#statsGrid').innerHTML = `
         ${publicView ? `<div class="public-view-note">${uiIcon('eye')}<span>Đang xem danh mục tra cứu công khai. Đăng nhập để xem tệp, ghi chú và thông tin nghiệp vụ đầy đủ.</span></div>` : ''}
         <div class="dashboard-kpi-grid">
-          ${dashboardKpiHtml({icon:'users',label:'Tổng hồ sơ',value:totalPatients,note:'Số đối tượng đã tạo hồ sơ lưu trữ',color:'#74413E',bg:'#FFF7F5',soft:'rgba(54,194,180,.13)'})}
-          ${dashboardKpiHtml({icon:'book',label:'Tổng quyển lưu',value:totalBooks,note:`Bình quân ${averageBooks} quyển/hồ sơ`,color:'#74413E',bg:'#FFF7F5',soft:'rgba(91,99,183,.11)'})}
-          ${dashboardKpiHtml({icon:'check',label:'Hết quyển',value:finishedBooks,note:`${rate(finishedBooks)}% tổng số quyển`,color:'#1c9664',bg:'#EDF5EE',soft:'rgba(46,182,125,.12)'})}
-          ${dashboardKpiHtml({icon:'home',label:'Đối tượng hồi gia',value:returnedBooks,note:`${rate(returnedBooks)}% tổng số quyển`,color:'#c47b13',bg:'#fff3db',soft:'rgba(249,176,65,.13)'})}
-          ${dashboardKpiHtml({icon:'box',label:'Tổng thùng lưu trữ',value:totalBoxes,note:`${structuredBooks} quyển đã xác định vị trí`,color:'#956B3D',bg:'#FFF5E9',soft:'rgba(202,139,54,.13)'})}
+          ${dashboardKpiHtml({icon:'users',label:'Tổng hồ sơ',value:totalPatients,note:'Số đối tượng đã tạo hồ sơ lưu trữ',color:'#D95F57',bg:'#FFF0ED',soft:'rgba(242,128,118,.16)'})}
+          ${dashboardKpiHtml({icon:'book',label:'Tổng quyển lưu',value:totalBooks,note:`Bình quân ${averageBooks} quyển/hồ sơ`,color:'#A66F48',bg:'#FFF6EA',soft:'rgba(251,193,147,.18)'})}
+          ${dashboardKpiHtml({icon:'check',label:'Hết quyển',value:finishedBooks,note:`${rate(finishedBooks)}% tổng số quyển`,color:'#C94F49',bg:'#FFECE9',soft:'rgba(255,182,175,.19)'})}
+          ${dashboardKpiHtml({icon:'home',label:'Đối tượng hồi gia',value:returnedBooks,note:`${rate(returnedBooks)}% tổng số quyển`,color:'#388D7B',bg:'#EEF9F6',soft:'rgba(78,176,155,.16)'})}
+          ${dashboardKpiHtml({icon:'box',label:'Tổng thùng lưu trữ',value:totalBoxes,note:`${structuredBooks} quyển đã xác định vị trí`,color:'#A86B3C',bg:'#FFF2E5',soft:'rgba(250,224,199,.24)'})}
         </div>
         <div class="dashboard-panels">
           <article class="dashboard-panel">
