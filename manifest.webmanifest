@@ -1,23 +1,25 @@
 {
-  "name": "Hồ sơ bệnh án lưu trữ - HSBA Trung tâm",
-  "short_name": "HSBA",
-  "description": "Ứng dụng số hóa, tra cứu và quản lý hồ sơ bệnh án lưu trữ",
+  "id": "./",
+  "name": "Ứng dụng Phòng Y tế",
+  "short_name": "Phòng Y tế",
+  "description": "Tổng hợp số liệu, chuyển viện và tử vong - Trung tâm Bảo trợ xã hội Tân Hiệp",
   "lang": "vi",
+  "dir": "ltr",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#FFF9F6",
-  "theme_color": "#FFB6AF",
+  "background_color": "#FBF9FC",
+  "theme_color": "#FF66B7",
   "icons": [
     {
-      "src": "./assets/logo-192.png",
+      "src": "./assets/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "./assets/logo-512.png",
+      "src": "./assets/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

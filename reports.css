@@ -1,0 +1,180 @@
+/* ================================================================
+   REPORTS MODULE — production 9.5.2
+   Only report/death-specific presentation belongs here.
+   ================================================================ */
+
+.report-head {
+  min-height: 66px;
+  margin-bottom: 14px;
+  padding: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.report-head h2 { margin: 0; font-size: clamp(24px,2vw,31px); letter-spacing: -.025em; }
+.report-head p { margin: 5px 0 0; color: var(--color-text-3); font-size: 13px; }
+.report-workspace {
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: none;
+}
+
+/* Legacy list/perms remain compatibility-only; unified history is the production UI. */
+.report-mode-row,
+#reportListPanel,
+#reportPermissionPanel,
+#btnNewReport { display: none !important; }
+
+.report-dialog-card { width: min(760px,100%); padding: 0; }
+.report-dialog-head {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: 16px 18px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 1px solid var(--color-border);
+  background: #fff;
+}
+.report-dialog-head h3 { margin: 0; font-size: 20px; }
+.report-dialog-badge { display: none !important; }
+.report-form-grid {
+  padding: 18px;
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 13px;
+}
+.report-form-grid.nested { padding: 0; }
+.report-kind-fields.full { grid-column: 1 / -1; }
+.report-reporter-line {
+  min-height: 42px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+}
+.report-reporter-line span { color: var(--color-text-3); font-size: 12px; }
+.report-reporter-line strong { font-size: 13px; }
+.center-death-dialog .confirm-actions { position: sticky; bottom: 0; z-index: 4; background: #fff; }
+
+/* Retained renderer styles for compatibility/detail calls. */
+.report-list { display: grid; gap: 8px; }
+.report-row {
+  padding: 12px 13px;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  gap: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+.report-row-main { min-width: 0; }
+.report-row-title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.report-row-title strong { font-size: 14px; }
+.report-row-meta, .report-row-by { margin-top: 5px; color: var(--color-text-3); font-size: 12px; }
+.report-row-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+.report-type-pill {
+  min-height: 23px;
+  padding: 3px 7px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
+  font-size: 11.5px;
+  font-weight: 720;
+}
+.report-row-mark { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 9px; color: var(--color-danger); background: var(--color-danger-soft); font-size: 10px; font-weight: 800; }
+.report-stats { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+.report-stat { padding: 11px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-subtle); }
+.report-stat span { display: block; color: var(--color-text-3); font-size: 12px; }
+.report-stat strong { display: block; margin-top: 3px; color: var(--color-primary-strong); font-size: 21px; }
+.report-filters { margin-top: 10px; display: grid; grid-template-columns: 150px 150px minmax(220px,1fr) auto; gap: 8px; align-items: end; }
+
+@media (max-width: 760px) {
+  .report-head { min-height: 54px; margin-bottom: 12px; }
+  .report-head h2 { font-size: 23px; }
+  .report-head p { font-size: 12px; }
+  .report-workspace { padding: 11px; }
+  .report-dialog-card { border-radius: 18px 18px 0 0; }
+  .report-dialog-head { padding: 15px 16px; }
+  .report-form-grid { grid-template-columns: 1fr; padding: 16px; }
+  .report-kind-fields.full, .report-form-grid .full { grid-column: 1; }
+  .report-row { grid-template-columns: 1fr; }
+  .report-row-actions { justify-content: flex-start; }
+  .report-filters { grid-template-columns: 1fr 1fr; }
+  .report-search-field { grid-column: 1 / -1; }
+}
+
+/* ---------- Production detail view 9.5.2 ---------- */
+.report-detail-view { padding: 18px; }
+.report-detail-person { padding: 13px; display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 11px; border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface-subtle); }
+.report-detail-avatar { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 12px; color: var(--color-primary); background: var(--color-primary-soft); }
+.report-detail-avatar svg { width: 21px; height: 21px; }
+.report-detail-person strong { font-size: 16px; }
+.report-detail-person p { margin: 3px 0 0; color: var(--color-text-3); font-size: 12px; }
+.report-detail-grid { margin-top: 12px; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+.report-detail-grid > div { min-width: 0; padding: 11px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: #fff; }
+.report-detail-grid > div.full { grid-column: 1 / -1; }
+.report-detail-grid span { display: block; margin-bottom: 4px; color: var(--color-text-3); font-size: 11.5px; font-weight: 650; }
+.report-detail-grid strong { display: block; color: var(--color-text-2); font-size: 13px; font-weight: 680; white-space: pre-wrap; }
+.report-detail-cause { border-color: #ecd0d0 !important; background: var(--color-danger-soft) !important; }
+.report-detail-cause strong { color: var(--color-danger); font-size: 14px; }
+.report-detail-audit { background: var(--color-surface-muted) !important; }
+#reportLayer.is-readonly .report-form-grid { display: none; }
+#reportLayer.is-readonly .category-error { display: none; }
+#reportLayer.is-readonly .center-death-dialog { width: min(720px,100%); }
+#reportLayer.is-readonly .confirm-actions { justify-content: flex-end; }
+@media (max-width: 760px) { .report-detail-view { padding: 14px 16px; } .report-detail-person { grid-template-columns: auto minmax(0,1fr); } .report-detail-person .journey-status { grid-column: 2; justify-self: start; } .report-detail-grid { grid-template-columns: 1fr; } .report-detail-grid > div.full { grid-column: 1; } }
+
+
+/* =====================================================================
+   REPORT UI 9.5.2 — clear detail/edit modes
+   ===================================================================== */
+.report-detail-view { padding: 16px 18px; }
+.report-detail-person { padding: 0 0 12px; grid-template-columns: auto minmax(0,1fr) auto; border: 0; border-bottom: 1px solid #eceff1; border-radius: 0; background: transparent; }
+.report-detail-avatar { width: 36px; height: 36px; border-radius: 10px; }
+.report-detail-person strong { color: #26313a; font-size: 17px; font-weight: 790; }
+.report-detail-person p { color: #77828b; }
+.report-detail-grid { margin-top: 8px; gap: 0 20px; }
+.report-detail-grid > div { padding: 9px 0; border: 0; border-bottom: 1px solid #f0edeb; border-radius: 0; background: transparent; }
+.report-detail-grid span { color: #818b93; font-size: 10.5px; }
+.report-detail-grid strong { color: #3d4851; font-size: 12.5px; }
+.report-detail-cause { border-color: #f0edeb !important; background: transparent !important; }
+.report-detail-cause strong { color: #963f3f; font-size: 13px; }
+.report-detail-audit { background: transparent !important; }
+.center-death-dialog textarea { min-height: 76px; }
+@media (max-width: 760px) {
+  .report-detail-view { padding: 14px 16px; }
+  .report-detail-person { grid-template-columns: minmax(0,1fr); gap: 7px; }
+  .report-detail-avatar { display: none; }
+  .report-detail-person .journey-status { grid-column: 1; justify-self: start; }
+  .report-detail-grid { grid-template-columns: 1fr; }
+  .report-detail-grid > div.full { grid-column: 1; }
+}
+
+
+/* ======================================================================
+   REPORT PROFESSIONAL PINK UI 9.5.2 — presentation only
+   ====================================================================== */
+.report-head h2 { color: #120E1C; font-weight: 850; }
+.report-workspace { border-color: #E7DFE6; background: #fff; box-shadow: 0 5px 18px rgba(18,14,28,.03); }
+.report-dialog-head { border-bottom-color: #ECE4EB; }
+.report-dialog-head h3 { color: #120E1C; font-weight: 850; }
+.report-reporter-line { background: #F8F5F8; }
+.report-reporter-line span { color: #7C7282; font-weight: 600; }
+.report-reporter-line strong { color: #342C3A; font-weight: 780; }
+.report-detail-person strong { color: #120E1C; font-weight: 850; }
+.report-detail-grid span { color: #817787; font-weight: 620; }
+.report-detail-grid strong { color: #332B39; font-weight: 760; }
