@@ -9,9 +9,9 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.08.17.1">
+  <meta name="version" content="2026.08.19.1">
   <title>Hồ sơ bệnh án lưu trữ</title>
-  <link rel="manifest" href="./manifest.webmanifest?v=2026.08.17.1">
+  <link rel="manifest" href="./manifest.webmanifest?v=2026.08.19.1">
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -8288,7 +8288,7 @@ textarea:focus {
   box-shadow:0 0 0 4px rgba(78,176,155,.14) !important;
 }
 
-/* ===== HSBA 2026.08.17.1 · TÊN HIỂN THỊ TÀI KHOẢN ===== */
+/* ===== HSBA 2026.08.19.1 · TÊN HIỂN THỊ TÀI KHOẢN ===== */
 .account-display-name-input {
   width: 210px;
   min-width: 180px;
@@ -8546,7 +8546,7 @@ dialog,
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.08.17.1</small>
+        <small>Phiên bản 2026.08.19.1</small>
       </div>
     </aside>
 
@@ -8900,6 +8900,8 @@ dialog,
             <option value="Hết quyển">Hết quyển</option>
             <option value="Đối tượng hồi gia">Đối tượng hồi gia</option>
             <option value="Đối tượng tử vong">Đối tượng tử vong</option>
+            <option value="Đối tượng chuyển trung tâm">Đối tượng chuyển trung tâm</option>
+            <option value="Khác">Khác</option>
           </select>
           <small class="field-hint">Chọn lý do kết thúc quyển hồ sơ.</small>
         </div>
@@ -8916,6 +8918,30 @@ dialog,
           <small class="field-hint">Ngày chốt quyển và đưa vào lưu trữ.</small>
         </div>
 
+        <div id="returnDateField" class="form-field full-span conditional-field hidden compact-conditional-field">
+          <label for="bookNgayHoiGia">Ngày đối tượng hồi gia</label>
+          <input id="bookNgayHoiGia" name="ngayHoiGia" type="date">
+          <small class="field-hint">Bắt buộc khi chọn trạng thái Đối tượng hồi gia.</small>
+        </div>
+
+        <div id="deathDateField" class="form-field full-span conditional-field hidden compact-conditional-field">
+          <label for="bookNgayTuVong">Ngày đối tượng tử vong</label>
+          <input id="bookNgayTuVong" name="ngayTuVong" type="date">
+          <small class="field-hint">Bắt buộc khi chọn trạng thái Đối tượng tử vong.</small>
+        </div>
+
+        <div id="transferDateField" class="form-field full-span conditional-field hidden compact-conditional-field">
+          <label for="bookNgayChuyenTrungTam">Ngày chuyển trung tâm</label>
+          <input id="bookNgayChuyenTrungTam" name="ngayChuyenTrungTam" type="date">
+          <small class="field-hint">Bắt buộc khi chọn trạng thái Đối tượng chuyển trung tâm.</small>
+        </div>
+
+        <div id="otherContentField" class="form-field full-span conditional-field hidden">
+          <label for="bookNoiDungKhac">Nội dung khác</label>
+          <textarea id="bookNoiDungKhac" name="noiDungKhac" maxlength="500" rows="3" placeholder="Nhập nội dung kết thúc hồ sơ; có thể ghi ngày trực tiếp trong nội dung này"></textarea>
+          <small class="field-hint">Bắt buộc khi chọn trạng thái Khác. Không cần nhập thêm ngày riêng.</small>
+        </div>
+
         <div id="deathPlaceField" class="form-field full-span conditional-field hidden">
           <label for="bookNoiTuVong">Nơi tử vong</label>
           <input id="bookNoiTuVong" name="noiTuVong" type="text" maxlength="200" placeholder="Ví dụ: Trung tâm; Bệnh viện...">
@@ -8926,12 +8952,6 @@ dialog,
           <label for="bookNguyenNhanTuVong">Nguyên nhân tử vong</label>
           <textarea id="bookNguyenNhanTuVong" name="nguyenNhanTuVong" maxlength="500" rows="3" placeholder="Nhập nguyên nhân tử vong theo hồ sơ hoặc giấy tờ có liên quan"></textarea>
           <small class="field-hint">Bắt buộc khi chọn trạng thái Đối tượng tử vong.</small>
-        </div>
-
-        <div id="returnDateField" class="form-field full-span conditional-field hidden compact-conditional-field">
-          <label for="bookNgayHoiGia">Ngày đối tượng hồi gia</label>
-          <input id="bookNgayHoiGia" name="ngayHoiGia" type="date">
-          <small class="field-hint">Bắt buộc khi chọn trạng thái Đối tượng hồi gia.</small>
         </div>
 
         <div class="form-field">
@@ -9130,6 +9150,9 @@ dialog,
                   <th>Ngày kết thúc</th>
                   <th>Trạng thái</th>
                   <th>Ngày hồi gia</th>
+                  <th>Ngày tử vong</th>
+                  <th>Ngày chuyển trung tâm</th>
+                  <th>Nội dung khác</th>
                   <th>Nơi tử vong</th>
                   <th>Nguyên nhân tử vong</th>
                   <th>Thùng</th>
@@ -9187,7 +9210,7 @@ dialog,
 
   <script>
     (() => {
-      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.08.17.1';
+      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.08.19.1';
       const banner = () => document.getElementById('appUpdateBanner');
       const updateText = () => document.getElementById('appUpdateText');
       let registration = null;
@@ -9398,6 +9421,8 @@ dialog,
         HET_QUYEN: 'Hết quyển',
         HOI_GIA: 'Đối tượng hồi gia',
         TU_VONG: 'Đối tượng tử vong',
+        CHUYEN_TRUNG_TAM: 'Đối tượng chuyển trung tâm',
+        KHAC: 'Khác',
         LEGACY_DANG_KHAM: 'Đang khám',
         LEGACY_LUU_KHO: 'Đã lưu kho'
       }
@@ -9761,6 +9786,8 @@ dialog,
         ) || 0,
         '_SỐ QUYỂN HỒI GIA': Number(patient.soQuyenHoiGia) || 0,
         '_SỐ QUYỂN TỬ VONG': Number(patient.soQuyenTuVong) || 0,
+        '_SỐ QUYỂN CHUYỂN TRUNG TÂM': Number(patient.soQuyenChuyenTrungTam) || 0,
+        '_SỐ QUYỂN KHÁC': Number(patient.soQuyenKhac) || 0,
         '_SỐ QUYỂN CÓ FILE': Number(patient.soQuyenCoFile) || 0,
         '_UPDATED_AT': Number(patient.updatedAt) || 0
       };
@@ -9781,6 +9808,9 @@ dialog,
         'NƠI TỬ VONG': book.noiTuVong || '',
         'NGUYÊN NHÂN TỬ VONG': book.nguyenNhanTuVong || '',
         'NGÀY HỒI GIA': book.ngayHoiGia || '',
+        'NGÀY TỬ VONG': book.ngayTuVong || (normalizeRecordStatus(book.trangThai) === CONFIG.STATUS.TU_VONG ? book.ngayKetThuc || '' : ''),
+        'NGÀY CHUYỂN TRUNG TÂM': book.ngayChuyenTrungTam || '',
+        'NỘI DUNG KHÁC': book.noiDungKhac || '',
         'THÙNG SỐ': storage.thungSo || '',
         'VỊ TRÍ SỐ': storage.viTriSo || '',
         'MÃ SỐ LƯU TRỮ': storage.label || book.maLuuTru || '',
@@ -9805,7 +9835,8 @@ dialog,
         'GIỚI TÍNH': item.gioiTinh || '',
         'QUYỂN SỐ': Number(item.quyenSo) || 0,
         'NGÀY KẾT THÚC': item.ngayKetThuc || '',
-        'NĂM TỬ VONG': Number(item.namTuVong) || Number(String(item.ngayKetThuc || '').slice(0, 4)) || '',
+        'NGÀY TỬ VONG': item.ngayTuVong || item.ngayKetThuc || '',
+        'NĂM TỬ VONG': Number(item.namTuVong) || Number(String(item.ngayTuVong || item.ngayKetThuc || '').slice(0, 4)) || '',
         'NƠI TỬ VONG': item.noiTuVong || '',
         'NGUYÊN NHÂN TỬ VONG': item.nguyenNhanTuVong || '',
         'THÙNG SỐ': storage.thungSo || '',
@@ -9833,6 +9864,8 @@ dialog,
         ) || 0;
         result.hoSoHoiGia += Number(patient.soQuyenHoiGia) || 0;
         result.hoSoTuVong += Number(patient.soQuyenTuVong) || 0;
+        result.hoSoChuyenTrungTam += Number(patient.soQuyenChuyenTrungTam) || 0;
+        result.hoSoKhac += Number(patient.soQuyenKhac) || 0;
         result.hoSoCoFile += Number(patient.soQuyenCoFile) || 0;
         return result;
       }, {
@@ -9841,6 +9874,8 @@ dialog,
         hoSoHetQuyen: 0,
         hoSoHoiGia: 0,
         hoSoTuVong: 0,
+        hoSoChuyenTrungTam: 0,
+        hoSoKhac: 0,
         hoSoCoFile: 0,
         hoSoChuaFile: 0
       });
@@ -9878,6 +9913,14 @@ dialog,
         ngayHoiGia:
           normalizeRecordStatus(book.trangThai) === CONFIG.STATUS.HOI_GIA
             ? String(book.ngayHoiGia || '')
+            : '',
+        ngayTuVong:
+          normalizeRecordStatus(book.trangThai) === CONFIG.STATUS.TU_VONG
+            ? String(book.ngayTuVong || book.ngayKetThuc || '')
+            : '',
+        ngayChuyenTrungTam:
+          normalizeRecordStatus(book.trangThai) === CONFIG.STATUS.CHUYEN_TRUNG_TAM
+            ? String(book.ngayChuyenTrungTam || '')
             : '',
         thungSo: Number(book.thungSo) || Number(storage.thungSo) || 0,
         viTriSo: Number(book.viTriSo) || Number(storage.viTriSo) || 0,
@@ -9933,6 +9976,12 @@ dialog,
         ).length,
         soQuyenTuVong: normalizedBooks.filter(
           book => book.normalizedStatus === CONFIG.STATUS.TU_VONG
+        ).length,
+        soQuyenChuyenTrungTam: normalizedBooks.filter(
+          book => book.normalizedStatus === CONFIG.STATUS.CHUYEN_TRUNG_TAM
+        ).length,
+        soQuyenKhac: normalizedBooks.filter(
+          book => book.normalizedStatus === CONFIG.STATUS.KHAC
         ).length,
         soQuyenCoFile: Number(patient.soQuyenCoFile) || 0,
         updatedAt: Number(patient.updatedAt) || Date.now(),
@@ -10370,6 +10419,8 @@ dialog,
       let finishedBooks = 0;
       let returnedBooks = 0;
       let deathBooks = 0;
+      let transferredBooks = 0;
+      let otherBooks = 0;
       let scannedBooks = 0;
       const inventoryTotals = {
         soToChamSoc: 0,
@@ -10388,6 +10439,8 @@ dialog,
           if (normalizedStatus === CONFIG.STATUS.HET_QUYEN) finishedBooks += 1;
           if (normalizedStatus === CONFIG.STATUS.HOI_GIA) returnedBooks += 1;
           if (normalizedStatus === CONFIG.STATUS.TU_VONG) deathBooks += 1;
+          if (normalizedStatus === CONFIG.STATUS.CHUYEN_TRUNG_TAM) transferredBooks += 1;
+          if (normalizedStatus === CONFIG.STATUS.KHAC) otherBooks += 1;
           if (String(book.fileDinhKem || '').trim()) scannedBooks += 1;
 
           const inventory = documentInventoryFromSource(book);
@@ -10459,6 +10512,8 @@ dialog,
         finishedBooks,
         returnedBooks,
         deathBooks,
+        transferredBooks,
+        otherBooks,
         scannedBooks,
         structuredBooks,
         unstructuredBooks,
@@ -11482,6 +11537,8 @@ dialog,
           finished: normalized.filter(book => book.normalizedStatus === CONFIG.STATUS.HET_QUYEN).length,
           returned: normalized.filter(book => book.normalizedStatus === CONFIG.STATUS.HOI_GIA).length,
           deaths: normalized.filter(book => book.normalizedStatus === CONFIG.STATUS.TU_VONG).length,
+          transferred: normalized.filter(book => book.normalizedStatus === CONFIG.STATUS.CHUYEN_TRUNG_TAM).length,
+          others: normalized.filter(book => book.normalizedStatus === CONFIG.STATUS.KHAC).length,
           files: normalized.filter(book => String(book.fileDinhKem || '').trim()).length,
           deathBook: normalized
             .filter(book => book.normalizedStatus === CONFIG.STATUS.TU_VONG)
@@ -11699,6 +11756,9 @@ dialog,
         const noiTuVong = String(payload.noiTuVong || '').trim();
         const nguyenNhanTuVong = String(payload.nguyenNhanTuVong || '').trim();
         const ngayHoiGia = String(payload.ngayHoiGia || '').trim();
+        const ngayTuVong = String(payload.ngayTuVong || '').trim();
+        const ngayChuyenTrungTam = String(payload.ngayChuyenTrungTam || '').trim();
+        const noiDungKhac = String(payload.noiDungKhac || '').trim();
         const thungSo = Number(payload.thungSo);
         const viTriSo = Number(payload.viTriSo);
         const maLuuTru = storageLocationLabel(thungSo, viTriSo);
@@ -11722,7 +11782,13 @@ dialog,
         if (ngayKetThuc < ngayBatDau) {
           throw new Error('Ngày kết thúc không được trước ngày mở quyển.');
         }
-        if (![CONFIG.STATUS.HET_QUYEN, CONFIG.STATUS.HOI_GIA, CONFIG.STATUS.TU_VONG].includes(trangThai)) {
+        if (![
+          CONFIG.STATUS.HET_QUYEN,
+          CONFIG.STATUS.HOI_GIA,
+          CONFIG.STATUS.TU_VONG,
+          CONFIG.STATUS.CHUYEN_TRUNG_TAM,
+          CONFIG.STATUS.KHAC
+        ].includes(trangThai)) {
           throw new Error('Vui lòng chọn đúng trạng thái kết thúc hồ sơ.');
         }
         if (!Number.isInteger(thungSo) || thungSo < 1) throw new Error('Vui lòng nhập đúng thùng số.');
@@ -11743,6 +11809,28 @@ dialog,
           if (ngayHoiGia < ngayBatDau || ngayHoiGia > ngayKetThuc) {
             throw new Error('Ngày hồi gia phải nằm trong khoảng từ ngày mở quyển đến ngày kết thúc.');
           }
+        }
+        if (trangThai === CONFIG.STATUS.TU_VONG) {
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(ngayTuVong)) {
+            throw new Error('Vui lòng nhập ngày đối tượng tử vong.');
+          }
+          if (ngayTuVong < ngayBatDau || ngayTuVong > ngayKetThuc) {
+            throw new Error('Ngày tử vong phải nằm trong khoảng từ ngày mở quyển đến ngày kết thúc.');
+          }
+        }
+        if (trangThai === CONFIG.STATUS.CHUYEN_TRUNG_TAM) {
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(ngayChuyenTrungTam)) {
+            throw new Error('Vui lòng nhập ngày chuyển trung tâm.');
+          }
+          if (ngayChuyenTrungTam < ngayBatDau || ngayChuyenTrungTam > ngayKetThuc) {
+            throw new Error('Ngày chuyển trung tâm phải nằm trong khoảng từ ngày mở quyển đến ngày kết thúc.');
+          }
+        }
+        if (trangThai === CONFIG.STATUS.KHAC && !noiDungKhac) {
+          throw new Error('Vui lòng nhập nội dung khác.');
+        }
+        if (noiDungKhac.length > 500) {
+          throw new Error('Nội dung khác không được vượt quá 500 ký tự.');
         }
         if (trangThai === CONFIG.STATUS.TU_VONG && !file && !existingFileUrl) {
           throw new Error('Hồ sơ tử vong bắt buộc phải có file scan hoặc hình ảnh.');
@@ -11811,6 +11899,9 @@ dialog,
             noiTuVong: trangThai === CONFIG.STATUS.TU_VONG ? noiTuVong : '',
             nguyenNhanTuVong: trangThai === CONFIG.STATUS.TU_VONG ? nguyenNhanTuVong : '',
             ngayHoiGia: trangThai === CONFIG.STATUS.HOI_GIA ? ngayHoiGia : '',
+            ngayTuVong: trangThai === CONFIG.STATUS.TU_VONG ? ngayTuVong : '',
+            ngayChuyenTrungTam: trangThai === CONFIG.STATUS.CHUYEN_TRUNG_TAM ? ngayChuyenTrungTam : '',
+            noiDungKhac: trangThai === CONFIG.STATUS.KHAC ? noiDungKhac : '',
             thungSo,
             viTriSo,
             maLuuTru,
@@ -11838,6 +11929,8 @@ dialog,
               soQuyenHetQuyen: summary.finished,
               soQuyenHoiGia: summary.returned,
               soQuyenTuVong: summary.deaths,
+              soQuyenChuyenTrungTam: summary.transferred,
+              soQuyenKhac: summary.others,
               soQuyenCoFile: summary.files,
               updatedAt: Date.now()
             },
@@ -11853,6 +11946,8 @@ dialog,
             [`doiTuong/${id}/soQuyenHetQuyen`]: summary.finished,
             [`doiTuong/${id}/soQuyenHoiGia`]: summary.returned,
             [`doiTuong/${id}/soQuyenTuVong`]: summary.deaths,
+            [`doiTuong/${id}/soQuyenChuyenTrungTam`]: summary.transferred,
+            [`doiTuong/${id}/soQuyenKhac`]: summary.others,
             [`doiTuong/${id}/soQuyenCoFile`]: summary.files,
             [`doiTuong/${id}/updatedAt`]: serverTimestamp(),
             [`congKhai/hoSo/${id}`]: publicPatient,
@@ -11872,6 +11967,9 @@ dialog,
                 noiTuVong: trangThai === CONFIG.STATUS.TU_VONG ? noiTuVong : '',
                 nguyenNhanTuVong: trangThai === CONFIG.STATUS.TU_VONG ? nguyenNhanTuVong : '',
                 ngayHoiGia: trangThai === CONFIG.STATUS.HOI_GIA ? ngayHoiGia : '',
+                ngayTuVong: trangThai === CONFIG.STATUS.TU_VONG ? ngayTuVong : '',
+                ngayChuyenTrungTam: trangThai === CONFIG.STATUS.CHUYEN_TRUNG_TAM ? ngayChuyenTrungTam : '',
+                noiDungKhac: trangThai === CONFIG.STATUS.KHAC ? noiDungKhac : '',
                 thungSo,
                 viTriSo,
                 maLuuTru,
@@ -11894,7 +11992,8 @@ dialog,
               gioiTinh: patient.gioiTinh || '',
               quyenSo: Number(deathBook.quyenSo) || 0,
               ngayKetThuc: deathBook.ngayKetThuc || '',
-              namTuVong: Number(String(deathBook.ngayKetThuc || '').slice(0, 4)) || 0,
+              ngayTuVong: deathBook.ngayTuVong || deathBook.ngayKetThuc || '',
+              namTuVong: Number(String(deathBook.ngayTuVong || deathBook.ngayKetThuc || '').slice(0, 4)) || 0,
               noiTuVong: deathBook.noiTuVong || '',
               nguyenNhanTuVong: deathBook.nguyenNhanTuVong || '',
               thungSo: Number(deathBook.thungSo) || parseStorageLocation(deathBook).thungSo || 0,
@@ -12718,7 +12817,7 @@ dialog,
         closeConfirmActionDialog(false);
       });
 
-      $('#bookForm [name="trangThai"]').addEventListener('change', updateDeathPlaceVisibility);
+      $('#bookForm [name="trangThai"]').addEventListener('change', updateBookStatusFields);
       $('#bookForm [name="thungSo"]').addEventListener('input', updateStorageLocationPreview);
       $('#bookForm [name="viTriSo"]').addEventListener('input', updateStorageLocationPreview);
       INVENTORY_FIELDS.forEach(field => {
@@ -12895,6 +12994,8 @@ dialog,
       const totalBooks = Number(patient['TỔNG SỐ QUYỂN']) || 0;
       if (latestStatus === CONFIG.STATUS.TU_VONG) return 'death';
       if (latestStatus === CONFIG.STATUS.HOI_GIA) return 'returned';
+      if (latestStatus === CONFIG.STATUS.CHUYEN_TRUNG_TAM) return 'transferred';
+      if (latestStatus === CONFIG.STATUS.KHAC) return 'other';
       if (latestStatus === CONFIG.STATUS.HET_QUYEN) return 'finished';
       return totalBooks > 0 ? 'finished' : 'empty';
     }
@@ -13187,13 +13288,20 @@ dialog,
 
       // Người xem công khai không được nhận nơi/nguyên nhân tử vong.
       // Với tài khoản đã đăng nhập, tiêu đề được tạo đúng theo trạng thái.
-      if (status === CONFIG.STATUS.TU_VONG && !publicView) {
-        base.push(
-          { key: 'deathPlace', title: 'Nơi tử vong' },
-          { key: 'deathCause', title: 'Nguyên nhân tử vong' }
-        );
+      if (status === CONFIG.STATUS.TU_VONG) {
+        base.push({ key: 'deathDate', title: 'Ngày tử vong' });
+        if (!publicView) {
+          base.push(
+            { key: 'deathPlace', title: 'Nơi tử vong' },
+            { key: 'deathCause', title: 'Nguyên nhân tử vong' }
+          );
+        }
       } else if (status === CONFIG.STATUS.HOI_GIA) {
         base.push({ key: 'returnDate', title: 'Ngày hồi gia' });
+      } else if (status === CONFIG.STATUS.CHUYEN_TRUNG_TAM) {
+        base.push({ key: 'transferDate', title: 'Ngày chuyển trung tâm' });
+      } else if (status === CONFIG.STATUS.KHAC && !publicView) {
+        base.push({ key: 'otherContent', title: 'Nội dung khác' });
       }
 
       base.push(
@@ -13282,6 +13390,24 @@ dialog,
           return `
             <td class="event-plain-cell" data-label="Ngày hồi gia">
               ${escapeHtml(formatDateVN(book['NGÀY HỒI GIA']))}
+            </td>`;
+
+        case 'deathDate':
+          return `
+            <td class="event-plain-cell" data-label="Ngày tử vong">
+              ${escapeHtml(formatDateVN(book['NGÀY TỬ VONG']))}
+            </td>`;
+
+        case 'transferDate':
+          return `
+            <td class="event-plain-cell" data-label="Ngày chuyển trung tâm">
+              ${escapeHtml(formatDateVN(book['NGÀY CHUYỂN TRUNG TÂM']))}
+            </td>`;
+
+        case 'otherContent':
+          return `
+            <td class="event-plain-cell" data-label="Nội dung khác">
+              ${escapeHtml(book['NỘI DUNG KHÁC'] || 'Chưa cập nhật')}
             </td>`;
 
         case 'storage':
@@ -13423,7 +13549,7 @@ dialog,
               <td>${escapeHtml(item['NĂM SINH'])}</td>
               <td>${escapeHtml(item['GIỚI TÍNH'] || '—')}</td>
               <td><span class="badge closed">Quyển ${escapeHtml(item['QUYỂN SỐ'])}</span></td>
-              <td>${escapeHtml(formatDateVN(item['NGÀY KẾT THÚC']))}</td>
+              <td>${escapeHtml(formatDateVN(publicView ? item['NGÀY KẾT THÚC'] : item['NGÀY TỬ VONG']))}</td>
               <td><strong>${escapeHtml(item['NĂM TỬ VONG'])}</strong></td>`;
             const storageCells = `
               <td>${item['THÙNG SỐ']
@@ -13463,6 +13589,8 @@ dialog,
       const finishedBooks = Number(stats.hoSoHetQuyen) || 0;
       const returnedBooks = Number(stats.hoSoHoiGia) || 0;
       const deathBooks = Number(stats.hoSoTuVong) || 0;
+      const transferredBooks = Number(stats.hoSoChuyenTrungTam) || Number(state.storageStats?.transferredBooks) || 0;
+      const otherBooks = Number(stats.hoSoKhac) || Number(state.storageStats?.otherBooks) || 0;
       const scannedBooks = Number(stats.hoSoCoFile) || 0;
       const unscannedBooks = Number(stats.hoSoChuaFile) || 0;
       const scanRate = totalBooks ? Math.round(scannedBooks / totalBooks * 100) : 0;
@@ -13493,11 +13621,13 @@ dialog,
             </div>
           </article>
           <article class="dashboard-panel">
-            <div class="dashboard-panel-head"><div><h3 class="dashboard-panel-title">Cơ cấu trạng thái lưu trữ</h3><p class="dashboard-panel-subtitle">Hết quyển, hồi gia và tử vong</p></div><span class="dashboard-panel-badge">${totalBooks} quyển</span></div>
+            <div class="dashboard-panel-head"><div><h3 class="dashboard-panel-title">Cơ cấu trạng thái lưu trữ</h3><p class="dashboard-panel-subtitle">Theo trạng thái kết thúc của từng quyển hồ sơ</p></div><span class="dashboard-panel-badge">${totalBooks} quyển</span></div>
             <div class="status-bars">
               ${statusBarHtml('Hết quyển', finishedBooks, rate(finishedBooks), 'archive')}
               ${statusBarHtml('Đối tượng hồi gia', returnedBooks, rate(returnedBooks), 'open')}
               ${statusBarHtml('Đối tượng tử vong', deathBooks, rate(deathBooks), 'death')}
+              ${statusBarHtml('Đối tượng chuyển trung tâm', transferredBooks, rate(transferredBooks), 'archive')}
+              ${statusBarHtml('Khác', otherBooks, rate(otherBooks), 'archive')}
             </div>
           </article>
           <article class="dashboard-panel">
@@ -13730,27 +13860,44 @@ dialog,
       $('#patientDialog').showModal();
     }
 
-    function updateDeathPlaceVisibility() {
+    function updateBookStatusFields() {
       const form = $('#bookForm');
       const status = form.elements.trangThai.value;
       const isDeath = status === CONFIG.STATUS.TU_VONG;
       const isReturned = status === CONFIG.STATUS.HOI_GIA;
+      const isTransferred = status === CONFIG.STATUS.CHUYEN_TRUNG_TAM;
+      const isOther = status === CONFIG.STATUS.KHAC;
 
+      $('#deathDateField').classList.toggle('hidden', !isDeath);
       $('#deathPlaceField').classList.toggle('hidden', !isDeath);
       $('#deathCauseField').classList.toggle('hidden', !isDeath);
       $('#returnDateField').classList.toggle('hidden', !isReturned);
+      $('#transferDateField').classList.toggle('hidden', !isTransferred);
+      $('#otherContentField').classList.toggle('hidden', !isOther);
 
       form.elements.noiTuVong.required = isDeath;
       form.elements.nguyenNhanTuVong.required = isDeath;
+      form.elements.ngayTuVong.required = isDeath;
       form.elements.ngayHoiGia.required = isReturned;
+      form.elements.ngayChuyenTrungTam.required = isTransferred;
+      form.elements.noiDungKhac.required = isOther;
 
       if (!isDeath) {
         form.elements.noiTuVong.value = '';
         form.elements.nguyenNhanTuVong.value = '';
+        form.elements.ngayTuVong.value = '';
       }
 
       if (!isReturned) {
         form.elements.ngayHoiGia.value = '';
+      }
+
+      if (!isTransferred) {
+        form.elements.ngayChuyenTrungTam.value = '';
+      }
+
+      if (!isOther) {
+        form.elements.noiDungKhac.value = '';
       }
     }
 
@@ -13800,11 +13947,14 @@ dialog,
       form.elements.ngayKetThuc.value = today;
       form.elements.nguyenNhanTuVong.value = '';
       form.elements.ngayHoiGia.value = '';
+      form.elements.ngayTuVong.value = '';
+      form.elements.ngayChuyenTrungTam.value = '';
+      form.elements.noiDungKhac.value = '';
       $('#bookDialogTitle').textContent = 'Lưu hồ sơ bệnh án';
       $('#bookSubmitBtn').textContent = 'Lưu hồ sơ';
       $('#bookNumberHelp').textContent = 'Hệ thống gợi ý số quyển tiếp theo; có thể điều chỉnh khi nhập hồ sơ lưu trữ cũ.';
       $('#existingFileNotice').classList.add('hidden');
-      updateDeathPlaceVisibility();
+      updateBookStatusFields();
       updateStorageLocationPreview();
       updateDocumentInventoryPreview();
       $('#bookDialog').showModal();
@@ -13828,6 +13978,9 @@ dialog,
       form.elements.noiTuVong.value = book['NƠI TỬ VONG'] || '';
       form.elements.nguyenNhanTuVong.value = book['NGUYÊN NHÂN TỬ VONG'] || '';
       form.elements.ngayHoiGia.value = book['NGÀY HỒI GIA'] || '';
+      form.elements.ngayTuVong.value = book['NGÀY TỬ VONG'] || '';
+      form.elements.ngayChuyenTrungTam.value = book['NGÀY CHUYỂN TRUNG TÂM'] || '';
+      form.elements.noiDungKhac.value = book['NỘI DUNG KHÁC'] || '';
       const storage = parseStorageLocation(book);
       form.elements.thungSo.value = storage.thungSo || '';
       form.elements.viTriSo.value = storage.viTriSo || '';
@@ -13847,7 +14000,7 @@ dialog,
       } else {
         notice.classList.add('hidden');
       }
-      updateDeathPlaceVisibility();
+      updateBookStatusFields();
       updateStorageLocationPreview();
       updateDocumentInventoryPreview();
       $('#bookDialog').showModal();
@@ -14739,6 +14892,14 @@ dialog,
         normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
         CONFIG.STATUS.HET_QUYEN
       ).length;
+      const transferredCount = bookRows.filter(item =>
+        normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
+        CONFIG.STATUS.CHUYEN_TRUNG_TAM
+      ).length;
+      const otherCount = bookRows.filter(item =>
+        normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
+        CONFIG.STATUS.KHAC
+      ).length;
 
       $('#reportPreviewSummary').innerHTML = `
         <div class="report-preview-statline" role="status">
@@ -14747,6 +14908,8 @@ dialog,
           <span>Hết quyển <strong>${finishedCount}</strong></span>
           <span>Hồi gia <strong>${returnedCount}</strong></span>
           <span>Tử vong <strong>${deathCount}</strong></span>
+          <span>Chuyển trung tâm <strong>${transferredCount}</strong></span>
+          <span>Khác <strong>${otherCount}</strong></span>
         </div>
       `;
 
@@ -14780,6 +14943,21 @@ dialog,
             <td class="center">${
               book && status === CONFIG.STATUS.HOI_GIA
                 ? escapeHtml(formatDateVN(book['NGÀY HỒI GIA']))
+                : '—'
+            }</td>
+            <td class="center">${
+              book && status === CONFIG.STATUS.TU_VONG
+                ? escapeHtml(formatDateVN(book['NGÀY TỬ VONG']))
+                : '—'
+            }</td>
+            <td class="center">${
+              book && status === CONFIG.STATUS.CHUYEN_TRUNG_TAM
+                ? escapeHtml(formatDateVN(book['NGÀY CHUYỂN TRUNG TÂM']))
+                : '—'
+            }</td>
+            <td>${
+              book && status === CONFIG.STATUS.KHAC
+                ? escapeHtml(book['NỘI DUNG KHÁC'] || '—')
                 : '—'
             }</td>
             <td>${
@@ -14972,7 +15150,7 @@ dialog,
           sheet.headerFooter.oddFooter =
             '&LHSBA Trung tâm&CTrang &P / &N&RNgày xuất: &D';
 
-          const totalColumns = 20;
+          const totalColumns = 23;
           sheet.mergeCells(1, 1, 1, totalColumns);
           sheet.getCell('A1').value =
             'BÁO CÁO DANH MỤC HỒ SƠ BỆNH ÁN LƯU TRỮ';
@@ -15031,6 +15209,9 @@ dialog,
             'Ngày kết thúc',
             'Trạng thái',
             'Ngày hồi gia',
+            'Ngày tử vong',
+            'Ngày chuyển trung tâm',
+            'Nội dung khác',
             'Nơi tử vong',
             'Nguyên nhân tử vong',
             'Thùng số',
@@ -15092,6 +15273,15 @@ dialog,
                 ? parseExcelDate(book['NGÀY HỒI GIA'])
                 : '',
               book && status === CONFIG.STATUS.TU_VONG
+                ? parseExcelDate(book['NGÀY TỬ VONG'])
+                : '',
+              book && status === CONFIG.STATUS.CHUYEN_TRUNG_TAM
+                ? parseExcelDate(book['NGÀY CHUYỂN TRUNG TÂM'])
+                : '',
+              book && status === CONFIG.STATUS.KHAC
+                ? excelSafeText(book['NỘI DUNG KHÁC'])
+                : '',
+              book && status === CONFIG.STATUS.TU_VONG
                 ? excelSafeText(book['NƠI TỬ VONG'])
                 : '',
               book && status === CONFIG.STATUS.TU_VONG
@@ -15112,7 +15302,7 @@ dialog,
               cell.font = { name: 'Arial', size: 9 };
               cell.alignment = {
                 vertical: 'middle',
-                horizontal: [1, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20]
+                horizontal: [1, 4, 5, 6, 7, 8, 10, 11, 12, 16, 17, 18, 19, 20, 21, 22, 23]
                   .includes(columnNumber)
                   ? 'center'
                   : 'left',
@@ -15133,7 +15323,7 @@ dialog,
               }
             });
 
-            [7, 8, 10].forEach(columnNumber => {
+            [7, 8, 10, 11, 12].forEach(columnNumber => {
               row.getCell(columnNumber).numFmt = 'dd/mm/yyyy';
             });
 
@@ -15169,8 +15359,9 @@ dialog,
           };
 
           const widths = [
-            6, 13, 25, 10, 10, 9, 12, 12, 17, 12,
-            20, 30, 9, 9, 11, 11, 12, 13, 13, 12
+            6, 13, 25, 10, 10, 9, 12, 12, 22, 12,
+            12, 15, 30, 20, 30, 9, 9, 11, 11, 12,
+            13, 13, 12
           ];
           widths.forEach((width, index) => {
             sheet.getColumn(index + 1).width = width;
@@ -15214,11 +15405,19 @@ dialog,
             ['Tử vong', reportRows.filter(item =>
               normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
               CONFIG.STATUS.TU_VONG
+            ).length],
+            ['Chuyển trung tâm', reportRows.filter(item =>
+              normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
+              CONFIG.STATUS.CHUYEN_TRUNG_TAM
+            ).length],
+            ['Khác', reportRows.filter(item =>
+              normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
+              CONFIG.STATUS.KHAC
             ).length]
           ];
 
           summaryLabels.forEach((summary, index) => {
-            const column = 6 + index * 3;
+            const column = 6 + index * 2;
             sheet.mergeCells(
               summaryRowNumber,
               column,
@@ -15423,7 +15622,7 @@ dialog,
     }
     }
   </script>
-  <div class="build-version" aria-hidden="true">2026.08.17.1</div>
+  <div class="build-version" aria-hidden="true">2026.08.19.1</div>
 
 </body>
 </html>

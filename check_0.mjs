@@ -21,7 +21,7 @@
           empty.classList.remove('hidden');
           empty.innerHTML = `
             <div class="guest-access-card">
-              <div class="guest-icon">🖥️</div>
+              <div class="guest-icon"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#i-eye"></use></svg></div>
               <h3>Đang xem thử giao diện</h3>
               <p>Dữ liệu trực tuyến chỉ được tải khi mở ứng dụng từ đường dẫn GitHub Pages chính thức.</p>
             </div>`;
@@ -72,6 +72,7 @@
     const CONFIG = Object.freeze({
       OWNER_EMAIL: 'thanhbds2011@gmail.com',
       ACCESS_REQUEST_PATH: 'hsbaYeuCauDangKy',
+      STORAGE_INDEX_PATH: 'hsbaViTriLuuTru',
 
       // Apps Script này chỉ dùng upload Google Drive; cấp quyền HSBA không còn phụ thuộc Apps Script/Google Sheet.
       DRIVE_UPLOAD_URL:
@@ -88,6 +89,8 @@
         HET_QUYEN: 'Hết quyển',
         HOI_GIA: 'Đối tượng hồi gia',
         TU_VONG: 'Đối tượng tử vong',
+        CHUYEN_TRUNG_TAM: 'Đối tượng chuyển trung tâm',
+        KHAC: 'Khác',
         LEGACY_DANG_KHAM: 'Đang khám',
         LEGACY_LUU_KHO: 'Đã lưu kho'
       }
@@ -284,6 +287,20 @@
       return `Thùng ${box} - Vị trí ${position}`;
     }
 
+    function storageLocationKey(thungSo, viTriSo) {
+      const box = Number(thungSo);
+      const position = Number(viTriSo);
+
+      if (
+        !Number.isInteger(box) || box < 1 ||
+        !Number.isInteger(position) || position < 1
+      ) {
+        return '';
+      }
+
+      return `t_${String(box).padStart(6, '0')}_v_${String(position).padStart(6, '0')}`;
+    }
+
     function parseStorageLocation(source = {}) {
       const directBox = Number(source.thungSo ?? source['THÙNG SỐ']);
       const directPosition = Number(source.viTriSo ?? source['VỊ TRÍ SỐ']);
@@ -319,6 +336,66 @@
         label: legacy,
         structured: false
       };
+    }
+
+    function findStorageLocationConflict(
+      booksRoot,
+      thungSo,
+      viTriSo,
+      ignorePatientId = '',
+      ignoreBookKey = ''
+    ) {
+      const targetBox = Number(thungSo);
+      const targetPosition = Number(viTriSo);
+
+      for (const [patientId, patientBooks] of Object.entries(booksRoot || {})) {
+        if (!patientBooks || typeof patientBooks !== 'object') continue;
+
+        for (const [candidateBookKey, book] of Object.entries(patientBooks)) {
+          if (!book || typeof book !== 'object') continue;
+
+          if (
+            patientId === ignorePatientId &&
+            candidateBookKey === ignoreBookKey
+          ) {
+            continue;
+          }
+
+          const storage = parseStorageLocation(book);
+          if (
+            Number(storage.thungSo) === targetBox &&
+            Number(storage.viTriSo) === targetPosition
+          ) {
+            return {
+              patientId,
+              bookKey: candidateBookKey,
+              soHoSo: String(book.soHoSo || ''),
+              quyenSo: Number(book.quyenSo) || 0,
+              thungSo: targetBox,
+              viTriSo: targetPosition
+            };
+          }
+        }
+      }
+
+      return null;
+    }
+
+    function storageConflictMessage(conflict, thungSo, viTriSo) {
+      const location = storageLocationLabel(thungSo, viTriSo);
+      if (!conflict) {
+        return `${location} đã được sử dụng. Vui lòng chọn vị trí khác.`;
+      }
+
+      const recordLabel = conflict.soHoSo
+        ? `hồ sơ ${conflict.soHoSo}`
+        : 'một hồ sơ khác';
+      const bookLabel = conflict.quyenSo
+        ? `, quyển ${conflict.quyenSo}`
+        : '';
+
+      return `${location} đã được sử dụng bởi ${recordLabel}${bookLabel}. `
+        + 'Mỗi vị trí chỉ được lưu một quyển hồ sơ. Vui lòng chọn vị trí khác.';
     }
 
     const INVENTORY_FIELDS = [
@@ -377,6 +454,8 @@
         ) || 0,
         '_SỐ QUYỂN HỒI GIA': Number(patient.soQuyenHoiGia) || 0,
         '_SỐ QUYỂN TỬ VONG': Number(patient.soQuyenTuVong) || 0,
+        '_SỐ QUYỂN CHUYỂN TRUNG TÂM': Number(patient.soQuyenChuyenTrungTam) || 0,
+        '_SỐ QUYỂN KHÁC': Number(patient.soQuyenKhac) || 0,
         '_SỐ QUYỂN CÓ FILE': Number(patient.soQuyenCoFile) || 0,
         '_UPDATED_AT': Number(patient.updatedAt) || 0
       };
@@ -397,6 +476,9 @@
         'NƠI TỬ VONG': book.noiTuVong || '',
         'NGUYÊN NHÂN TỬ VONG': book.nguyenNhanTuVong || '',
         'NGÀY HỒI GIA': book.ngayHoiGia || '',
+        'NGÀY TỬ VONG': book.ngayTuVong || (normalizeRecordStatus(book.trangThai) === CONFIG.STATUS.TU_VONG ? book.ngayKetThuc || '' : ''),
+        'NGÀY CHUYỂN TRUNG TÂM': book.ngayChuyenTrungTam || '',
+        'NỘI DUNG KHÁC': book.noiDungKhac || '',
         'THÙNG SỐ': storage.thungSo || '',
         'VỊ TRÍ SỐ': storage.viTriSo || '',
         'MÃ SỐ LƯU TRỮ': storage.label || book.maLuuTru || '',
@@ -421,7 +503,8 @@
         'GIỚI TÍNH': item.gioiTinh || '',
         'QUYỂN SỐ': Number(item.quyenSo) || 0,
         'NGÀY KẾT THÚC': item.ngayKetThuc || '',
-        'NĂM TỬ VONG': Number(item.namTuVong) || Number(String(item.ngayKetThuc || '').slice(0, 4)) || '',
+        'NGÀY TỬ VONG': item.ngayTuVong || item.ngayKetThuc || '',
+        'NĂM TỬ VONG': Number(item.namTuVong) || Number(String(item.ngayTuVong || item.ngayKetThuc || '').slice(0, 4)) || '',
         'NƠI TỬ VONG': item.noiTuVong || '',
         'NGUYÊN NHÂN TỬ VONG': item.nguyenNhanTuVong || '',
         'THÙNG SỐ': storage.thungSo || '',
@@ -449,6 +532,8 @@
         ) || 0;
         result.hoSoHoiGia += Number(patient.soQuyenHoiGia) || 0;
         result.hoSoTuVong += Number(patient.soQuyenTuVong) || 0;
+        result.hoSoChuyenTrungTam += Number(patient.soQuyenChuyenTrungTam) || 0;
+        result.hoSoKhac += Number(patient.soQuyenKhac) || 0;
         result.hoSoCoFile += Number(patient.soQuyenCoFile) || 0;
         return result;
       }, {
@@ -457,6 +542,8 @@
         hoSoHetQuyen: 0,
         hoSoHoiGia: 0,
         hoSoTuVong: 0,
+        hoSoChuyenTrungTam: 0,
+        hoSoKhac: 0,
         hoSoCoFile: 0,
         hoSoChuaFile: 0
       });
@@ -494,6 +581,14 @@
         ngayHoiGia:
           normalizeRecordStatus(book.trangThai) === CONFIG.STATUS.HOI_GIA
             ? String(book.ngayHoiGia || '')
+            : '',
+        ngayTuVong:
+          normalizeRecordStatus(book.trangThai) === CONFIG.STATUS.TU_VONG
+            ? String(book.ngayTuVong || book.ngayKetThuc || '')
+            : '',
+        ngayChuyenTrungTam:
+          normalizeRecordStatus(book.trangThai) === CONFIG.STATUS.CHUYEN_TRUNG_TAM
+            ? String(book.ngayChuyenTrungTam || '')
             : '',
         thungSo: Number(book.thungSo) || Number(storage.thungSo) || 0,
         viTriSo: Number(book.viTriSo) || Number(storage.viTriSo) || 0,
@@ -549,6 +644,12 @@
         ).length,
         soQuyenTuVong: normalizedBooks.filter(
           book => book.normalizedStatus === CONFIG.STATUS.TU_VONG
+        ).length,
+        soQuyenChuyenTrungTam: normalizedBooks.filter(
+          book => book.normalizedStatus === CONFIG.STATUS.CHUYEN_TRUNG_TAM
+        ).length,
+        soQuyenKhac: normalizedBooks.filter(
+          book => book.normalizedStatus === CONFIG.STATUS.KHAC
         ).length,
         soQuyenCoFile: Number(patient.soQuyenCoFile) || 0,
         updatedAt: Number(patient.updatedAt) || Date.now(),
@@ -986,6 +1087,8 @@
       let finishedBooks = 0;
       let returnedBooks = 0;
       let deathBooks = 0;
+      let transferredBooks = 0;
+      let otherBooks = 0;
       let scannedBooks = 0;
       const inventoryTotals = {
         soToChamSoc: 0,
@@ -1004,6 +1107,8 @@
           if (normalizedStatus === CONFIG.STATUS.HET_QUYEN) finishedBooks += 1;
           if (normalizedStatus === CONFIG.STATUS.HOI_GIA) returnedBooks += 1;
           if (normalizedStatus === CONFIG.STATUS.TU_VONG) deathBooks += 1;
+          if (normalizedStatus === CONFIG.STATUS.CHUYEN_TRUNG_TAM) transferredBooks += 1;
+          if (normalizedStatus === CONFIG.STATUS.KHAC) otherBooks += 1;
           if (String(book.fileDinhKem || '').trim()) scannedBooks += 1;
 
           const inventory = documentInventoryFromSource(book);
@@ -1075,6 +1180,8 @@
         finishedBooks,
         returnedBooks,
         deathBooks,
+        transferredBooks,
+        otherBooks,
         scannedBooks,
         structuredBooks,
         unstructuredBooks,
@@ -1945,8 +2052,14 @@
             [`khoaThaoTac/${oldId}`]: null
           };
 
+          // Không ghi cả nhánh cha quyenHoSo/{patientId} vì Rules chỉ cấp
+          // quyền ghi tại từng quyenHoSo/{patientId}/{bookId}. Ghi từng quyển
+          // cũng giữ nguyên cơ chế khóa chống chỉnh sửa đồng thời.
           if (bookCount > 0) {
-            updates[`quyenHoSo/${newId}`] = updatedBooks;
+            Object.entries(updatedBooks).forEach(([bookId, book]) => {
+              if (!book) return;
+              updates[`quyenHoSo/${newId}/${bookId}`] = book;
+            });
           }
 
           if (updatedDeath) {
@@ -1955,7 +2068,10 @@
 
           if (oldId !== newId) {
             updates[`doiTuong/${oldId}`] = null;
-            updates[`quyenHoSo/${oldId}`] = null;
+            Object.entries(bookMap).forEach(([bookId, book]) => {
+              if (!book) return;
+              updates[`quyenHoSo/${oldId}/${bookId}`] = null;
+            });
             updates[`hoSoTuVong/${oldId}`] = null;
             updates[`congKhai/hoSo/${oldId}`] = null;
             updates[`khoaThaoTac/${newId}`] = null;
@@ -2032,7 +2148,6 @@
           const logKey = push(ref(this.database, 'nhatKy')).key;
           const updates = {
             [`doiTuong/${id}`]: null,
-            [`quyenHoSo/${id}`]: null,
             [`hoSoTuVong/${id}`]: null,
             [`congKhai/hoSo/${id}`]: null,
             [`khoaThaoTac/${id}`]: null,
@@ -2048,6 +2163,15 @@
               }
             )
           };
+
+          // Rules chỉ cho phép ghi/xóa tại từng bookId. Vì vậy:
+          // - Admin: có quyển thì xóa lần lượt toàn bộ quyển rồi xóa hồ sơ.
+          // - Nhập liệu: đã có quyển đã bị chặn ở trên; chưa có quyển thì
+          //   không phát sinh write vào nhánh quyenHoSo nên vẫn xóa được.
+          Object.entries(bookMap).forEach(([bookId, book]) => {
+            if (!book) return;
+            updates[`quyenHoSo/${id}/${bookId}`] = null;
+          });
 
           await update(ref(this.database), updates);
           await this.updatePublicMeta(-1, Date.now());
@@ -2081,11 +2205,212 @@
           finished: normalized.filter(book => book.normalizedStatus === CONFIG.STATUS.HET_QUYEN).length,
           returned: normalized.filter(book => book.normalizedStatus === CONFIG.STATUS.HOI_GIA).length,
           deaths: normalized.filter(book => book.normalizedStatus === CONFIG.STATUS.TU_VONG).length,
+          transferred: normalized.filter(book => book.normalizedStatus === CONFIG.STATUS.CHUYEN_TRUNG_TAM).length,
+          others: normalized.filter(book => book.normalizedStatus === CONFIG.STATUS.KHAC).length,
           files: normalized.filter(book => String(book.fileDinhKem || '').trim()).length,
           deathBook: normalized
             .filter(book => book.normalizedStatus === CONFIG.STATUS.TU_VONG)
             .sort((a, b) => Number(b.quyenSo || 0) - Number(a.quyenSo || 0))[0] || null
         };
+      }
+
+      async reserveStorageLocation({
+        patientId,
+        targetBookKey,
+        originalBookKey = '',
+        soHoSo,
+        quyenSo,
+        thungSo,
+        viTriSo
+      }) {
+        const locationKey = storageLocationKey(thungSo, viTriSo);
+        if (!locationKey) {
+          throw new Error('Vị trí lưu trữ không hợp lệ.');
+        }
+
+        // Kiểm tra toàn bộ dữ liệu hiện hữu trước để chặn cả các quyển cũ
+        // chưa có trong chỉ mục vị trí.
+        const booksRoot = await readBooksRootCached(true);
+        const conflict = findStorageLocationConflict(
+          booksRoot,
+          thungSo,
+          viTriSo,
+          patientId,
+          originalBookKey
+        );
+
+        if (conflict) {
+          throw new Error(storageConflictMessage(conflict, thungSo, viTriSo));
+        }
+
+        const indexReference = ref(
+          this.database,
+          `${CONFIG.STORAGE_INDEX_PATH}/${locationKey}`
+        );
+
+        // Nếu chỉ mục cũ bị sót nhưng quyển tham chiếu không còn ở vị trí đó,
+        // dọn chỉ mục trước khi giữ chỗ mới.
+        const existingSnapshot = await get(indexReference);
+        const existingIndex = existingSnapshot.val() || null;
+        const allowedBookKeys = new Set(
+          [targetBookKey, originalBookKey].filter(Boolean)
+        );
+
+        if (
+          existingIndex &&
+          !(
+            String(existingIndex.patientId || '') === patientId &&
+            allowedBookKeys.has(String(existingIndex.bookKey || ''))
+          )
+        ) {
+          const indexedPatientId = String(existingIndex.patientId || '');
+          const indexedBookKey = String(existingIndex.bookKey || '');
+          const indexedBookSnapshot =
+            indexedPatientId && indexedBookKey
+              ? await get(
+                  ref(
+                    this.database,
+                    `quyenHoSo/${indexedPatientId}/${indexedBookKey}`
+                  )
+                )
+              : null;
+          const indexedBook = indexedBookSnapshot?.exists()
+            ? indexedBookSnapshot.val()
+            : null;
+          const indexedStorage = parseStorageLocation(indexedBook || {});
+
+          if (
+            indexedBook &&
+            Number(indexedStorage.thungSo) === Number(thungSo) &&
+            Number(indexedStorage.viTriSo) === Number(viTriSo)
+          ) {
+            throw new Error(
+              storageConflictMessage(
+                {
+                  soHoSo: indexedBook.soHoSo || existingIndex.soHoSo || '',
+                  quyenSo:
+                    Number(indexedBook.quyenSo) ||
+                    Number(existingIndex.quyenSo) ||
+                    0
+                },
+                thungSo,
+                viTriSo
+              )
+            );
+          }
+
+          // Chỉ mục mồ côi: chỉ xóa nếu nó vẫn đúng bản ghi vừa kiểm tra.
+          await runTransaction(
+            indexReference,
+            current => {
+              if (
+                current &&
+                String(current.patientId || '') === indexedPatientId &&
+                String(current.bookKey || '') === indexedBookKey
+              ) {
+                return null;
+              }
+              return current;
+            },
+            { applyLocally: false }
+          );
+        }
+
+        const reservationToken = this.makeOperationToken();
+        const now = Date.now();
+        const reservation = {
+          locationKey,
+          patientId,
+          bookKey: targetBookKey,
+          soHoSo,
+          quyenSo: Number(quyenSo),
+          thungSo: Number(thungSo),
+          viTriSo: Number(viTriSo),
+          reservationToken,
+          updatedAt: now,
+          updatedByUid: this.auth.currentUser?.uid || '',
+          updatedByEmail: this.auth.currentUser?.email || ''
+        };
+
+        const result = await runTransaction(
+          indexReference,
+          current => {
+            if (!current) {
+              return reservation;
+            }
+
+            const samePatient =
+              String(current.patientId || '') === patientId;
+            const currentBookKey = String(current.bookKey || '');
+
+            if (samePatient && allowedBookKeys.has(currentBookKey)) {
+              // Đây chính là quyển đang chỉnh sửa; giữ nguyên chỉ mục cũ
+              // cho đến khi ghi dữ liệu chính thức thành công.
+              return current;
+            }
+
+            return;
+          },
+          { applyLocally: false }
+        );
+
+        if (!result.committed) {
+          const current = result.snapshot?.val() || null;
+          throw new Error(
+            storageConflictMessage(current, thungSo, viTriSo)
+          );
+        }
+
+        const committedIndex = result.snapshot?.val() || {};
+        const acquiredByThisAttempt =
+          String(committedIndex.reservationToken || '') === reservationToken;
+
+        return {
+          locationKey,
+          reservation,
+          reservationToken,
+          acquiredByThisAttempt
+        };
+      }
+
+      async releaseStorageLocationReservation(
+        locationKey,
+        patientId,
+        allowedBookKeys = [],
+        reservationToken = ''
+      ) {
+        if (!locationKey) return;
+
+        const acceptedKeys = new Set(
+          (Array.isArray(allowedBookKeys) ? allowedBookKeys : [allowedBookKeys])
+            .filter(Boolean)
+            .map(String)
+        );
+
+        await runTransaction(
+          ref(this.database, `${CONFIG.STORAGE_INDEX_PATH}/${locationKey}`),
+          current => {
+            if (!current) return null;
+            if (String(current.patientId || '') !== String(patientId || '')) {
+              return current;
+            }
+
+            const currentBookKey = String(current.bookKey || '');
+            if (acceptedKeys.size && !acceptedKeys.has(currentBookKey)) {
+              return current;
+            }
+
+            if (
+              reservationToken &&
+              String(current.reservationToken || '') !== reservationToken
+            ) {
+              return current;
+            }
+
+            return null;
+          },
+          { applyLocally: false }
+        );
       }
 
       async saveBook(payload, file) {
@@ -2099,6 +2424,9 @@
         const noiTuVong = String(payload.noiTuVong || '').trim();
         const nguyenNhanTuVong = String(payload.nguyenNhanTuVong || '').trim();
         const ngayHoiGia = String(payload.ngayHoiGia || '').trim();
+        const ngayTuVong = String(payload.ngayTuVong || '').trim();
+        const ngayChuyenTrungTam = String(payload.ngayChuyenTrungTam || '').trim();
+        const noiDungKhac = String(payload.noiDungKhac || '').trim();
         const thungSo = Number(payload.thungSo);
         const viTriSo = Number(payload.viTriSo);
         const maLuuTru = storageLocationLabel(thungSo, viTriSo);
@@ -2122,7 +2450,13 @@
         if (ngayKetThuc < ngayBatDau) {
           throw new Error('Ngày kết thúc không được trước ngày mở quyển.');
         }
-        if (![CONFIG.STATUS.HET_QUYEN, CONFIG.STATUS.HOI_GIA, CONFIG.STATUS.TU_VONG].includes(trangThai)) {
+        if (![
+          CONFIG.STATUS.HET_QUYEN,
+          CONFIG.STATUS.HOI_GIA,
+          CONFIG.STATUS.TU_VONG,
+          CONFIG.STATUS.CHUYEN_TRUNG_TAM,
+          CONFIG.STATUS.KHAC
+        ].includes(trangThai)) {
           throw new Error('Vui lòng chọn đúng trạng thái kết thúc hồ sơ.');
         }
         if (!Number.isInteger(thungSo) || thungSo < 1) throw new Error('Vui lòng nhập đúng thùng số.');
@@ -2144,6 +2478,28 @@
             throw new Error('Ngày hồi gia phải nằm trong khoảng từ ngày mở quyển đến ngày kết thúc.');
           }
         }
+        if (trangThai === CONFIG.STATUS.TU_VONG) {
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(ngayTuVong)) {
+            throw new Error('Vui lòng nhập ngày đối tượng tử vong.');
+          }
+          if (ngayTuVong < ngayBatDau || ngayTuVong > ngayKetThuc) {
+            throw new Error('Ngày tử vong phải nằm trong khoảng từ ngày mở quyển đến ngày kết thúc.');
+          }
+        }
+        if (trangThai === CONFIG.STATUS.CHUYEN_TRUNG_TAM) {
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(ngayChuyenTrungTam)) {
+            throw new Error('Vui lòng nhập ngày chuyển trung tâm.');
+          }
+          if (ngayChuyenTrungTam < ngayBatDau || ngayChuyenTrungTam > ngayKetThuc) {
+            throw new Error('Ngày chuyển trung tâm phải nằm trong khoảng từ ngày mở quyển đến ngày kết thúc.');
+          }
+        }
+        if (trangThai === CONFIG.STATUS.KHAC && !noiDungKhac) {
+          throw new Error('Vui lòng nhập nội dung khác.');
+        }
+        if (noiDungKhac.length > 500) {
+          throw new Error('Nội dung khác không được vượt quá 500 ký tự.');
+        }
         if (trangThai === CONFIG.STATUS.TU_VONG && !file && !existingFileUrl) {
           throw new Error('Hồ sơ tử vong bắt buộc phải có file scan hoặc hình ảnh.');
         }
@@ -2151,6 +2507,9 @@
         const id = firebaseKey(soHoSo);
         const lockToken = await this.acquirePatientLock(id, mode === 'edit' ? 'SUA_QUYEN' : 'LUU_QUYEN');
         let uploadedFileId = '';
+        let storageReservation = null;
+        let previousLocationKey = '';
+        let dataCommitted = false;
 
         try {
           const [patientSnapshot, booksSnapshot] = await Promise.all([
@@ -2171,6 +2530,24 @@
             throw new Error(`Quyển ${quyenSo} đã tồn tại.`);
           }
 
+          if (previousBook) {
+            const previousStorage = parseStorageLocation(previousBook);
+            previousLocationKey = storageLocationKey(
+              previousStorage.thungSo,
+              previousStorage.viTriSo
+            );
+          }
+
+          storageReservation = await this.reserveStorageLocation({
+            patientId: id,
+            targetBookKey: targetKey,
+            originalBookKey: mode === 'edit' ? originalKey : '',
+            soHoSo,
+            quyenSo,
+            thungSo,
+            viTriSo
+          });
+
           let fileDinhKem = previousBook?.fileDinhKem || existingFileUrl || '';
           if (file) {
             const upload = await this.driveUploader.upload(soHoSo, quyenSo, file);
@@ -2190,6 +2567,9 @@
             noiTuVong: trangThai === CONFIG.STATUS.TU_VONG ? noiTuVong : '',
             nguyenNhanTuVong: trangThai === CONFIG.STATUS.TU_VONG ? nguyenNhanTuVong : '',
             ngayHoiGia: trangThai === CONFIG.STATUS.HOI_GIA ? ngayHoiGia : '',
+            ngayTuVong: trangThai === CONFIG.STATUS.TU_VONG ? ngayTuVong : '',
+            ngayChuyenTrungTam: trangThai === CONFIG.STATUS.CHUYEN_TRUNG_TAM ? ngayChuyenTrungTam : '',
+            noiDungKhac: trangThai === CONFIG.STATUS.KHAC ? noiDungKhac : '',
             thungSo,
             viTriSo,
             maLuuTru,
@@ -2217,6 +2597,8 @@
               soQuyenHetQuyen: summary.finished,
               soQuyenHoiGia: summary.returned,
               soQuyenTuVong: summary.deaths,
+              soQuyenChuyenTrungTam: summary.transferred,
+              soQuyenKhac: summary.others,
               soQuyenCoFile: summary.files,
               updatedAt: Date.now()
             },
@@ -2232,12 +2614,16 @@
             [`doiTuong/${id}/soQuyenHetQuyen`]: summary.finished,
             [`doiTuong/${id}/soQuyenHoiGia`]: summary.returned,
             [`doiTuong/${id}/soQuyenTuVong`]: summary.deaths,
+            [`doiTuong/${id}/soQuyenChuyenTrungTam`]: summary.transferred,
+            [`doiTuong/${id}/soQuyenKhac`]: summary.others,
             [`doiTuong/${id}/soQuyenCoFile`]: summary.files,
             [`doiTuong/${id}/updatedAt`]: serverTimestamp(),
             [`congKhai/hoSo/${id}`]: publicPatient,
             [`congKhai/_meta/schemaVersion`]: CONFIG.PUBLIC_SCHEMA_VERSION,
             [`congKhai/_meta/sourceUpdatedAt`]: Date.now(),
             [`congKhai/_meta/updatedAt`]: Date.now(),
+            [`${CONFIG.STORAGE_INDEX_PATH}/${storageReservation.locationKey}`]:
+              storageReservation.reservation,
             [`nhatKy/${logKey}`]: this.makeLog(
               mode === 'edit' ? 'CHỈNH SỬA QUYỂN HỒ SƠ' : 'LƯU QUYỂN HỒ SƠ',
               {
@@ -2249,14 +2635,16 @@
                 noiTuVong: trangThai === CONFIG.STATUS.TU_VONG ? noiTuVong : '',
                 nguyenNhanTuVong: trangThai === CONFIG.STATUS.TU_VONG ? nguyenNhanTuVong : '',
                 ngayHoiGia: trangThai === CONFIG.STATUS.HOI_GIA ? ngayHoiGia : '',
+                ngayTuVong: trangThai === CONFIG.STATUS.TU_VONG ? ngayTuVong : '',
+                ngayChuyenTrungTam: trangThai === CONFIG.STATUS.CHUYEN_TRUNG_TAM ? ngayChuyenTrungTam : '',
+                noiDungKhac: trangThai === CONFIG.STATUS.KHAC ? noiDungKhac : '',
                 thungSo,
                 viTriSo,
                 maLuuTru,
                 ...inventoryValues,
                 tongSoGiayTo
               }
-            ),
-            [`khoaThaoTac/${id}`]: null
+            )
           };
 
           if (mode === 'edit' && originalKey !== targetKey) {
@@ -2272,7 +2660,8 @@
               gioiTinh: patient.gioiTinh || '',
               quyenSo: Number(deathBook.quyenSo) || 0,
               ngayKetThuc: deathBook.ngayKetThuc || '',
-              namTuVong: Number(String(deathBook.ngayKetThuc || '').slice(0, 4)) || 0,
+              ngayTuVong: deathBook.ngayTuVong || deathBook.ngayKetThuc || '',
+              namTuVong: Number(String(deathBook.ngayTuVong || deathBook.ngayKetThuc || '').slice(0, 4)) || 0,
               noiTuVong: deathBook.noiTuVong || '',
               nguyenNhanTuVong: deathBook.nguyenNhanTuVong || '',
               thungSo: Number(deathBook.thungSo) || parseStorageLocation(deathBook).thungSo || 0,
@@ -2292,6 +2681,35 @@
           }
 
           await update(ref(this.database), updates);
+          dataCommitted = true;
+
+          if (
+            previousLocationKey &&
+            previousLocationKey !== storageReservation.locationKey
+          ) {
+            try {
+              await this.releaseStorageLocationReservation(
+                previousLocationKey,
+                id,
+                [originalKey, targetKey]
+              );
+            } catch (releaseOldLocationError) {
+              console.warn(
+                'Đã lưu quyển nhưng chưa dọn được chỉ mục vị trí cũ:',
+                releaseOldLocationError
+              );
+            }
+          }
+
+          try {
+            await this.releasePatientLock(id, lockToken);
+          } catch (releaseLockError) {
+            console.warn(
+              'Đã lưu quyển nhưng chưa giải phóng được khóa thao tác:',
+              releaseLockError
+            );
+          }
+
           patchBooksRootCache(id, id, nextBookMap);
 
           return {
@@ -2300,8 +2718,35 @@
             data: bookToUi(patient, { ...savedBook, updatedAt: Date.now() })
           };
         } catch (error) {
-          await this.releasePatientLock(id, lockToken);
-          if (uploadedFileId) await this.driveUploader.removeTemporary(uploadedFileId);
+          if (
+            !dataCommitted &&
+            storageReservation?.acquiredByThisAttempt &&
+            storageReservation?.locationKey
+          ) {
+            try {
+              await this.releaseStorageLocationReservation(
+                storageReservation.locationKey,
+                id,
+                [bookKey(quyenSo)],
+                storageReservation.reservationToken
+              );
+            } catch (releaseLocationError) {
+              console.warn(
+                'Không giải phóng được vị trí tạm sau khi lưu thất bại:',
+                releaseLocationError
+              );
+            }
+          }
+
+          try {
+            await this.releasePatientLock(id, lockToken);
+          } catch (releaseLockError) {
+            console.warn('Không giải phóng được khóa thao tác:', releaseLockError);
+          }
+
+          if (!dataCommitted && uploadedFileId) {
+            await this.driveUploader.removeTemporary(uploadedFileId);
+          }
           throw error;
         }
       }
@@ -2344,12 +2789,109 @@
       accountAdmin: {
         requests: [],
         permissions: [],
-        loaded: false
+        loaded: false,
+        errors: { requests: '', permissions: '' }
       }
     };
 
     const $ = (selector, root = document) => root.querySelector(selector);
     const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+
+    let realtimeCatalogUnsubscribe = null;
+    let realtimeCatalogMetaSeen = 0;
+    let realtimeRefreshTimer = null;
+    let realtimeRefreshRunning = false;
+    let realtimeRefreshQueued = false;
+
+    function activeViewId() {
+      return document.querySelector('.view.active')?.id || 'patientsView';
+    }
+
+    async function refreshCurrentPatientRealtime() {
+      const soHoSo = state.currentPatient?.['SỐ HỒ SƠ'];
+      if (!soHoSo) return;
+
+      const id = firebaseKey(soHoSo);
+      const patientSnapshot = await get(
+        ref(firebaseDatabase, `${patientCatalogPath()}/${id}`)
+      );
+
+      if (!patientSnapshot.exists()) {
+        state.currentPatient = null;
+        state.currentBooks = [];
+        switchView('patients');
+        showToast('Hồ sơ đang xem vừa được cập nhật hoặc xóa trên thiết bị khác.');
+        return;
+      }
+
+      state.currentPatient = patientToUi(id, patientSnapshot.val() || {});
+      const detail = await api.get('layChiTietHoSo', { soHoSo });
+      state.currentBooks = detail.data || [];
+      renderDetail();
+    }
+
+    async function runRealtimeDataRefresh() {
+      if (realtimeRefreshRunning) {
+        realtimeRefreshQueued = true;
+        return;
+      }
+
+      realtimeRefreshRunning = true;
+      try {
+        await refreshPatientSummariesSilently();
+
+        const view = activeViewId();
+        if (view === 'detailView') {
+          await refreshCurrentPatientRealtime();
+        } else if (view === 'deathsView') {
+          await refreshDeathsSilently();
+        } else if (view === 'dashboardView') {
+          state.storageStatsLoaded = false;
+          await refreshStorageStatsSilently();
+        }
+
+        if (view === 'accountsView' && state.currentRole === 'admin') {
+          state.accountAdmin.loaded = false;
+          await refreshAccountAdministration(true);
+        }
+      } catch (error) {
+        console.warn('Không tự đồng bộ được dữ liệu mới:', error);
+      } finally {
+        realtimeRefreshRunning = false;
+        if (realtimeRefreshQueued) {
+          realtimeRefreshQueued = false;
+          scheduleRealtimeDataRefresh(250);
+        }
+      }
+    }
+
+    function scheduleRealtimeDataRefresh(delay = 450) {
+      window.clearTimeout(realtimeRefreshTimer);
+      realtimeRefreshTimer = window.setTimeout(runRealtimeDataRefresh, delay);
+    }
+
+    function startRealtimeDataSync() {
+      if (realtimeCatalogUnsubscribe) return;
+
+      realtimeCatalogUnsubscribe = onValue(
+        ref(firebaseDatabase, 'congKhai/_meta/updatedAt'),
+        snapshot => {
+          const updatedAt = Number(snapshot.val() || 0);
+          if (!updatedAt) return;
+
+          // Lần đầu chỉ ghi nhận mốc hiện tại để không gọi lại bootstrap.
+          if (!realtimeCatalogMetaSeen) {
+            realtimeCatalogMetaSeen = updatedAt;
+            return;
+          }
+
+          if (updatedAt <= realtimeCatalogMetaSeen) return;
+          realtimeCatalogMetaSeen = updatedAt;
+          scheduleRealtimeDataRefresh();
+        },
+        error => console.warn('Không mở được kênh đồng bộ thời gian thực:', error)
+      );
+    }
 
     let hsbaInitStarted = false;
 
@@ -2433,7 +2975,7 @@
             const access = await resolveUserAccess(user);
             accessResolved = true;
             state.currentRole = access.role;
-            showLoggedInState(user, access.role);
+            showLoggedInState(user, access.role, access.displayName);
 
             if (access.role === 'pending') {
               showToast('Yêu cầu sử dụng HSBA đã được gửi và đang chờ quản trị viên duyệt.');
@@ -2473,6 +3015,7 @@
           renderPatients();
           renderDeaths();
           renderStats();
+          startRealtimeDataSync();
 
           if (publicMode && state.patients.length === 0) {
             $('#patientsEmpty')?.classList.remove('hidden');
@@ -2514,7 +3057,13 @@
       const email = String(user?.email || '').trim().toLowerCase();
 
       if (email === CONFIG.OWNER_EMAIL.toLowerCase()) {
-        return { active: true, role: 'admin', email };
+        const ownerPermission = await readRealtimePermission(user.uid).catch(() => ({}));
+        return {
+          active: true,
+          role: 'admin',
+          email,
+          displayName: String(ownerPermission.displayName || user.displayName || '').trim()
+        };
       }
 
       const permission = await readRealtimePermission(user.uid);
@@ -2527,7 +3076,8 @@
         return {
           active: true,
           role,
-          email: permission.email || email
+          email: permission.email || email,
+          displayName: String(permission.displayName || user.displayName || '').trim()
         };
       }
 
@@ -2536,7 +3086,8 @@
         return {
           active: false,
           role: 'blocked',
-          email: permission.email || email
+          email: permission.email || email,
+          displayName: String(permission.displayName || user.displayName || '').trim()
         };
       }
 
@@ -2545,6 +3096,7 @@
         active: false,
         role: request.status === 'rejected' ? 'rejected' : 'pending',
         email,
+        displayName: String(request.displayName || user.displayName || '').trim(),
         request
       };
     }
@@ -2631,7 +3183,7 @@
       if (state.currentRole === 'pending') {
         message = '⏳ Yêu cầu sử dụng HSBA đã được ghi nhận. Bạn vẫn có thể xem danh mục công khai trong khi chờ quản trị viên duyệt; sau khi được duyệt chỉ cần tải lại trang.';
       } else if (state.currentRole === 'blocked') {
-        message = '🔒 Tài khoản HSBA hiện đang bị khóa. Vui lòng liên hệ quản trị viên để được mở lại quyền.';
+        message = 'Tài khoản HSBA hiện đang bị khóa. Vui lòng liên hệ quản trị viên để được mở lại quyền.';
       } else if (state.currentRole === 'rejected') {
         message = 'ℹ️ Yêu cầu sử dụng HSBA chưa được duyệt. Đăng nhập lại sẽ tạo yêu cầu xét duyệt mới.';
       }
@@ -2790,8 +3342,9 @@
 
       $('#authGate').classList.add('hidden');
       $('#openLoginBtn').classList.remove('hidden');
-      $('#openLoginBtn').textContent = '🔐 Đăng nhập chỉnh sửa';
+      $('#openLoginBtn').innerHTML = `${uiIcon('log-in')}<span>Đăng nhập chỉnh sửa</span>`;
       $('#authUserBar').classList.add('hidden');
+      updateTopGreeting('');
       hideAuthError();
 
       const googleButton = $('#googleLoginBtn');
@@ -2820,13 +3373,27 @@
       switchView('patients');
     }
 
-    function showLoggedInState(user, role) {
+    function greetingShortName(value) {
+      const displayName = String(value || '').trim().replace(/\s+/g, ' ');
+      if (!displayName) return '';
+      const parts = displayName.split(' ').filter(Boolean);
+      return parts[parts.length - 1] || '';
+    }
+
+    function updateTopGreeting(displayName = '') {
+      const greeting = $('#topGreetingText');
+      if (!greeting) return;
+      const shortName = greetingShortName(displayName);
+      greeting.textContent = shortName ? `Xin chào, ${shortName} 👋` : 'Xin chào 👋';
+    }
+
+    function showLoggedInState(user, role, displayName = '') {
       $('#authGate').classList.add('hidden');
       $('#openLoginBtn').classList.add('hidden');
       $('#authUserBar').classList.remove('hidden');
       document.body.classList.remove('guest-mode');
-      $('#authUserEmail').textContent =
-        `${user.email || user.displayName || 'Đã đăng nhập'} · ${roleLabel(role)}`;
+      updateTopGreeting(displayName || user.displayName || '');
+      $('#authUserEmail').textContent = roleLabel(role);
       hideAuthError();
     }
 
@@ -2911,7 +3478,14 @@
         button.addEventListener('click', () => button.closest('dialog').close());
       });
 
-      $('#bookForm [name="trangThai"]').addEventListener('change', updateDeathPlaceVisibility);
+      $('#confirmActionCancelBtn')?.addEventListener('click', () => closeConfirmActionDialog(false));
+      $('#confirmActionSubmitBtn')?.addEventListener('click', () => closeConfirmActionDialog(true));
+      $('#confirmActionDialog')?.addEventListener('cancel', event => {
+        event.preventDefault();
+        closeConfirmActionDialog(false);
+      });
+
+      $('#bookForm [name="trangThai"]').addEventListener('change', updateBookStatusFields);
       $('#bookForm [name="thungSo"]').addEventListener('input', updateStorageLocationPreview);
       $('#bookForm [name="viTriSo"]').addEventListener('input', updateStorageLocationPreview);
       INVENTORY_FIELDS.forEach(field => {
@@ -3088,6 +3662,8 @@
       const totalBooks = Number(patient['TỔNG SỐ QUYỂN']) || 0;
       if (latestStatus === CONFIG.STATUS.TU_VONG) return 'death';
       if (latestStatus === CONFIG.STATUS.HOI_GIA) return 'returned';
+      if (latestStatus === CONFIG.STATUS.CHUYEN_TRUNG_TAM) return 'transferred';
+      if (latestStatus === CONFIG.STATUS.KHAC) return 'other';
       if (latestStatus === CONFIG.STATUS.HET_QUYEN) return 'finished';
       return totalBooks > 0 ? 'finished' : 'empty';
     }
@@ -3169,10 +3745,10 @@
         : `${state.patients.length} hồ sơ đang hiển thị`;
 
       $('#summary').innerHTML = `
-        <span class="chip">👥 ${patientSummaryLabel}</span>
-        <span class="chip">✓ ${finishedCount} quyển hết quyển</span>
-        <span class="chip">⌂ ${returnCount} quyển hồi gia</span>
-        <span class="chip">🗂️ ${deathCount} quyển tử vong</span>
+        <span class="chip">${uiIcon('users')} ${patientSummaryLabel}</span>
+        <span class="chip">${uiIcon('check')} ${finishedCount} quyển hết quyển</span>
+        <span class="chip">${uiIcon('home')} ${returnCount} quyển hồi gia</span>
+        <span class="chip">${uiIcon('folder')} ${deathCount} quyển tử vong</span>
       `;
 
       if (!state.patients.length) {
@@ -3222,7 +3798,7 @@
                 <div class="patient-info-item"><span class="patient-info-label">Năm sinh</span><span class="patient-info-value">${escapeHtml(patient['NĂM SINH'])}</span></div>
                 <div class="patient-info-item"><span class="patient-info-label">Giới tính</span><span class="patient-info-value">${escapeHtml(patient['GIỚI TÍNH'] || 'Chưa cập nhật')}</span></div>
                 <div class="patient-info-item"><span class="patient-info-label">Số hồ sơ</span><span class="patient-info-value">${escapeHtml(patient['SỐ HỒ SƠ'])}</span></div>
-                <div class="patient-info-item"><span class="patient-info-label">Số quyển lưu</span><span class="patient-info-value">${Number(patient['TỔNG SỐ QUYỂN']) || 0}</span></div>
+                <div class="patient-info-item"><span class="patient-info-label">Số quyển</span><span class="patient-info-value">${Number(patient['TỔNG SỐ QUYỂN']) || 0}</span></div>
               </div>
               <div class="patient-status-row">
                 <span class="badge ${statusClass}">${escapeHtml(displayStatus)}</span>
@@ -3285,18 +3861,18 @@
               <span>Giới tính: <strong>${escapeHtml(patient['GIỚI TÍNH'] || 'Chưa cập nhật')}</strong></span>
             </div>
             <div class="badges">
-              <span class="badge">📚 ${books.length} quyển lưu</span>
+              <span class="badge">${uiIcon('book')} ${books.length} quyển</span>
               ${patient['TRẠNG THÁI MỚI NHẤT'] ? `<span class="badge ${isDeath ? 'death' : 'closed'}">${escapeHtml(patient['TRẠNG THÁI MỚI NHẤT'])}</span>` : ''}
             </div>
           </div>
           <div class="detail-action">
             ${canEdit ? `<div class="detail-action-group">
               ${(state.currentRole === 'admin' || books.length > 0)
-                ? '<button id="editPatientBtn" class="btn secondary-action">✎ Chỉnh sửa thông tin</button>'
+                ? `<button id="editPatientBtn" class="btn secondary-action">${uiIcon('edit')}<span>Chỉnh sửa thông tin</span></button>`
                 : ''}
-              ${canDeleteRecords() ? `<button id="deletePatientBtn" class="btn danger-action" ${state.currentRole === 'editor' && books.length ? 'disabled title="Tài khoản nhập liệu không được xóa hồ sơ đã có quyển"' : ''}>🗑 Xóa hồ sơ</button>` : ''}
-              <button id="openBookBtn" class="btn primary" ${isDeath ? 'disabled title="Hồ sơ tử vong không mở thêm quyển mới"' : ''}>＋ Lưu hồ sơ</button>
-            </div>` : `<span class="readonly-label">👁 ${isPublicView ? 'Xem công khai' : 'Chế độ chỉ xem'}</span>`}
+              ${canDeleteRecords() ? `<button id="deletePatientBtn" class="btn danger-action" ${state.currentRole === 'editor' && books.length ? 'disabled title="Tài khoản nhập liệu không được xóa hồ sơ đã có quyển"' : ''}>${uiIcon('trash')}<span>Xóa hồ sơ</span></button>` : ''}
+              <button id="openBookBtn" class="btn primary" ${isDeath ? 'disabled title="Hồ sơ tử vong không mở thêm quyển mới"' : ''}>${uiIcon('plus')}<span>Lưu hồ sơ</span></button>
+            </div>` : `<span class="readonly-label">${uiIcon('eye')} ${isPublicView ? 'Xem công khai' : 'Chế độ chỉ xem'}</span>`}
           </div>
         </section>
 
@@ -3380,13 +3956,20 @@
 
       // Người xem công khai không được nhận nơi/nguyên nhân tử vong.
       // Với tài khoản đã đăng nhập, tiêu đề được tạo đúng theo trạng thái.
-      if (status === CONFIG.STATUS.TU_VONG && !publicView) {
-        base.push(
-          { key: 'deathPlace', title: 'Nơi tử vong' },
-          { key: 'deathCause', title: 'Nguyên nhân tử vong' }
-        );
+      if (status === CONFIG.STATUS.TU_VONG) {
+        base.push({ key: 'deathDate', title: 'Ngày tử vong' });
+        if (!publicView) {
+          base.push(
+            { key: 'deathPlace', title: 'Nơi tử vong' },
+            { key: 'deathCause', title: 'Nguyên nhân tử vong' }
+          );
+        }
       } else if (status === CONFIG.STATUS.HOI_GIA) {
         base.push({ key: 'returnDate', title: 'Ngày hồi gia' });
+      } else if (status === CONFIG.STATUS.CHUYEN_TRUNG_TAM) {
+        base.push({ key: 'transferDate', title: 'Ngày chuyển trung tâm' });
+      } else if (status === CONFIG.STATUS.KHAC && !publicView) {
+        base.push({ key: 'otherContent', title: 'Nội dung khác' });
       }
 
       base.push(
@@ -3477,6 +4060,24 @@
               ${escapeHtml(formatDateVN(book['NGÀY HỒI GIA']))}
             </td>`;
 
+        case 'deathDate':
+          return `
+            <td class="event-plain-cell" data-label="Ngày tử vong">
+              ${escapeHtml(formatDateVN(book['NGÀY TỬ VONG']))}
+            </td>`;
+
+        case 'transferDate':
+          return `
+            <td class="event-plain-cell" data-label="Ngày chuyển trung tâm">
+              ${escapeHtml(formatDateVN(book['NGÀY CHUYỂN TRUNG TÂM']))}
+            </td>`;
+
+        case 'otherContent':
+          return `
+            <td class="event-plain-cell" data-label="Nội dung khác">
+              ${escapeHtml(book['NỘI DUNG KHÁC'] || 'Chưa cập nhật')}
+            </td>`;
+
         case 'storage':
           return `
             <td data-label="Vị trí lưu">
@@ -3499,7 +4100,7 @@
                 ? `<a class="file-link"
                      href="${escapeAttr(book['FILE ĐÍNH KÈM'])}"
                      target="_blank"
-                     rel="noopener">📎 Mở tệp</a>`
+                     rel="noopener">${uiIcon('paperclip')}<span>Mở tệp</span></a>`
                 : '—'}
             </td>`;
 
@@ -3616,7 +4217,7 @@
               <td>${escapeHtml(item['NĂM SINH'])}</td>
               <td>${escapeHtml(item['GIỚI TÍNH'] || '—')}</td>
               <td><span class="badge closed">Quyển ${escapeHtml(item['QUYỂN SỐ'])}</span></td>
-              <td>${escapeHtml(formatDateVN(item['NGÀY KẾT THÚC']))}</td>
+              <td>${escapeHtml(formatDateVN(publicView ? item['NGÀY KẾT THÚC'] : item['NGÀY TỬ VONG']))}</td>
               <td><strong>${escapeHtml(item['NĂM TỬ VONG'])}</strong></td>`;
             const storageCells = `
               <td>${item['THÙNG SỐ']
@@ -3637,7 +4238,7 @@
               <td class="death-cause-cell">${escapeHtml(item['NGUYÊN NHÂN TỬ VONG'] || '—')}</td>
               ${storageCells}
               <td>${item['FILE ĐÍNH KÈM']
-                ? `<a class="file-link" href="${escapeAttr(item['FILE ĐÍNH KÈM'])}" target="_blank" rel="noopener">📎 Mở file</a>`
+                ? `<a class="file-link" href="${escapeAttr(item['FILE ĐÍNH KÈM'])}" target="_blank" rel="noopener">${uiIcon('paperclip')}<span>Mở file</span></a>`
                 : '—'}</td>
             </tr>`;
           }).join('') : `<tr><td colspan="${publicView ? 10 : 13}">Chưa có hồ sơ tử vong trong năm đã chọn.</td></tr>`}</tbody>
@@ -3656,6 +4257,8 @@
       const finishedBooks = Number(stats.hoSoHetQuyen) || 0;
       const returnedBooks = Number(stats.hoSoHoiGia) || 0;
       const deathBooks = Number(stats.hoSoTuVong) || 0;
+      const transferredBooks = Number(stats.hoSoChuyenTrungTam) || Number(state.storageStats?.transferredBooks) || 0;
+      const otherBooks = Number(stats.hoSoKhac) || Number(state.storageStats?.otherBooks) || 0;
       const scannedBooks = Number(stats.hoSoCoFile) || 0;
       const unscannedBooks = Number(stats.hoSoChuaFile) || 0;
       const scanRate = totalBooks ? Math.round(scannedBooks / totalBooks * 100) : 0;
@@ -3670,13 +4273,13 @@
       const publicView = isPublicSession();
 
       $('#statsGrid').innerHTML = `
-        ${publicView ? '<div class="public-view-note">👁 Đang xem danh mục tra cứu công khai. Đăng nhập để xem tệp, ghi chú và thông tin nghiệp vụ đầy đủ.</div>' : ''}
+        ${publicView ? `<div class="public-view-note">${uiIcon('eye')}<span>Đang xem danh mục tra cứu công khai. Đăng nhập để xem tệp, ghi chú và thông tin nghiệp vụ đầy đủ.</span></div>` : ''}
         <div class="dashboard-kpi-grid">
-          ${dashboardKpiHtml({icon:'👥',label:'Tổng hồ sơ',value:totalPatients,note:'Số đối tượng đã tạo hồ sơ lưu trữ',color:'#0d7f86',bg:'#e5f8f4',soft:'rgba(54,194,180,.13)'})}
-          ${dashboardKpiHtml({icon:'📚',label:'Tổng quyển lưu',value:totalBooks,note:`Bình quân ${averageBooks} quyển/hồ sơ`,color:'#5b63b7',bg:'#eeeffd',soft:'rgba(91,99,183,.11)'})}
-          ${dashboardKpiHtml({icon:'✓',label:'Hết quyển',value:finishedBooks,note:`${rate(finishedBooks)}% tổng số quyển`,color:'#1c9664',bg:'#e6f7ee',soft:'rgba(46,182,125,.12)'})}
-          ${dashboardKpiHtml({icon:'⌂',label:'Đối tượng hồi gia',value:returnedBooks,note:`${rate(returnedBooks)}% tổng số quyển`,color:'#c47b13',bg:'#fff3db',soft:'rgba(249,176,65,.13)'})}
-          ${dashboardKpiHtml({icon:'📦',label:'Tổng thùng lưu trữ',value:totalBoxes,note:`${structuredBooks} quyển đã xác định vị trí`,color:'#8a5b22',bg:'#fff4df',soft:'rgba(202,139,54,.13)'})}
+          ${dashboardKpiHtml({icon:'users',label:'Tổng hồ sơ',value:totalPatients,note:'Số đối tượng đã tạo hồ sơ lưu trữ',color:'#D95F57',bg:'#FFF0ED',soft:'rgba(242,128,118,.16)'})}
+          ${dashboardKpiHtml({icon:'book',label:'Tổng quyển lưu',value:totalBooks,note:`Bình quân ${averageBooks} quyển/hồ sơ`,color:'#A66F48',bg:'#FFF6EA',soft:'rgba(251,193,147,.18)'})}
+          ${dashboardKpiHtml({icon:'check',label:'Hết quyển',value:finishedBooks,note:`${rate(finishedBooks)}% tổng số quyển`,color:'#C94F49',bg:'#FFECE9',soft:'rgba(255,182,175,.19)'})}
+          ${dashboardKpiHtml({icon:'home',label:'Đối tượng hồi gia',value:returnedBooks,note:`${rate(returnedBooks)}% tổng số quyển`,color:'#388D7B',bg:'#EEF9F6',soft:'rgba(78,176,155,.16)'})}
+          ${dashboardKpiHtml({icon:'box',label:'Tổng thùng lưu trữ',value:totalBoxes,note:`${structuredBooks} quyển đã xác định vị trí`,color:'#A86B3C',bg:'#FFF2E5',soft:'rgba(250,224,199,.24)'})}
         </div>
         <div class="dashboard-panels">
           <article class="dashboard-panel">
@@ -3686,27 +4289,29 @@
             </div>
           </article>
           <article class="dashboard-panel">
-            <div class="dashboard-panel-head"><div><h3 class="dashboard-panel-title">Cơ cấu trạng thái lưu trữ</h3><p class="dashboard-panel-subtitle">Hết quyển, hồi gia và tử vong</p></div><span class="dashboard-panel-badge">${totalBooks} quyển</span></div>
+            <div class="dashboard-panel-head"><div><h3 class="dashboard-panel-title">Cơ cấu trạng thái lưu trữ</h3><p class="dashboard-panel-subtitle">Theo trạng thái kết thúc của từng quyển hồ sơ</p></div><span class="dashboard-panel-badge">${totalBooks} quyển</span></div>
             <div class="status-bars">
               ${statusBarHtml('Hết quyển', finishedBooks, rate(finishedBooks), 'archive')}
               ${statusBarHtml('Đối tượng hồi gia', returnedBooks, rate(returnedBooks), 'open')}
               ${statusBarHtml('Đối tượng tử vong', deathBooks, rate(deathBooks), 'death')}
+              ${statusBarHtml('Đối tượng chuyển trung tâm', transferredBooks, rate(transferredBooks), 'archive')}
+              ${statusBarHtml('Khác', otherBooks, rate(otherBooks), 'archive')}
             </div>
           </article>
           <article class="dashboard-panel">
             <div class="dashboard-panel-head"><div><h3 class="dashboard-panel-title">Chỉ số quản lý</h3><p class="dashboard-panel-subtitle">Các chỉ số phục vụ kiểm tra hồ sơ lưu trữ</p></div></div>
             <div class="management-metrics">
-              ${managementMetricHtml('📘','Bình quân quyển',`${averageBooks}`,'Mỗi hồ sơ','#5b63b7','#eeeffd')}
-              ${managementMetricHtml('●','Hồ sơ tử vong',`${deathBooks}`,'Quyển hồ sơ','#b94747','#fdebec')}
-              ${managementMetricHtml('📎','File còn thiếu',`${unscannedBooks}`,'Quyển cần bổ sung','#d36a3d','#fff0e8')}
+              ${managementMetricHtml('book','Bình quân quyển',`${averageBooks}`,'Mỗi hồ sơ','#74413E','#FFF7F5')}
+              ${managementMetricHtml('folder','Hồ sơ tử vong',`${deathBooks}`,'Quyển hồ sơ','#b94747','#fdebec')}
+              ${managementMetricHtml('paperclip','File còn thiếu',`${unscannedBooks}`,'Quyển cần bổ sung','#d36a3d','#fff0e8')}
             </div>
           </article>
         </div>
         ${storageInventoryPanelHtml(storageStats)}
         ${documentInventoryStatsPanelHtml(inventoryStats)}
         <div class="dashboard-alerts">
-          <article class="dashboard-alert ${unscannedBooks ? 'warning' : 'success'}"><div class="dashboard-alert-icon">${unscannedBooks ? '⚠️' : '✓'}</div><div><strong>${unscannedBooks ? `${unscannedBooks} quyển chưa có file` : 'Đã hoàn tất file số hóa'}</strong><p>${unscannedBooks ? 'Cần tiếp tục bổ sung file scan hoặc hình ảnh.' : 'Tất cả quyển hiện có đều đã đính kèm file.'}</p></div></article>
-          <article class="dashboard-alert ${deathBooks ? '' : 'success'}"><div class="dashboard-alert-icon">${deathBooks ? '●' : '✓'}</div><div><strong>${deathBooks ? `${deathBooks} quyển thuộc hồ sơ tử vong` : 'Chưa có hồ sơ tử vong'}</strong><p>Danh mục tử vong có thể lọc theo năm và nơi tử vong.</p></div></article>
+          <article class="dashboard-alert ${unscannedBooks ? 'warning' : 'success'}"><div class="dashboard-alert-icon">${uiIcon(unscannedBooks ? 'warning' : 'check')}</div><div><strong>${unscannedBooks ? `${unscannedBooks} quyển chưa có file` : 'Đã hoàn tất file số hóa'}</strong><p>${unscannedBooks ? 'Cần tiếp tục bổ sung file scan hoặc hình ảnh.' : 'Tất cả quyển hiện có đều đã đính kèm file.'}</p></div></article>
+          <article class="dashboard-alert ${deathBooks ? '' : 'success'}"><div class="dashboard-alert-icon">${uiIcon(deathBooks ? 'folder' : 'check')}</div><div><strong>${deathBooks ? `${deathBooks} quyển thuộc hồ sơ tử vong` : 'Chưa có hồ sơ tử vong'}</strong><p>Danh mục tử vong có thể lọc theo năm và nơi tử vong.</p></div></article>
         </div>`;
 
       const storageSearchInput = $('#storageInventorySearch');
@@ -3832,7 +4437,7 @@
             <strong class="dashboard-kpi-value">${Number(value) || 0}</strong>
             <p class="dashboard-kpi-note">${escapeHtml(note)}</p>
           </div>
-          <div class="dashboard-kpi-icon">${icon}</div>
+          <div class="dashboard-kpi-icon">${uiIcon(icon, 'dashboard-kpi-svg')}</div>
         </article>
       `;
     }
@@ -3870,7 +4475,7 @@
               --metric-color:${color};
               --metric-bg:${background};
             ">
-            ${icon}
+            ${uiIcon(icon, 'management-metric-svg')}
           </div>
           <div>
             <div class="management-metric-label">${escapeHtml(label)}</div>
@@ -3923,27 +4528,44 @@
       $('#patientDialog').showModal();
     }
 
-    function updateDeathPlaceVisibility() {
+    function updateBookStatusFields() {
       const form = $('#bookForm');
       const status = form.elements.trangThai.value;
       const isDeath = status === CONFIG.STATUS.TU_VONG;
       const isReturned = status === CONFIG.STATUS.HOI_GIA;
+      const isTransferred = status === CONFIG.STATUS.CHUYEN_TRUNG_TAM;
+      const isOther = status === CONFIG.STATUS.KHAC;
 
+      $('#deathDateField').classList.toggle('hidden', !isDeath);
       $('#deathPlaceField').classList.toggle('hidden', !isDeath);
       $('#deathCauseField').classList.toggle('hidden', !isDeath);
       $('#returnDateField').classList.toggle('hidden', !isReturned);
+      $('#transferDateField').classList.toggle('hidden', !isTransferred);
+      $('#otherContentField').classList.toggle('hidden', !isOther);
 
       form.elements.noiTuVong.required = isDeath;
       form.elements.nguyenNhanTuVong.required = isDeath;
+      form.elements.ngayTuVong.required = isDeath;
       form.elements.ngayHoiGia.required = isReturned;
+      form.elements.ngayChuyenTrungTam.required = isTransferred;
+      form.elements.noiDungKhac.required = isOther;
 
       if (!isDeath) {
         form.elements.noiTuVong.value = '';
         form.elements.nguyenNhanTuVong.value = '';
+        form.elements.ngayTuVong.value = '';
       }
 
       if (!isReturned) {
         form.elements.ngayHoiGia.value = '';
+      }
+
+      if (!isTransferred) {
+        form.elements.ngayChuyenTrungTam.value = '';
+      }
+
+      if (!isOther) {
+        form.elements.noiDungKhac.value = '';
       }
     }
 
@@ -3993,11 +4615,14 @@
       form.elements.ngayKetThuc.value = today;
       form.elements.nguyenNhanTuVong.value = '';
       form.elements.ngayHoiGia.value = '';
+      form.elements.ngayTuVong.value = '';
+      form.elements.ngayChuyenTrungTam.value = '';
+      form.elements.noiDungKhac.value = '';
       $('#bookDialogTitle').textContent = 'Lưu hồ sơ bệnh án';
       $('#bookSubmitBtn').textContent = 'Lưu hồ sơ';
       $('#bookNumberHelp').textContent = 'Hệ thống gợi ý số quyển tiếp theo; có thể điều chỉnh khi nhập hồ sơ lưu trữ cũ.';
       $('#existingFileNotice').classList.add('hidden');
-      updateDeathPlaceVisibility();
+      updateBookStatusFields();
       updateStorageLocationPreview();
       updateDocumentInventoryPreview();
       $('#bookDialog').showModal();
@@ -4021,6 +4646,9 @@
       form.elements.noiTuVong.value = book['NƠI TỬ VONG'] || '';
       form.elements.nguyenNhanTuVong.value = book['NGUYÊN NHÂN TỬ VONG'] || '';
       form.elements.ngayHoiGia.value = book['NGÀY HỒI GIA'] || '';
+      form.elements.ngayTuVong.value = book['NGÀY TỬ VONG'] || '';
+      form.elements.ngayChuyenTrungTam.value = book['NGÀY CHUYỂN TRUNG TÂM'] || '';
+      form.elements.noiDungKhac.value = book['NỘI DUNG KHÁC'] || '';
       const storage = parseStorageLocation(book);
       form.elements.thungSo.value = storage.thungSo || '';
       form.elements.viTriSo.value = storage.viTriSo || '';
@@ -4040,7 +4668,7 @@
       } else {
         notice.classList.add('hidden');
       }
-      updateDeathPlaceVisibility();
+      updateBookStatusFields();
       updateStorageLocationPreview();
       updateDocumentInventoryPreview();
       $('#bookDialog').showModal();
@@ -4058,6 +4686,13 @@
           true
         );
         return;
+      }
+
+      const warning = $('#deletePatientWarning');
+      if (warning) {
+        warning.innerHTML = state.currentRole === 'admin'
+          ? '<strong>Lưu ý:</strong> Quản trị được xóa toàn bộ hồ sơ, kể cả hồ sơ đã có quyển. Dữ liệu liên quan sẽ được xử lý theo quy trình xóa của hệ thống.'
+          : '<strong>Lưu ý:</strong> Tài khoản nhập liệu chỉ được xóa hồ sơ chưa có quyển. Hồ sơ đã có quyển chỉ được chỉnh sửa để bảo đảm an toàn dữ liệu.';
       }
 
       const form = $('#deletePatientForm');
@@ -4322,29 +4957,52 @@
         return;
       }
 
-      const [requestSnapshot, permissionSnapshot] = await Promise.all([
+      const readRoots = () => Promise.allSettled([
         get(ref(firebaseDatabase, CONFIG.ACCESS_REQUEST_PATH)),
         get(ref(firebaseDatabase, 'phanQuyen'))
       ]);
 
-      const requestRoot = requestSnapshot.val() || {};
-      const permissionRoot = permissionSnapshot.val() || {};
+      let results = await readRoots();
 
-      state.accountAdmin.requests = Object.entries(requestRoot)
-        .map(([uid, value]) => ({ uid, ...(value || {}) }))
-        .sort((a, b) => {
-          const ap = a.status === 'pending' ? 0 : 1;
-          const bp = b.status === 'pending' ? 0 : 1;
-          if (ap !== bp) return ap - bp;
-          return (Number(b.requestedAt) || 0) - (Number(a.requestedAt) || 0);
-        });
+      // Một số phiên đăng nhập lâu ngày có thể giữ token cũ. Làm mới token
+      // đúng một lần trước khi kết luận cấu hình quyền truy cập bị lệch.
+      if (results.some(item => item.status === 'rejected') && firebaseAuth.currentUser) {
+        await firebaseAuth.currentUser.getIdToken(true).catch(() => {});
+        results = await readRoots();
+      }
 
-      state.accountAdmin.permissions = Object.entries(permissionRoot)
-        .map(([uid, value]) => ({ uid, ...(value || {}) }))
-        .sort((a, b) => {
-          if ((a.active === true) !== (b.active === true)) return a.active === true ? -1 : 1;
-          return String(a.email || '').localeCompare(String(b.email || ''), 'vi');
-        });
+      const [requestResult, permissionResult] = results;
+      state.accountAdmin.errors = { requests: '', permissions: '' };
+
+      if (requestResult.status === 'fulfilled') {
+        const requestRoot = requestResult.value.val() || {};
+        state.accountAdmin.requests = Object.entries(requestRoot)
+          .map(([uid, value]) => ({ uid, ...(value || {}) }))
+          .sort((a, b) => {
+            const ap = a.status === 'pending' ? 0 : 1;
+            const bp = b.status === 'pending' ? 0 : 1;
+            if (ap !== bp) return ap - bp;
+            return (Number(b.requestedAt) || 0) - (Number(a.requestedAt) || 0);
+          });
+      } else {
+        state.accountAdmin.requests = [];
+        state.accountAdmin.errors.requests = 'Không tải được danh sách yêu cầu cấp quyền.';
+        console.warn('Không tải được yêu cầu cấp quyền HSBA:', requestResult.reason);
+      }
+
+      if (permissionResult.status === 'fulfilled') {
+        const permissionRoot = permissionResult.value.val() || {};
+        state.accountAdmin.permissions = Object.entries(permissionRoot)
+          .map(([uid, value]) => ({ uid, ...(value || {}) }))
+          .sort((a, b) => {
+            if ((a.active === true) !== (b.active === true)) return a.active === true ? -1 : 1;
+            return String(a.email || '').localeCompare(String(b.email || ''), 'vi');
+          });
+      } else {
+        state.accountAdmin.permissions = [];
+        state.accountAdmin.errors.permissions = 'Không tải được danh sách tài khoản đã phân quyền.';
+        console.warn('Không tải được phân quyền HSBA:', permissionResult.reason);
+      }
 
       state.accountAdmin.loaded = true;
       renderAccountAdministration();
@@ -4354,37 +5012,55 @@
       if (state.currentRole !== 'admin') return;
 
       const pending = state.accountAdmin.requests.filter(item => item.status === 'pending');
-      const active = state.accountAdmin.permissions.filter(item => item.active === true);
+      const unapproved = state.accountAdmin.requests.filter(item => item.status !== 'approved');
+      const requestError = String(state.accountAdmin.errors?.requests || '');
+      const permissionError = String(state.accountAdmin.errors?.permissions || '');
 
-      $('#pendingAccountCount').textContent = String(pending.length);
-      $('#activeAccountCount').textContent = String(active.length);
+      $('#pendingAccountCount').textContent = requestError ? '—' : String(unapproved.length);
+      $('#activeAccountCount').textContent = permissionError ? '—' : String(state.accountAdmin.permissions.length);
       $('#pendingAccountBadge').textContent = String(pending.length);
-      $('#pendingAccountBadge').classList.toggle('hidden', pending.length === 0);
+      $('#pendingAccountBadge').classList.toggle('hidden', Boolean(requestError) || pending.length === 0);
 
-      $('#accountRequestsList').innerHTML = pending.length
-        ? pending.map(request => `
+      $('#accountRequestsList').innerHTML = requestError
+        ? `<div class="account-admin-read-error">
+             <span class="account-admin-read-error-icon">!</span>
+             <div><strong>Chưa thể tải yêu cầu cấp quyền</strong><p>Quyền truy cập dữ liệu quản trị chưa được đồng bộ. Vui lòng cập nhật cấu hình quyền truy cập rồi bấm “Làm mới”.</p></div>
+           </div>`
+        : unapproved.length
+        ? unapproved.map(request => {
+            const isPending = request.status === 'pending';
+            const statusText = isPending ? 'Đang chờ duyệt' : 'Đã từ chối';
+            return `
             <article class="account-admin-card" data-request-uid="${escapeAttr(request.uid)}">
               <div class="account-admin-main">
                 <div class="account-avatar">${escapeHtml((request.displayName || request.email || '?').trim().charAt(0).toUpperCase() || '?')}</div>
                 <div class="account-admin-info">
                   <strong>${escapeHtml(request.displayName || 'Chưa có tên hiển thị')}</strong>
                   <span>${escapeHtml(request.email || '')}</span>
-                  <small>Gửi yêu cầu: ${escapeHtml(accountTimeLabel(request.requestedAt))}</small>
+                  <small>${escapeHtml(statusText)} · Gửi yêu cầu: ${escapeHtml(accountTimeLabel(request.requestedAt))}</small>
                 </div>
               </div>
               <div class="account-admin-actions">
                 <select class="account-role-select" aria-label="Vai trò cấp cho tài khoản">
                   ${accountRoleOptions('editor')}
                 </select>
-                <button class="btn primary small" type="button" data-account-action="approve">Duyệt</button>
-                <button class="btn small" type="button" data-account-action="reject">Từ chối</button>
+                <button class="btn primary small" type="button" data-account-action="approve">${isPending ? 'Duyệt' : 'Duyệt lại'}</button>
+                ${isPending ? '<button class="btn small" type="button" data-account-action="reject">Từ chối</button>' : ''}
+                <button class="btn small danger-outline" type="button" data-account-action="delete-request" title="Xóa yêu cầu cấp quyền">Xóa yêu cầu</button>
               </div>
-            </article>`).join('')
-        : '<div class="account-admin-empty">Không có yêu cầu nào đang chờ duyệt.</div>';
+            </article>`;
+          }).join('')
+        : '<div class="account-admin-empty">Không có tài khoản nào đang chờ duyệt hoặc đã bị từ chối.</div>';
 
-      $('#accountPermissionsList').innerHTML = state.accountAdmin.permissions.length
+      $('#accountPermissionsList').innerHTML = permissionError
+        ? `<div class="account-admin-read-error">
+             <span class="account-admin-read-error-icon">!</span>
+             <div><strong>Chưa thể tải danh sách tài khoản</strong><p>Quyền truy cập dữ liệu quản trị chưa được đồng bộ. Vui lòng cập nhật cấu hình quyền truy cập rồi bấm “Làm mới”.</p></div>
+           </div>`
+        : state.accountAdmin.permissions.length
         ? state.accountAdmin.permissions.map(account => {
-            const isCurrentAdmin = account.uid === firebaseAuth.currentUser?.uid;
+            const isCurrentAccount = account.uid === firebaseAuth.currentUser?.uid;
+            const accountNote = isCurrentAccount ? ' · Tài khoản đang đăng nhập' : '';
             return `
               <article class="account-admin-card" data-permission-uid="${escapeAttr(account.uid)}">
                 <div class="account-admin-main">
@@ -4392,17 +5068,27 @@
                   <div class="account-admin-info">
                     <strong>${escapeHtml(account.displayName || account.email || 'Tài khoản')}</strong>
                     <span>${escapeHtml(account.email || '')}</span>
-                    <small>${account.active === true ? 'Đang hoạt động' : 'Đã khóa'} · ${escapeHtml(roleLabel(account.role))}</small>
+                    <small>${account.active === true ? 'Đang hoạt động' : 'Đã khóa'} · ${escapeHtml(roleLabel(account.role))}${escapeHtml(accountNote)}</small>
                   </div>
                 </div>
                 <div class="account-admin-actions">
-                  <select class="account-role-select" ${isCurrentAdmin ? 'disabled title="Không tự đổi vai trò tài khoản quản trị đang đăng nhập"' : ''}>
+                  <input
+                    class="account-display-name-input"
+                    type="text"
+                    maxlength="150"
+                    autocomplete="off"
+                    aria-label="Tên hiển thị tài khoản ${escapeAttr(account.email || '')}"
+                    placeholder="Tên hiển thị"
+                    value="${escapeAttr(account.displayName || '')}"
+                  >
+                  <select class="account-role-select" aria-label="Vai trò tài khoản ${escapeAttr(account.email || '')}">
                     ${accountRoleOptions(String(account.role || 'editor'))}
                   </select>
-                  <button class="btn small" type="button" data-account-action="save-role" ${isCurrentAdmin ? 'disabled' : ''}>Lưu quyền</button>
-                  <button class="btn small ${account.active === true ? 'danger-outline' : 'primary'}" type="button" data-account-action="toggle-active" ${isCurrentAdmin ? 'disabled title="Không tự khóa tài khoản quản trị đang đăng nhập"' : ''}>
+                  <button class="btn small" type="button" data-account-action="save-role">Lưu quyền</button>
+                  <button class="btn small ${account.active === true ? 'danger-outline' : 'primary'}" type="button" data-account-action="toggle-active">
                     ${account.active === true ? 'Khóa' : 'Mở khóa'}
                   </button>
+                  <button class="btn small danger-outline" type="button" data-account-action="delete-account" title="Xóa tài khoản khỏi ứng dụng">Xóa tài khoản</button>
                 </div>
               </article>`;
           }).join('')
@@ -4414,7 +5100,9 @@
       if (!['admin', 'editor', 'viewer'].includes(role)) throw new Error('Vai trò không hợp lệ.');
 
       const request = state.accountAdmin.requests.find(item => item.uid === uid);
-      if (!request || request.status !== 'pending') throw new Error('Yêu cầu không còn ở trạng thái chờ duyệt.');
+      if (!request || !['pending', 'rejected'].includes(String(request.status || ''))) {
+        throw new Error('Yêu cầu không còn ở trạng thái có thể duyệt.');
+      }
 
       const existing = state.accountAdmin.permissions.find(item => item.uid === uid) || {};
       const now = Date.now();
@@ -4472,26 +5160,199 @@
       showToast(`Đã từ chối yêu cầu của ${request.email || 'tài khoản'}.`);
     }
 
+    const confirmActionState = {
+      resolver: null,
+      resolve(value) {
+        if (typeof this.resolver === 'function') {
+          const fn = this.resolver;
+          this.resolver = null;
+          fn(Boolean(value));
+        }
+      }
+    };
+
+    function closeConfirmActionDialog(result) {
+      const dialog = $('#confirmActionDialog');
+      if (dialog?.open) dialog.close();
+      confirmActionState.resolve(result);
+    }
+
+    function showConfirmActionDialog(options = {}) {
+      const dialog = $('#confirmActionDialog');
+      if (!dialog) return Promise.resolve(true);
+
+      const {
+        chip = 'Xác nhận thao tác',
+        title = 'Xác nhận thao tác',
+        subtitle = 'Vui lòng kiểm tra thông tin trước khi tiếp tục.',
+        message = '',
+        detailLines = [],
+        confirmText = 'Xác nhận',
+        cancelText = 'Quay lại',
+        tone = 'danger',
+        icon = '!'
+      } = options;
+
+      $('#confirmActionChip').textContent = chip;
+      $('#confirmActionTitle').textContent = title;
+      $('#confirmActionSubtitle').textContent = subtitle;
+      $('#confirmActionMessage').textContent = message;
+      $('#confirmActionCancelBtn').textContent = cancelText;
+      $('#confirmActionSubmitBtn').textContent = confirmText;
+      $('#confirmActionIcon').textContent = icon;
+
+      const detailEl = $('#confirmActionDetail');
+      const lines = Array.isArray(detailLines)
+        ? detailLines.filter(Boolean)
+        : (String(detailLines || '').trim() ? [String(detailLines || '').trim()] : []);
+      detailEl.innerHTML = lines.map(line => `<div>${escapeHtml(line)}</div>`).join('');
+      detailEl.classList.toggle('hidden', lines.length === 0);
+
+      const submitBtn = $('#confirmActionSubmitBtn');
+      submitBtn.classList.remove('confirm-danger-btn', 'confirm-primary-btn');
+      submitBtn.classList.add(tone === 'primary' ? 'confirm-primary-btn' : 'confirm-danger-btn');
+
+      // Nếu một xác nhận cũ còn treo, đóng an toàn trước khi mở xác nhận mới.
+      if (typeof confirmActionState.resolver === 'function') {
+        confirmActionState.resolve(false);
+      }
+
+      return new Promise(resolve => {
+        confirmActionState.resolver = resolve;
+        if (dialog.open) dialog.close();
+        dialog.showModal();
+      });
+    }
+
     async function updateHsbaPermission(uid, patch) {
       if (state.currentRole !== 'admin') throw new Error('Chỉ quản trị viên mới được thay đổi quyền.');
       const account = state.accountAdmin.permissions.find(item => item.uid === uid);
       if (!account) throw new Error('Không tìm thấy tài khoản cần cập nhật.');
-      if (uid === firebaseAuth.currentUser?.uid) throw new Error('Không tự thay đổi hoặc khóa tài khoản quản trị đang đăng nhập.');
 
       const nextRole = String(patch.role || account.role || '').trim().toLowerCase();
       if (!['admin', 'editor', 'viewer'].includes(nextRole)) throw new Error('Vai trò không hợp lệ.');
 
+      const hasDisplayNamePatch = Object.prototype.hasOwnProperty.call(patch, 'displayName');
+      const nextDisplayName = hasDisplayNamePatch
+        ? formatVietnamesePersonName(patch.displayName)
+        : String(account.displayName || '').trim();
+      if (nextDisplayName.length > 150) throw new Error('Tên hiển thị không được vượt quá 150 ký tự.');
+
+      const nextActive = patch.active === undefined
+        ? account.active === true
+        : patch.active === true;
+      const isCurrentAccount = uid === firebaseAuth.currentUser?.uid;
+
+      if (isCurrentAccount && (nextRole !== 'admin' || nextActive !== true)) {
+        const confirmed = await showConfirmActionDialog({
+          chip: 'Thay đổi quyền sử dụng',
+          title: 'Bạn đang thay đổi quyền của chính mình',
+          subtitle: 'Thay đổi sẽ được áp dụng ngay sau khi lưu.',
+          message: 'Nếu tiếp tục, quyền sử dụng hiện tại của tài khoản đang đăng nhập sẽ được cập nhật theo lựa chọn mới.',
+          detailLines: [
+            'Bạn có thể không còn quyền quản trị sau khi lưu thay đổi.',
+            'Hệ thống sẽ tự tải lại để áp dụng quyền mới.'
+          ],
+          confirmText: 'Lưu thay đổi',
+          cancelText: 'Quay lại',
+          tone: 'primary',
+          icon: '✓'
+        });
+        if (!confirmed) return false;
+      }
+
       await update(ref(firebaseDatabase, `phanQuyen/${uid}`), {
+        displayName: nextDisplayName,
         role: nextRole,
-        active: patch.active === undefined ? account.active === true : patch.active === true,
+        active: nextActive,
         updatedAt: Date.now(),
         approvedByUid: firebaseAuth.currentUser?.uid || '',
         approvedByEmail: firebaseAuth.currentUser?.email || ''
       });
 
+      if (isCurrentAccount) {
+        showToast('Đã cập nhật thông tin tài khoản đang đăng nhập. Hệ thống sẽ tải lại để áp dụng thay đổi.');
+        setTimeout(() => window.location.reload(), 500);
+        return true;
+      }
+
       state.accountAdmin.loaded = false;
       await refreshAccountAdministration(true);
-      showToast('Đã cập nhật quyền tài khoản.');
+      showToast('Đã cập nhật thông tin tài khoản.');
+      return true;
+    }
+
+    async function deleteHsbaAccessRequest(uid) {
+      if (state.currentRole !== 'admin') throw new Error('Chỉ quản trị viên mới được xóa yêu cầu tài khoản.');
+      const request = state.accountAdmin.requests.find(item => item.uid === uid);
+      if (!request) throw new Error('Không tìm thấy yêu cầu cần xóa.');
+
+      const confirmed = await showConfirmActionDialog({
+        chip: 'Quản trị tài khoản',
+        title: 'Xóa yêu cầu cấp quyền?',
+        subtitle: 'Yêu cầu sẽ được gỡ khỏi danh sách chờ xử lý.',
+        message: `Bạn có chắc muốn xóa yêu cầu cấp quyền của ${request.email || 'tài khoản này'}?`,
+        detailLines: [
+          'Yêu cầu hiện tại sẽ được xóa khỏi danh sách quản trị.',
+          'Nếu cần sử dụng lại, người dùng có thể đăng nhập để gửi yêu cầu cấp quyền mới.'
+        ],
+        confirmText: 'Xóa yêu cầu',
+        cancelText: 'Quay lại',
+        tone: 'danger',
+        icon: '×'
+      });
+      if (!confirmed) return false;
+
+      await remove(ref(firebaseDatabase, `${CONFIG.ACCESS_REQUEST_PATH}/${uid}`));
+      state.accountAdmin.loaded = false;
+      await refreshAccountAdministration(true);
+      showToast(`Đã xóa yêu cầu của ${request.email || 'tài khoản'}.`);
+      return true;
+    }
+
+    async function deleteHsbaAccount(uid) {
+      if (state.currentRole !== 'admin') throw new Error('Chỉ quản trị viên mới được xóa tài khoản HSBA.');
+      const account = state.accountAdmin.permissions.find(item => item.uid === uid);
+      if (!account) throw new Error('Không tìm thấy tài khoản cần xóa.');
+
+      const isCurrentAccount = uid === firebaseAuth.currentUser?.uid;
+      const detailLines = [
+        'Tài khoản sẽ không còn quyền sử dụng ứng dụng Hồ sơ bệnh án lưu trữ.',
+        'Các hồ sơ và dữ liệu đã nhập trước đây vẫn được giữ nguyên.',
+        'Nếu cần sử dụng lại, người dùng phải đăng nhập và gửi yêu cầu cấp quyền mới.'
+      ];
+      if (isCurrentAccount) {
+        detailLines.unshift('Đây là tài khoản bạn đang sử dụng. Quyền quản trị sẽ kết thúc ngay sau khi xác nhận.');
+      }
+
+      const confirmed = await showConfirmActionDialog({
+        chip: 'Quản trị tài khoản',
+        title: 'Xóa tài khoản khỏi hệ thống?',
+        subtitle: 'Thao tác chỉ loại bỏ quyền sử dụng trong Hồ sơ bệnh án lưu trữ.',
+        message: `Bạn có chắc muốn xóa tài khoản ${account.email || 'này'} khỏi hệ thống?`,
+        detailLines,
+        confirmText: 'Xóa tài khoản',
+        cancelText: 'Quay lại',
+        tone: 'danger',
+        icon: '×'
+      });
+      if (!confirmed) return false;
+
+      await update(ref(firebaseDatabase), {
+        [`phanQuyen/${uid}`]: null,
+        [`${CONFIG.ACCESS_REQUEST_PATH}/${uid}`]: null
+      });
+
+      if (isCurrentAccount) {
+        showToast('Đã xóa quyền HSBA của tài khoản đang đăng nhập. Hệ thống sẽ tải lại.');
+        setTimeout(() => window.location.reload(), 500);
+        return true;
+      }
+
+      state.accountAdmin.loaded = false;
+      await refreshAccountAdministration(true);
+      showToast(`Đã xóa tài khoản HSBA của ${account.email || 'người dùng'}.`);
+      return true;
     }
 
     async function handleAccountRequestAction(event) {
@@ -4509,6 +5370,8 @@
             await approveHsbaAccess(uid, role);
           } else if (button.dataset.accountAction === 'reject') {
             await rejectHsbaAccess(uid);
+          } else if (button.dataset.accountAction === 'delete-request') {
+            await deleteHsbaAccessRequest(uid);
           }
         });
       } catch (error) {
@@ -4532,10 +5395,13 @@
       try {
         await withLoading(async () => {
           const role = card.querySelector('.account-role-select')?.value || account.role || 'editor';
+          const displayName = card.querySelector('.account-display-name-input')?.value ?? account.displayName ?? '';
           if (button.dataset.accountAction === 'save-role') {
-            await updateHsbaPermission(uid, { role });
+            await updateHsbaPermission(uid, { role, displayName });
           } else if (button.dataset.accountAction === 'toggle-active') {
             await updateHsbaPermission(uid, { role, active: account.active !== true });
+          } else if (button.dataset.accountAction === 'delete-account') {
+            await deleteHsbaAccount(uid);
           }
         });
       } catch (error) {
@@ -4694,13 +5560,25 @@
         normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
         CONFIG.STATUS.HET_QUYEN
       ).length;
+      const transferredCount = bookRows.filter(item =>
+        normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
+        CONFIG.STATUS.CHUYEN_TRUNG_TAM
+      ).length;
+      const otherCount = bookRows.filter(item =>
+        normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
+        CONFIG.STATUS.KHAC
+      ).length;
 
       $('#reportPreviewSummary').innerHTML = `
-        <span class="report-preview-chip">Hồ sơ <strong>${patients.length}</strong></span>
-        <span class="report-preview-chip">Dòng quyển <strong>${bookRows.length}</strong></span>
-        <span class="report-preview-chip">Hết quyển <strong>${finishedCount}</strong></span>
-        <span class="report-preview-chip">Hồi gia <strong>${returnedCount}</strong></span>
-        <span class="report-preview-chip">Tử vong <strong>${deathCount}</strong></span>
+        <div class="report-preview-statline" role="status">
+          <span><strong>${patients.length}</strong> hồ sơ</span>
+          <span><strong>${bookRows.length}</strong> dòng quyển</span>
+          <span>Hết quyển <strong>${finishedCount}</strong></span>
+          <span>Hồi gia <strong>${returnedCount}</strong></span>
+          <span>Tử vong <strong>${deathCount}</strong></span>
+          <span>Chuyển trung tâm <strong>${transferredCount}</strong></span>
+          <span>Khác <strong>${otherCount}</strong></span>
+        </div>
       `;
 
       $('#reportPreviewScope').textContent =
@@ -4733,6 +5611,21 @@
             <td class="center">${
               book && status === CONFIG.STATUS.HOI_GIA
                 ? escapeHtml(formatDateVN(book['NGÀY HỒI GIA']))
+                : '—'
+            }</td>
+            <td class="center">${
+              book && status === CONFIG.STATUS.TU_VONG
+                ? escapeHtml(formatDateVN(book['NGÀY TỬ VONG']))
+                : '—'
+            }</td>
+            <td class="center">${
+              book && status === CONFIG.STATUS.CHUYEN_TRUNG_TAM
+                ? escapeHtml(formatDateVN(book['NGÀY CHUYỂN TRUNG TÂM']))
+                : '—'
+            }</td>
+            <td>${
+              book && status === CONFIG.STATUS.KHAC
+                ? escapeHtml(book['NỘI DUNG KHÁC'] || '—')
                 : '—'
             }</td>
             <td>${
@@ -4768,7 +5661,7 @@
       if (!requireEditPermission()) return;
 
       const button = $('#exportExcelBtn');
-      const originalText = button.textContent;
+      const originalHtml = button.innerHTML;
 
       button.disabled = true;
       button.textContent = 'Đang chuẩn bị báo cáo...';
@@ -4781,7 +5674,7 @@
         });
       } finally {
         button.disabled = false;
-        button.textContent = originalText;
+        button.innerHTML = originalHtml;
       }
     }
 
@@ -4925,7 +5818,7 @@
           sheet.headerFooter.oddFooter =
             '&LHSBA Trung tâm&CTrang &P / &N&RNgày xuất: &D';
 
-          const totalColumns = 20;
+          const totalColumns = 23;
           sheet.mergeCells(1, 1, 1, totalColumns);
           sheet.getCell('A1').value =
             'BÁO CÁO DANH MỤC HỒ SƠ BỆNH ÁN LƯU TRỮ';
@@ -4933,7 +5826,7 @@
             name: 'Arial',
             size: 16,
             bold: true,
-            color: { argb: 'FF0D6F73' }
+            color: { argb: 'FFF28076' }
           };
           sheet.getCell('A1').alignment = {
             horizontal: 'center',
@@ -4954,7 +5847,7 @@
             name: 'Arial',
             size: 10,
             italic: true,
-            color: { argb: 'FF607780' }
+            color: { argb: 'FF687169' }
           };
 
           sheet.mergeCells(3, 1, 3, totalColumns);
@@ -4970,7 +5863,7 @@
           sheet.getCell('A3').font = {
             name: 'Arial',
             size: 9,
-            color: { argb: 'FF70828E' }
+            color: { argb: 'FF778078' }
           };
 
           const headers = [
@@ -4984,6 +5877,9 @@
             'Ngày kết thúc',
             'Trạng thái',
             'Ngày hồi gia',
+            'Ngày tử vong',
+            'Ngày chuyển trung tâm',
+            'Nội dung khác',
             'Nơi tử vong',
             'Nguyên nhân tử vong',
             'Thùng số',
@@ -5009,7 +5905,7 @@
             cell.fill = {
               type: 'pattern',
               pattern: 'solid',
-              fgColor: { argb: 'FF0D7F86' }
+              fgColor: { argb: 'FFF28076' }
             };
             cell.alignment = {
               horizontal: 'center',
@@ -5017,10 +5913,10 @@
               wrapText: true
             };
             cell.border = {
-              top: { style: 'thin', color: { argb: 'FFB9D9D5' } },
-              left: { style: 'thin', color: { argb: 'FFB9D9D5' } },
-              bottom: { style: 'thin', color: { argb: 'FFB9D9D5' } },
-              right: { style: 'thin', color: { argb: 'FFB9D9D5' } }
+              top: { style: 'thin', color: { argb: 'FFBCD0BE' } },
+              left: { style: 'thin', color: { argb: 'FFBCD0BE' } },
+              bottom: { style: 'thin', color: { argb: 'FFBCD0BE' } },
+              right: { style: 'thin', color: { argb: 'FFBCD0BE' } }
             };
           });
 
@@ -5045,6 +5941,15 @@
                 ? parseExcelDate(book['NGÀY HỒI GIA'])
                 : '',
               book && status === CONFIG.STATUS.TU_VONG
+                ? parseExcelDate(book['NGÀY TỬ VONG'])
+                : '',
+              book && status === CONFIG.STATUS.CHUYEN_TRUNG_TAM
+                ? parseExcelDate(book['NGÀY CHUYỂN TRUNG TÂM'])
+                : '',
+              book && status === CONFIG.STATUS.KHAC
+                ? excelSafeText(book['NỘI DUNG KHÁC'])
+                : '',
+              book && status === CONFIG.STATUS.TU_VONG
                 ? excelSafeText(book['NƠI TỬ VONG'])
                 : '',
               book && status === CONFIG.STATUS.TU_VONG
@@ -5065,28 +5970,28 @@
               cell.font = { name: 'Arial', size: 9 };
               cell.alignment = {
                 vertical: 'middle',
-                horizontal: [1, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 20]
+                horizontal: [1, 4, 5, 6, 7, 8, 10, 11, 12, 16, 17, 18, 19, 20, 21, 22, 23]
                   .includes(columnNumber)
                   ? 'center'
                   : 'left',
                 wrapText: true
               };
               cell.border = {
-                top: { style: 'hair', color: { argb: 'FFD7E7E4' } },
-                left: { style: 'hair', color: { argb: 'FFD7E7E4' } },
-                bottom: { style: 'hair', color: { argb: 'FFD7E7E4' } },
-                right: { style: 'hair', color: { argb: 'FFD7E7E4' } }
+                top: { style: 'hair', color: { argb: 'FFF2D5D5' } },
+                left: { style: 'hair', color: { argb: 'FFF2D5D5' } },
+                bottom: { style: 'hair', color: { argb: 'FFF2D5D5' } },
+                right: { style: 'hair', color: { argb: 'FFF2D5D5' } }
               };
               if (rowIndex % 2 === 1) {
                 cell.fill = {
                   type: 'pattern',
                   pattern: 'solid',
-                  fgColor: { argb: 'FFF4FAF8' }
+                  fgColor: { argb: 'FFFAF8F4' }
                 };
               }
             });
 
-            [7, 8, 10].forEach(columnNumber => {
+            [7, 8, 10, 11, 12].forEach(columnNumber => {
               row.getCell(columnNumber).numFmt = 'dd/mm/yyyy';
             });
 
@@ -5096,21 +6001,21 @@
                 name: 'Arial',
                 size: 9,
                 bold: true,
-                color: { argb: 'FFB54132' }
+                color: { argb: 'FFA45157' }
               };
             } else if (status === CONFIG.STATUS.HOI_GIA) {
               statusCell.font = {
                 name: 'Arial',
                 size: 9,
                 bold: true,
-                color: { argb: 'FF1F8A5B' }
+                color: { argb: 'FF4F7B59' }
               };
             } else {
               statusCell.font = {
                 name: 'Arial',
                 size: 9,
                 bold: true,
-                color: { argb: 'FF0D7F86' }
+                color: { argb: 'FFF28076' }
               };
             }
           });
@@ -5122,8 +6027,9 @@
           };
 
           const widths = [
-            6, 13, 25, 10, 10, 9, 12, 12, 17, 12,
-            20, 30, 9, 9, 11, 11, 12, 13, 13, 12
+            6, 13, 25, 10, 10, 9, 12, 12, 22, 12,
+            12, 15, 30, 20, 30, 9, 9, 11, 11, 12,
+            13, 13, 12
           ];
           widths.forEach((width, index) => {
             sheet.getColumn(index + 1).width = width;
@@ -5146,7 +6052,7 @@
           sheet.getCell(summaryRowNumber, 1).fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: 'FF0D7F86' }
+            fgColor: { argb: 'FFF28076' }
           };
           sheet.getCell(summaryRowNumber, 1).alignment = {
             horizontal: 'center',
@@ -5167,11 +6073,19 @@
             ['Tử vong', reportRows.filter(item =>
               normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
               CONFIG.STATUS.TU_VONG
+            ).length],
+            ['Chuyển trung tâm', reportRows.filter(item =>
+              normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
+              CONFIG.STATUS.CHUYEN_TRUNG_TAM
+            ).length],
+            ['Khác', reportRows.filter(item =>
+              normalizeRecordStatus(item.book?.['TRẠNG THÁI HIỆN TẠI']) ===
+              CONFIG.STATUS.KHAC
             ).length]
           ];
 
           summaryLabels.forEach((summary, index) => {
-            const column = 6 + index * 3;
+            const column = 6 + index * 2;
             sheet.mergeCells(
               summaryRowNumber,
               column,
@@ -5188,12 +6102,12 @@
               name: 'Arial',
               size: 9,
               bold: true,
-              color: { argb: 'FF29464E' }
+              color: { argb: 'FF29332C' }
             };
             sheet.getCell(summaryRowNumber, column).fill = {
               type: 'pattern',
               pattern: 'solid',
-              fgColor: { argb: 'FFEAF8F5' }
+              fgColor: { argb: 'FFFCF8F3' }
             };
           });
 
@@ -5299,6 +6213,13 @@
         reader.onerror = () => reject(new Error('Không đọc được file.'));
         reader.readAsDataURL(file);
       });
+    }
+
+
+    function uiIcon(name, className = '') {
+      const safeName = String(name || '').replace(/[^a-z0-9-]/gi, '');
+      const safeClass = String(className || '').replace(/[^a-z0-9 _-]/gi, '').trim();
+      return `<svg class="ui-icon${safeClass ? ` ${safeClass}` : ''}" aria-hidden="true" focusable="false"><use href="#i-${safeName}"></use></svg>`;
     }
 
     function normalize(value) {
