@@ -9,9 +9,9 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.08.19.1">
+  <meta name="version" content="2026.09.09.1">
   <title>Hồ sơ bệnh án lưu trữ</title>
-  <link rel="manifest" href="./manifest.webmanifest?v=2026.08.19.1">
+  <link rel="manifest" href="./manifest.webmanifest?v=2026.09.09.1">
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -8288,7 +8288,7 @@ textarea:focus {
   box-shadow:0 0 0 4px rgba(78,176,155,.14) !important;
 }
 
-/* ===== HSBA 2026.08.19.1 · TÊN HIỂN THỊ TÀI KHOẢN ===== */
+/* ===== HSBA 2026.09.09.1 · TÊN HIỂN THỊ TÀI KHOẢN ===== */
 .account-display-name-input {
   width: 210px;
   min-width: 180px;
@@ -8546,7 +8546,7 @@ dialog,
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.08.19.1</small>
+        <small>Phiên bản 2026.09.09.1</small>
       </div>
     </aside>
 
@@ -9210,7 +9210,7 @@ dialog,
 
   <script>
     (() => {
-      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.08.19.1';
+      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.09.09.1';
       const banner = () => document.getElementById('appUpdateBanner');
       const updateText = () => document.getElementById('appUpdateText');
       let registration = null;
@@ -10603,55 +10603,108 @@ dialog,
         }
       }
 
-      async request(payload, timeoutMs = 60000) {
-        const user = this.auth.currentUser;
-        if (!user) throw new Error('Phiên đăng nhập đã hết hạn.');
-
-        const idToken = await user.getIdToken();
-        const response = await this.fetchWithTimeout(this.baseUrl, {
-          method: 'POST',
-          cache: 'no-store',
-          redirect: 'follow',
-          headers: {
-            'Content-Type': 'text/plain;charset=utf-8'
-          },
-          body: JSON.stringify({
-            ...payload,
-            idToken
-          })
-        }, timeoutMs);
-
-        if (!response.ok) {
-          let message =
-            `Dịch vụ lưu trữ phản hồi lỗi HTTP ${response.status}.`;
-
-          try {
-            const errorResult = await response.json();
-            message = errorResult?.message || message;
-          } catch (_) {
-            // Giữ thông báo HTTP ở trên nếu phản hồi lỗi không phải JSON.
-          }
-
-          throw new Error(message);
-        }
-
-        let result;
-        try {
-          result = await response.json();
-        } catch (error) {
-          throw new Error('Dịch vụ file trả về dữ liệu không hợp lệ.');
-        }
-
-        if (!result || result.success !== true) {
-          throw new Error(
-            result?.message || 'Không thực hiện được thao tác file.'
-          );
-        }
-
-        return result;
+      makeServiceError(result, fallbackMessage) {
+        const serviceCode = String(result?.errorCode || 'DRIVE_SERVICE_ERROR')
+          .trim()
+          .toUpperCase();
+        const error = new Error(
+          result?.message || fallbackMessage || 'Không thực hiện được thao tác file.'
+        );
+        error.code = `hsba-drive/${serviceCode.toLowerCase().replace(/_/g, '-')}`;
+        error.serviceCode = serviceCode;
+        return error;
       }
 
-      async upload(soHoSo, quyenSo, file) {
+      shouldRefreshToken(result) {
+        const serviceCode = String(result?.errorCode || '').trim().toUpperCase();
+        const message = String(result?.message || '');
+
+        return serviceCode === 'AUTH_TOKEN_INVALID'
+          || (!serviceCode && /Phiên đăng nhập Firebase.*(không hợp lệ|hết hạn)/i.test(message));
+      }
+
+      async request(payload, timeoutMs = 60000, onProgress = null) {
+        const reportProgress = typeof onProgress === 'function'
+          ? onProgress
+          : () => {};
+        const user = this.auth.currentUser;
+
+        if (!user) throw new Error('Phiên đăng nhập đã hết hạn.');
+
+        const sendAttempt = async forceRefresh => {
+          reportProgress(
+            forceRefresh
+              ? 'Đang làm mới phiên đăng nhập...'
+              : 'Đang xác thực...'
+          );
+
+          const idToken = await user.getIdToken(forceRefresh === true);
+
+          reportProgress(
+            payload?.action === 'taiFileLen'
+              ? 'Đang tải file...'
+              : 'Đang xử lý file...'
+          );
+
+          const response = await this.fetchWithTimeout(this.baseUrl, {
+            method: 'POST',
+            cache: 'no-store',
+            redirect: 'follow',
+            headers: {
+              'Content-Type': 'text/plain;charset=utf-8'
+            },
+            body: JSON.stringify({
+              ...payload,
+              idToken
+            })
+          }, timeoutMs);
+
+          const responseText = await response.text();
+          let result = null;
+
+          if (responseText) {
+            try {
+              result = JSON.parse(responseText);
+            } catch (_) {
+              if (!response.ok) {
+                throw new Error(
+                  `Dịch vụ lưu trữ phản hồi lỗi HTTP ${response.status}.`
+                );
+              }
+
+              throw new Error('Dịch vụ file trả về dữ liệu không hợp lệ.');
+            }
+          }
+
+          if (!response.ok) {
+            throw this.makeServiceError(
+              result,
+              `Dịch vụ lưu trữ phản hồi lỗi HTTP ${response.status}.`
+            );
+          }
+
+          if (!result || result.success !== true) {
+            if (!forceRefresh && this.shouldRefreshToken(result)) {
+              return sendAttempt(true);
+            }
+
+            throw this.makeServiceError(
+              result,
+              'Không thực hiện được thao tác file.'
+            );
+          }
+
+          return result;
+        };
+
+        return sendAttempt(false);
+      }
+
+      async upload(soHoSo, quyenSo, file, onProgress = null) {
+        const reportProgress = typeof onProgress === 'function'
+          ? onProgress
+          : () => {};
+
         if (!file) throw new Error('Chưa chọn file.');
 
         if (file.size > CONFIG.MAX_UPLOAD_BYTES) {
@@ -10674,6 +10727,7 @@ dialog,
           );
         }
 
+        reportProgress('Đang chuẩn bị file...');
         const base64Data = await fileToBase64(file);
 
         return this.request({
@@ -10683,7 +10737,7 @@ dialog,
           fileName: file.name,
           mimeType,
           base64Data
-        }, 150000);
+        }, 150000, reportProgress);
       }
 
       async removeTemporary(fileId) {
@@ -11053,11 +11107,11 @@ dialog,
         }
       }
 
-      async saveBookWithFile(payload, file) {
+      async saveBookWithFile(payload, file, onProgress = null) {
         this.ensureSignedIn();
 
         try {
-          return await this.saveBook(payload, file || null);
+          return await this.saveBook(payload, file || null, onProgress);
         } catch (error) {
           throw firebaseError(error);
         }
@@ -11745,7 +11799,11 @@ dialog,
         );
       }
 
-      async saveBook(payload, file) {
+      async saveBook(payload, file, onProgress = null) {
+        const reportProgress = typeof onProgress === 'function'
+          ? onProgress
+          : () => {};
+        reportProgress('Đang kiểm tra dữ liệu...');
         const soHoSo = String(payload.soHoSo || '').trim();
         const mode = String(payload.mode || 'add');
         const quyenSo = Number(payload.quyenSo);
@@ -11837,13 +11895,18 @@ dialog,
         }
 
         const id = firebaseKey(soHoSo);
-        const lockToken = await this.acquirePatientLock(id, mode === 'edit' ? 'SUA_QUYEN' : 'LUU_QUYEN');
+        reportProgress('Đang khóa hồ sơ...');
+        const lockToken = await this.acquirePatientLock(
+          id,
+          mode === 'edit' ? 'SUA_QUYEN' : 'LUU_QUYEN'
+        );
         let uploadedFileId = '';
         let storageReservation = null;
         let previousLocationKey = '';
         let dataCommitted = false;
 
         try {
+          reportProgress('Đang kiểm tra hồ sơ...');
           const [patientSnapshot, booksSnapshot] = await Promise.all([
             get(ref(this.database, `doiTuong/${id}`)),
             get(ref(this.database, `quyenHoSo/${id}`))
@@ -11870,6 +11933,7 @@ dialog,
             );
           }
 
+          reportProgress('Đang kiểm tra vị trí...');
           storageReservation = await this.reserveStorageLocation({
             patientId: id,
             targetBookKey: targetKey,
@@ -11882,7 +11946,12 @@ dialog,
 
           let fileDinhKem = previousBook?.fileDinhKem || existingFileUrl || '';
           if (file) {
-            const upload = await this.driveUploader.upload(soHoSo, quyenSo, file);
+            const upload = await this.driveUploader.upload(
+              soHoSo,
+              quyenSo,
+              file,
+              reportProgress
+            );
             uploadedFileId = upload.data?.fileId || '';
             fileDinhKem = upload.data?.fileUrl || '';
             if (!fileDinhKem) throw new Error('Không nhận được đường dẫn tệp sau khi tải lên.');
@@ -12012,8 +12081,10 @@ dialog,
             updates[`hoSoTuVong/${id}`] = null;
           }
 
+          reportProgress('Đang lưu dữ liệu...');
           await update(ref(this.database), updates);
           dataCommitted = true;
+          reportProgress('Đang hoàn tất...');
 
           if (
             previousLocationKey &&
@@ -12043,6 +12114,7 @@ dialog,
           }
 
           patchBooksRootCache(id, id, nextBookMap);
+          reportProgress('Hoàn tất');
 
           return {
             success: true,
@@ -14136,8 +14208,14 @@ dialog,
       const form = event.currentTarget;
       const submitButton = $('#bookSubmitBtn');
       const originalText = submitButton.textContent;
+      const setProgress = message => {
+        submitButton.textContent = String(message || 'Đang lưu...');
+      };
+
       submitButton.disabled = true;
-      submitButton.textContent = 'Đang lưu...';
+      submitButton.setAttribute('aria-busy', 'true');
+      setProgress('Đang kiểm tra...');
+
       const formData = new FormData(form);
       const file = formData.get('file');
       const data = Object.fromEntries(formData.entries());
@@ -14145,7 +14223,17 @@ dialog,
 
       try {
         await withLoading(async () => {
-          const result = await api.saveBookWithFile({ ...data, quyenSo: Number(data.quyenSo), originalQuyenSo: Number(data.originalQuyenSo || data.quyenSo) }, file && file.size ? file : null);
+          const result = await api.saveBookWithFile(
+            {
+              ...data,
+              quyenSo: Number(data.quyenSo),
+              originalQuyenSo: Number(
+                data.originalQuyenSo || data.quyenSo
+              )
+            },
+            file && file.size ? file : null,
+            setProgress
+          );
           const index = state.currentBooks.findIndex(book => Number(book['QUYỂN SỐ']) === Number(data.originalQuyenSo || data.quyenSo));
           if (index >= 0) state.currentBooks[index] = result.data;
           else state.currentBooks.push(result.data);
@@ -14162,6 +14250,7 @@ dialog,
         });
       } finally {
         submitButton.disabled = false;
+        submitButton.removeAttribute('aria-busy');
         submitButton.textContent = originalText;
       }
     }
@@ -15622,7 +15711,7 @@ dialog,
     }
     }
   </script>
-  <div class="build-version" aria-hidden="true">2026.08.19.1</div>
+  <div class="build-version" aria-hidden="true">2026.09.09.1</div>
 
 </body>
 </html>
