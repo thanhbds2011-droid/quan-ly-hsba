@@ -1,0 +1,267 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "accessAccounts": {
+      ".read": false,
+      ".write": false
+    },
+    "phanQuyen": {
+      ".read": "auth != null && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin'))",
+      "$uid": {
+        ".read": "auth != null && (auth.uid == $uid || auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin'))",
+        ".write": "auth != null && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin' && ($uid != auth.uid || (newData.exists() && newData.child('role').val() == 'admin' && newData.child('active').val() == true))))",
+        ".validate": "!newData.exists() || (newData.hasChildren(['email','role','active']) && newData.child('email').isString() && newData.child('email').val().length > 3 && newData.child('email').val().length <= 200 && (!newData.hasChild('displayName') || (newData.child('displayName').isString() && newData.child('displayName').val().length <= 150)) && newData.child('role').isString() && (newData.child('role').val() == 'admin' || newData.child('role').val() == 'editor' || newData.child('role').val() == 'viewer') && newData.child('active').isBoolean() && (!newData.hasChild('createdAt') || newData.child('createdAt').isNumber()) && (!newData.hasChild('updatedAt') || newData.child('updatedAt').isNumber()) && (!newData.hasChild('approvedByUid') || newData.child('approvedByUid').isString()) && (!newData.hasChild('approvedByEmail') || newData.child('approvedByEmail').isString()))"
+      }
+    },
+    "congKhai": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email != null && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && (root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin' || root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor')))",
+      "hoSo": {
+        ".indexOn": [
+          "soHoSo",
+          "hoTenTimKiem",
+          "namSinh",
+          "gioiTinh",
+          "trangThaiHienTai",
+          "updatedAt",
+          "tongSoQuyen"
+        ]
+      },
+      "tuVong": {
+        ".indexOn": [
+          "soHoSo",
+          "ngayTuVong",
+          "namTuVong",
+          "updatedAt"
+        ]
+      }
+    },
+    "doiTuong": {
+      ".read": "auth != null && (auth.token.email == 'thanhbds2011@gmail.com' || root.child('phanQuyen').child(auth.uid).child('active').val() == true)",
+      ".indexOn": [
+        "soHoSo",
+        "hoTenTimKiem",
+        "namSinh",
+        "gioiTinh",
+        "trangThaiHienTai",
+        "updatedAt",
+        "tongSoQuyen"
+      ],
+      "$patientId": {
+        ".write": "auth != null && (((!data.exists() && newData.exists()) && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && (root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin' || root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor')))) || (data.exists() && newData.exists() && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && (root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin' || root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor'))) && root.child('khoaThaoTac').child($patientId).child('uid').val() == auth.uid && ((auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin')) || ((root.child('phanQuyen').child(auth.uid).child('active').val() == true && root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor') && root.child('quyenHoSo').child($patientId).exists() && newData.child('soHoSo').val() == data.child('soHoSo').val()))) || (data.exists() && !newData.exists() && ((auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin')) || ((root.child('phanQuyen').child(auth.uid).child('active').val() == true && root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor') && !root.child('quyenHoSo').child($patientId).exists()))))",
+        ".validate": "!newData.exists() || (newData.hasChildren(['soHoSo','hoTen','hoTenTimKiem','namSinh','tongSoQuyen','quyenDangMo','trangThaiHienTai','soQuyenDaLuuKho','soQuyenTuVong','soQuyenCoFile','createdAt','updatedAt','createdBy']) && newData.child('soHoSo').isString() && newData.child('soHoSo').val().matches(/^[A-Z]{2}\\.\\d{2}\\.\\d{2}\\.\\d{4}$/) && newData.child('hoTen').isString() && newData.child('hoTen').val().length > 0 && newData.child('hoTen').val().length <= 150 && newData.child('hoTenTimKiem').isString() && newData.child('hoTenTimKiem').val().length <= 200 && newData.child('namSinh').isNumber() && newData.child('namSinh').val() >= 1900 && newData.child('namSinh').val() <= 2100 && (!newData.hasChild('gioiTinh') || (newData.child('gioiTinh').isString() && (newData.child('gioiTinh').val() == '' || newData.child('gioiTinh').val() == 'Nam' || newData.child('gioiTinh').val() == 'Nữ'))) && newData.child('tongSoQuyen').isNumber() && newData.child('tongSoQuyen').val() >= 0 && (newData.child('quyenDangMo').isString() || newData.child('quyenDangMo').isNumber()) && newData.child('trangThaiHienTai').isString() && (newData.child('trangThaiHienTai').val() == '' || newData.child('trangThaiHienTai').val() == 'Hết quyển' || newData.child('trangThaiHienTai').val() == 'Đối tượng hồi gia' || newData.child('trangThaiHienTai').val() == 'Đối tượng tử vong' || newData.child('trangThaiHienTai').val() == 'Đối tượng chuyển trung tâm' || newData.child('trangThaiHienTai').val() == 'Khác' || newData.child('trangThaiHienTai').val() == 'Đang khám' || newData.child('trangThaiHienTai').val() == 'Đã lưu kho') && newData.child('soQuyenDaLuuKho').isNumber() && newData.child('soQuyenDaLuuKho').val() >= 0 && (!newData.hasChild('soQuyenHetQuyen') || (newData.child('soQuyenHetQuyen').isNumber() && newData.child('soQuyenHetQuyen').val() >= 0)) && (!newData.hasChild('soQuyenHoiGia') || (newData.child('soQuyenHoiGia').isNumber() && newData.child('soQuyenHoiGia').val() >= 0)) && (!newData.hasChild('soQuyenChuyenTrungTam') || (newData.child('soQuyenChuyenTrungTam').isNumber() && newData.child('soQuyenChuyenTrungTam').val() >= 0)) && (!newData.hasChild('soQuyenKhac') || (newData.child('soQuyenKhac').isNumber() && newData.child('soQuyenKhac').val() >= 0)) && newData.child('soQuyenTuVong').isNumber() && newData.child('soQuyenTuVong').val() >= 0 && newData.child('soQuyenCoFile').isNumber() && newData.child('soQuyenCoFile').val() >= 0 && newData.child('createdAt').isNumber() && newData.child('updatedAt').isNumber() && newData.child('createdBy').isString())"
+      }
+    },
+    "quyenHoSo": {
+      ".read": "auth != null && (auth.token.email == 'thanhbds2011@gmail.com' || root.child('phanQuyen').child(auth.uid).child('active').val() == true)",
+      "$patientId": {
+        ".read": "auth != null && (auth.token.email == 'thanhbds2011@gmail.com' || root.child('phanQuyen').child(auth.uid).child('active').val() == true)",
+        ".indexOn": [
+          "quyenSo",
+          "trangThai",
+          "ngayKetThuc",
+          "ngayHoiGia",
+          "updatedAt",
+          "thungSo",
+          "viTriSo",
+          "tongSoGiayTo",
+          "soToChamSoc",
+          "soToDieuTri",
+          "storageArea"
+        ],
+        "$bookId": {
+          ".write": "auth != null && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && (root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin' || root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor'))) && root.child('khoaThaoTac').child($patientId).child('uid').val() == auth.uid && (!newData.exists() || (newData.child('operationToken').isString() && newData.child('operationToken').val() == root.child('khoaThaoTac').child($patientId).child('token').val() && (data.exists() || !root.child('hoSoTuVong').child($patientId).exists()) && (newData.child('trangThai').val() != 'Đối tượng tử vong' || !root.child('hoSoTuVong').child($patientId).exists() || root.child('hoSoTuVong').child($patientId).child('quyenSo').val() == newData.child('quyenSo').val()) && (newData.child('trangThai').val() != 'Đối tượng tử vong' || newData.child('quyenSo').val() == root.child('doiTuong').child($patientId).child('tongSoQuyen').val() || newData.child('quyenSo').val() == root.child('doiTuong').child($patientId).child('tongSoQuyen').val() + 1)))",
+          ".validate": "!newData.exists() || (newData.hasChildren(['soHoSo','quyenSo','ngayBatDau','ngayKetThuc','trangThai','noiTuVong','nguyenNhanTuVong','ngayHoiGia','storageArea','thungSo','viTriSo','maLuuTru','soToChamSoc','soToDieuTri','soPhieuTruyenDich','soPhieuDanhGiaTeNga','soPhieuDanhGiaLoetTiDe','tongSoGiayTo','fileDinhKem','ghiChu','operationToken','createdAt','updatedAt','createdBy']) && (newData.child('trangThai').val() != 'Đối tượng tử vong' || newData.hasChild('ngayTuVong')) && (newData.child('trangThai').val() != 'Đối tượng chuyển trung tâm' || newData.hasChild('ngayChuyenTrungTam')) && (newData.child('trangThai').val() != 'Khác' || newData.hasChild('noiDungKhac')))",
+          "soHoSo": {
+            ".validate": "newData.isString() && newData.val().matches(/^[A-Z]{2}\\.\\d{2}\\.\\d{2}\\.\\d{4}$/) && (!data.exists() || newData.val() == data.val() || (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin')))"
+          },
+          "quyenSo": {
+            ".validate": "newData.isNumber() && newData.val() >= 1 && (!data.exists() || newData.val() == data.val())"
+          },
+          "ngayBatDau": {
+            ".validate": "newData.isString() && newData.val().matches(/^\\d{4}-\\d{2}-\\d{2}$/)"
+          },
+          "ngayKetThuc": {
+            ".validate": "newData.isString() && newData.val().matches(/^\\d{4}-\\d{2}-\\d{2}$/) && newData.val() >= newData.parent().child('ngayBatDau').val()"
+          },
+          "trangThai": {
+            ".validate": "newData.isString() && (newData.val() == 'Hết quyển' || newData.val() == 'Đối tượng hồi gia' || newData.val() == 'Đối tượng tử vong' || newData.val() == 'Đối tượng chuyển trung tâm' || newData.val() == 'Khác' || newData.val() == 'Đang khám' || newData.val() == 'Đã lưu kho')"
+          },
+          "noiTuVong": {
+            ".validate": "newData.isString() && newData.val().length <= 200 && ((newData.parent().child('trangThai').val() == 'Đối tượng tử vong' && newData.val().length > 0) || (newData.parent().child('trangThai').val() != 'Đối tượng tử vong' && newData.val() == ''))"
+          },
+          "nguyenNhanTuVong": {
+            ".validate": "newData.isString() && newData.val().length <= 500 && ((newData.parent().child('trangThai').val() == 'Đối tượng tử vong' && newData.val().length > 0) || (newData.parent().child('trangThai').val() != 'Đối tượng tử vong' && newData.val() == ''))"
+          },
+          "ngayHoiGia": {
+            ".validate": "newData.isString() && ((newData.parent().child('trangThai').val() == 'Đối tượng hồi gia' && newData.val().matches(/^\\d{4}-\\d{2}-\\d{2}$/) && newData.val() >= newData.parent().child('ngayBatDau').val() && newData.val() <= newData.parent().child('ngayKetThuc').val()) || (newData.parent().child('trangThai').val() != 'Đối tượng hồi gia' && newData.val() == ''))"
+          },
+          "ngayTuVong": {
+            ".validate": "newData.isString() && ((newData.parent().child('trangThai').val() == 'Đối tượng tử vong' && newData.val().matches(/^\\d{4}-\\d{2}-\\d{2}$/) && newData.val() >= newData.parent().child('ngayBatDau').val() && newData.val() <= newData.parent().child('ngayKetThuc').val()) || (newData.parent().child('trangThai').val() != 'Đối tượng tử vong' && newData.val() == ''))"
+          },
+          "ngayChuyenTrungTam": {
+            ".validate": "newData.isString() && ((newData.parent().child('trangThai').val() == 'Đối tượng chuyển trung tâm' && newData.val().matches(/^\\d{4}-\\d{2}-\\d{2}$/) && newData.val() >= newData.parent().child('ngayBatDau').val() && newData.val() <= newData.parent().child('ngayKetThuc').val()) || (newData.parent().child('trangThai').val() != 'Đối tượng chuyển trung tâm' && newData.val() == ''))"
+          },
+          "noiDungKhac": {
+            ".validate": "newData.isString() && newData.val().length <= 500 && ((newData.parent().child('trangThai').val() == 'Khác' && newData.val().length > 0) || (newData.parent().child('trangThai').val() != 'Khác' && newData.val() == ''))"
+          },
+          "thungSo": {
+            ".validate": "newData.isNumber() && newData.val() >= 1"
+          },
+          "viTriSo": {
+            ".validate": "newData.isNumber() && newData.val() >= 1"
+          },
+          "maLuuTru": {
+            ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 150"
+          },
+          "soToChamSoc": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          },
+          "soToDieuTri": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          },
+          "soPhieuTruyenDich": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          },
+          "soPhieuDanhGiaTeNga": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          },
+          "soPhieuDanhGiaLoetTiDe": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          },
+          "tongSoGiayTo": {
+            ".validate": "newData.isNumber() && newData.val() == newData.parent().child('soToChamSoc').val() + newData.parent().child('soToDieuTri').val() + newData.parent().child('soPhieuTruyenDich').val() + newData.parent().child('soPhieuDanhGiaTeNga').val() + newData.parent().child('soPhieuDanhGiaLoetTiDe').val()"
+          },
+          "fileDinhKem": {
+            ".validate": "newData.isString() && newData.val().length <= 2000 && (newData.parent().child('trangThai').val() != 'Đối tượng tử vong' || newData.val().length > 0)"
+          },
+          "ghiChu": {
+            ".validate": "newData.isString() && newData.val().length <= 2000"
+          },
+          "createdAt": {
+            ".validate": "newData.isNumber()"
+          },
+          "updatedAt": {
+            ".validate": "newData.isNumber()"
+          },
+          "createdBy": {
+            ".validate": "newData.isString()"
+          },
+          "updatedBy": {
+            ".validate": "newData.isString()"
+          },
+          "storageArea": {
+            ".validate": "newData.isString() && ((newData.parent().child('trangThai').val() == 'Đối tượng tử vong' && newData.val() == 'TU_VONG') || (newData.parent().child('trangThai').val() != 'Đối tượng tử vong' && newData.val() == 'CHUNG'))"
+          },
+          "operationToken": {
+            ".validate": "newData.isString() && newData.val().length > 10 && newData.val().length <= 200 && newData.val() == root.child('khoaThaoTac').child($patientId).child('token').val()"
+          },
+          "files": {
+            "$fileKey": {
+              ".validate": "newData.hasChildren(['fileUrl','fileName']) && newData.child('fileUrl').isString() && newData.child('fileUrl').val().length > 0 && newData.child('fileUrl').val().length <= 2000 && (!newData.hasChild('fileId') || (newData.child('fileId').isString() && newData.child('fileId').val().length <= 300)) && newData.child('fileName').isString() && newData.child('fileName').val().length > 0 && newData.child('fileName').val().length <= 300 && (!newData.hasChild('mimeType') || (newData.child('mimeType').isString() && newData.child('mimeType').val().length <= 100)) && (!newData.hasChild('sizeBytes') || (newData.child('sizeBytes').isNumber() && newData.child('sizeBytes').val() >= 0)) && (!newData.hasChild('uploadedAt') || (newData.child('uploadedAt').isNumber() && newData.child('uploadedAt').val() >= 0)) && (!newData.hasChild('uploadedByUid') || newData.child('uploadedByUid').isString()) && (!newData.hasChild('uploadedByEmail') || newData.child('uploadedByEmail').isString()) && (!newData.hasChild('sourceSoHoSo') || (newData.child('sourceSoHoSo').isString() && (newData.child('sourceSoHoSo').val() == '' || newData.child('sourceSoHoSo').val().matches(/^[A-Z]{2}\\.\\d{2}\\.\\d{2}\\.\\d{4}$/)))) && (!newData.hasChild('sourceQuyenSo') || (newData.child('sourceQuyenSo').isNumber() && newData.child('sourceQuyenSo').val() >= 0))"
+            }
+          },
+          "fileId": {
+            ".validate": "newData.isString() && newData.val().length <= 300"
+          },
+          "fileUrl": {
+            ".validate": "newData.isString() && newData.val().length <= 2000"
+          },
+          "fileName": {
+            ".validate": "newData.isString() && newData.val().length <= 300"
+          }
+        }
+      }
+    },
+    "hoSoTuVong": {
+      ".read": "auth != null && (auth.token.email == 'thanhbds2011@gmail.com' || root.child('phanQuyen').child(auth.uid).child('active').val() == true)",
+      ".indexOn": [
+        "soHoSo",
+        "ngayTuVong",
+        "namTuVong",
+        "noiTuVong",
+        "nguyenNhanTuVong",
+        "updatedAt"
+      ],
+      "$patientId": {
+        ".write": "auth != null && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && (root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin' || root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor'))) && root.child('khoaThaoTac').child($patientId).child('uid').val() == auth.uid && (!newData.exists() || (newData.child('operationToken').isString() && newData.child('operationToken').val() == root.child('khoaThaoTac').child($patientId).child('token').val()))",
+        ".validate": "!newData.exists() || (newData.hasChildren(['soHoSo','hoTen','namSinh','quyenSo','ngayKetThuc','ngayTuVong','namTuVong','noiTuVong','nguyenNhanTuVong','storageArea','thungSo','viTriSo','maLuuTru','soToChamSoc','soToDieuTri','soPhieuTruyenDich','soPhieuDanhGiaTeNga','soPhieuDanhGiaLoetTiDe','tongSoGiayTo','fileDinhKem','operationToken','updatedAt']) && newData.child('soHoSo').isString() && newData.child('soHoSo').val().matches(/^[A-Z]{2}\\.\\d{2}\\.\\d{2}\\.\\d{4}$/) && newData.child('hoTen').isString() && newData.child('namSinh').isNumber() && (!newData.hasChild('gioiTinh') || newData.child('gioiTinh').isString()) && newData.child('quyenSo').isNumber() && newData.child('quyenSo').val() >= 1 && newData.child('ngayKetThuc').isString() && newData.child('ngayKetThuc').val().matches(/^\\d{4}-\\d{2}-\\d{2}$/) && newData.child('ngayTuVong').isString() && newData.child('ngayTuVong').val().matches(/^\\d{4}-\\d{2}-\\d{2}$/) && newData.child('ngayTuVong').val() <= newData.child('ngayKetThuc').val() && newData.child('namTuVong').isNumber() && newData.child('namTuVong').val() >= 1900 && newData.child('namTuVong').val() <= 2100 && newData.child('noiTuVong').isString() && newData.child('noiTuVong').val().length > 0 && newData.child('noiTuVong').val().length <= 200 && newData.child('nguyenNhanTuVong').isString() && newData.child('nguyenNhanTuVong').val().length > 0 && newData.child('nguyenNhanTuVong').val().length <= 500 && newData.child('storageArea').val() == 'TU_VONG' && newData.child('thungSo').isNumber() && newData.child('thungSo').val() >= 1 && newData.child('viTriSo').isNumber() && newData.child('viTriSo').val() >= 1 && newData.child('maLuuTru').isString() && newData.child('soToChamSoc').isNumber() && newData.child('soToChamSoc').val() >= 0 && newData.child('soToDieuTri').isNumber() && newData.child('soToDieuTri').val() >= 0 && newData.child('soPhieuTruyenDich').isNumber() && newData.child('soPhieuTruyenDich').val() >= 0 && newData.child('soPhieuDanhGiaTeNga').isNumber() && newData.child('soPhieuDanhGiaTeNga').val() >= 0 && newData.child('soPhieuDanhGiaLoetTiDe').isNumber() && newData.child('soPhieuDanhGiaLoetTiDe').val() >= 0 && newData.child('tongSoGiayTo').isNumber() && newData.child('tongSoGiayTo').val() == newData.child('soToChamSoc').val() + newData.child('soToDieuTri').val() + newData.child('soPhieuTruyenDich').val() + newData.child('soPhieuDanhGiaTeNga').val() + newData.child('soPhieuDanhGiaLoetTiDe').val() && newData.child('fileDinhKem').isString() && newData.child('fileDinhKem').val().length > 0 && newData.child('operationToken').isString() && newData.child('operationToken').val() == root.child('khoaThaoTac').child($patientId).child('token').val() && newData.child('updatedAt').isNumber())",
+        "storageArea": {
+          ".validate": "newData.val() == 'TU_VONG'"
+        },
+        "operationToken": {
+          ".validate": "newData.isString() && newData.val().length > 10 && newData.val().length <= 200 && newData.val() == root.child('khoaThaoTac').child($patientId).child('token').val()"
+        },
+        "files": {
+          "$fileKey": {
+            ".validate": "newData.hasChildren(['fileUrl','fileName']) && newData.child('fileUrl').isString() && newData.child('fileUrl').val().length > 0 && newData.child('fileUrl').val().length <= 2000 && (!newData.hasChild('fileId') || (newData.child('fileId').isString() && newData.child('fileId').val().length <= 300)) && newData.child('fileName').isString() && newData.child('fileName').val().length > 0 && newData.child('fileName').val().length <= 300 && (!newData.hasChild('mimeType') || (newData.child('mimeType').isString() && newData.child('mimeType').val().length <= 100)) && (!newData.hasChild('sizeBytes') || (newData.child('sizeBytes').isNumber() && newData.child('sizeBytes').val() >= 0)) && (!newData.hasChild('uploadedAt') || (newData.child('uploadedAt').isNumber() && newData.child('uploadedAt').val() >= 0)) && (!newData.hasChild('uploadedByUid') || newData.child('uploadedByUid').isString()) && (!newData.hasChild('uploadedByEmail') || newData.child('uploadedByEmail').isString()) && (!newData.hasChild('sourceSoHoSo') || (newData.child('sourceSoHoSo').isString() && (newData.child('sourceSoHoSo').val() == '' || newData.child('sourceSoHoSo').val().matches(/^[A-Z]{2}\\.\\d{2}\\.\\d{2}\\.\\d{4}$/)))) && (!newData.hasChild('sourceQuyenSo') || (newData.child('sourceQuyenSo').isNumber() && newData.child('sourceQuyenSo').val() >= 0))"
+          }
+        },
+        "fileId": {
+          ".validate": "newData.isString() && newData.val().length <= 300"
+        },
+        "fileUrl": {
+          ".validate": "newData.isString() && newData.val().length <= 2000"
+        },
+        "fileName": {
+          ".validate": "newData.isString() && newData.val().length <= 300"
+        }
+      }
+    },
+    "nhatKy": {
+      ".read": "auth != null && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin'))",
+      ".indexOn": [
+        "createdAt",
+        "uid",
+        "email",
+        "action"
+      ],
+      "$logId": {
+        ".write": "auth != null && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && (root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin' || root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor'))) && !data.exists() && newData.exists() && newData.child('uid').val() == auth.uid",
+        ".validate": "newData.hasChildren(['action','content','email','uid','createdAt']) && newData.child('action').isString() && newData.child('action').val().length > 0 && newData.child('action').val().length <= 100 && newData.child('email').isString() && newData.child('email').val() == auth.token.email && newData.child('uid').isString() && newData.child('uid').val() == auth.uid && newData.child('createdAt').isNumber() && ((newData.child('action').val() != 'XÓA HỒ SƠ NHẬP NHẦM' && newData.child('action').val() != 'QUẢN TRỊ XÓA TOÀN BỘ HỒ SƠ') || (newData.child('content').child('soHoSo').isString() && newData.child('content').child('soHoSo').val().length > 0 && newData.child('content').child('lyDoXoa').isString() && newData.child('content').child('lyDoXoa').val().length >= 3 && newData.child('content').child('lyDoXoa').val().length <= 500))"
+      }
+    },
+    "khoaThaoTac": {
+      "$patientId": {
+        ".read": "auth != null && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && (root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin' || root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor')))",
+        ".write": "auth != null && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && (root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin' || root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor'))) && (((!data.exists() || data.child('expiresAt').val() < now) && newData.exists() && newData.child('uid').val() == auth.uid) || (data.exists() && data.child('expiresAt').val() >= now && data.child('uid').val() == auth.uid && (!newData.exists() || (newData.child('uid').val() == auth.uid && newData.child('token').val() == data.child('token').val()))))",
+        ".validate": "!newData.exists() || (newData.hasChildren(['uid','email','operation','token','acquiredAt','expiresAt']) && newData.child('uid').isString() && newData.child('uid').val() == auth.uid && newData.child('email').isString() && newData.child('email').val() == auth.token.email && newData.child('operation').isString() && newData.child('token').isString() && newData.child('acquiredAt').isNumber() && newData.child('expiresAt').isNumber() && newData.child('expiresAt').val() > newData.child('acquiredAt').val() && newData.child('expiresAt').val() <= now + 300000)"
+      }
+    },
+    "hsbaViTriLuuTru": {
+      ".read": "auth != null && (auth.token.email == 'thanhbds2011@gmail.com' || root.child('phanQuyen').child(auth.uid).child('active').val() == true)",
+      "$locationKey": {
+        ".write": "auth != null && ((auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin')) || ((root.child('phanQuyen').child(auth.uid).child('active').val() == true && root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor') && ((newData.exists() && root.child('khoaThaoTac').child(newData.child('patientId').val()).child('uid').val() == auth.uid && newData.child('patientLockToken').isString() && newData.child('patientLockToken').val() == root.child('khoaThaoTac').child(newData.child('patientId').val()).child('token').val() && (!data.exists() || (data.child('patientId').val() == newData.child('patientId').val() && data.child('bookKey').val() == newData.child('bookKey').val()) || (data.child('reservationState').val() == 'reserved' && data.child('expiresAt').val() > 0 && data.child('expiresAt').val() < now))) || (data.exists() && !newData.exists() && root.child('khoaThaoTac').child(data.child('patientId').val()).child('uid').val() == auth.uid))))",
+        ".validate": "!newData.exists() || (newData.hasChildren(['locationKey','storageArea','patientId','bookKey','soHoSo','quyenSo','thungSo','viTriSo','reservationState','reservationToken','reservedAt','expiresAt','updatedAt','updatedByUid','updatedByEmail']) && newData.child('locationKey').isString() && newData.child('locationKey').val() == $locationKey && ((newData.child('storageArea').val() == 'CHUNG' && $locationKey.matches(/^chung_t_\\d{6}_v_\\d{6}$/)) || (newData.child('storageArea').val() == 'TU_VONG' && $locationKey.matches(/^tuvong_t_\\d{6}_v_\\d{6}$/))) && newData.child('patientId').isString() && newData.child('patientId').val().length > 0 && newData.child('patientId').val().length <= 120 && newData.child('bookKey').isString() && newData.child('bookKey').val().matches(/^q_\\d{6}$/) && newData.child('soHoSo').isString() && newData.child('soHoSo').val().matches(/^[A-Z]{2}\\.\\d{2}\\.\\d{2}\\.\\d{4}$/) && newData.child('quyenSo').isNumber() && newData.child('quyenSo').val() >= 1 && newData.child('thungSo').isNumber() && newData.child('thungSo').val() >= 1 && newData.child('viTriSo').isNumber() && newData.child('viTriSo').val() >= 1 && newData.child('reservationState').isString() && (newData.child('reservationState').val() == 'reserved' || newData.child('reservationState').val() == 'committed') && newData.child('reservationToken').isString() && newData.child('reservationToken').val().length > 0 && newData.child('reservationToken').val().length <= 200 && newData.child('reservedAt').isNumber() && newData.child('reservedAt').val() > 0 && newData.child('expiresAt').isNumber() && ((newData.child('reservationState').val() == 'reserved' && newData.child('expiresAt').val() > now && newData.child('expiresAt').val() <= now + 600000) || (newData.child('reservationState').val() == 'committed' && newData.child('expiresAt').val() == 0)) && (!newData.hasChild('patientLockToken') || newData.child('patientLockToken').isString()) && newData.child('updatedAt').isNumber() && newData.child('updatedByUid').isString() && newData.child('updatedByUid').val() == auth.uid && newData.child('updatedByEmail').isString() && newData.child('updatedByEmail').val() == auth.token.email)"
+      },
+      ".indexOn": [
+        "patientId",
+        "storageArea",
+        "thungSo",
+        "updatedAt"
+      ]
+    },
+    "hsbaFileChoXoa": {
+      ".read": "auth != null && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && (root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin' || root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor')))",
+      ".indexOn": [
+        "requestedAt",
+        "patientId",
+        "requestedByUid"
+      ],
+      "$jobKey": {
+        ".write": "auth != null && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && (root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin' || root.child('phanQuyen').child(auth.uid).child('role').val() == 'editor'))) && ((!data.exists() && newData.exists() && newData.child('requestedByUid').val() == auth.uid && newData.child('requestedByEmail').val() == auth.token.email) || (data.exists() && !newData.exists()) || (data.exists() && newData.exists() && ((auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin')) || (newData.child('patientId').val() == data.child('patientId').val() && newData.child('soHoSo').val() == data.child('soHoSo').val()))))",
+        ".validate": "!newData.exists() || (newData.hasChildren(['status','fileId','fileUrl','fileName','cleanupToken','patientId','bookKey','soHoSo','quyenSo','requestedAt','requestedByUid','requestedByEmail','attempts','lastAttemptAt','lastError']) && newData.child('status').val() == 'pending' && newData.child('fileId').isString() && newData.child('fileId').val().length >= 10 && newData.child('fileId').val().length <= 300 && newData.child('fileUrl').isString() && newData.child('fileUrl').val().length <= 2000 && newData.child('fileName').isString() && newData.child('fileName').val().length <= 300 && newData.child('cleanupToken').isString() && newData.child('cleanupToken').val().length >= 20 && newData.child('cleanupToken').val().length <= 2000 && newData.child('patientId').isString() && newData.child('patientId').val().length > 0 && newData.child('patientId').val().length <= 120 && newData.child('bookKey').isString() && newData.child('bookKey').val().matches(/^q_\\d{6}$/) && newData.child('soHoSo').isString() && newData.child('soHoSo').val().matches(/^[A-Z]{2}\\.\\d{2}\\.\\d{2}\\.\\d{4}$/) && newData.child('quyenSo').isNumber() && newData.child('quyenSo').val() >= 1 && newData.child('requestedAt').isNumber() && newData.child('requestedAt').val() > 0 && newData.child('requestedAt').val() <= now + 60000 && newData.child('requestedByUid').isString() && newData.child('requestedByUid').val().length > 0 && newData.child('requestedByUid').val().length <= 200 && newData.child('requestedByEmail').isString() && newData.child('requestedByEmail').val().length > 3 && newData.child('requestedByEmail').val().length <= 200 && newData.child('attempts').isNumber() && newData.child('attempts').val() >= 0 && newData.child('lastAttemptAt').isNumber() && newData.child('lastAttemptAt').val() >= 0 && newData.child('lastError').isString() && newData.child('lastError').val().length <= 500 && (!data.exists() || (newData.child('fileId').val() == data.child('fileId').val() && newData.child('fileUrl').val() == data.child('fileUrl').val() && newData.child('fileName').val() == data.child('fileName').val() && newData.child('cleanupToken').val() == data.child('cleanupToken').val() && newData.child('bookKey').val() == data.child('bookKey').val() && newData.child('quyenSo').val() == data.child('quyenSo').val() && newData.child('requestedAt').val() == data.child('requestedAt').val() && newData.child('requestedByUid').val() == data.child('requestedByUid').val() && newData.child('requestedByEmail').val() == data.child('requestedByEmail').val())))",
+        "status": {
+          ".validate": "newData.val() == 'pending'"
+        }
+      }
+    },
+    "hsbaYeuCauDangKy": {
+      ".read": "auth != null && (auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin'))",
+      "$uid": {
+        ".read": "auth != null && (auth.uid == $uid || auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin'))",
+        ".write": "auth != null && ((auth.uid == $uid && ((!data.exists() || data.child('status').val() == 'rejected') && newData.exists() && newData.child('status').val() == 'pending' && newData.child('email').val() == auth.token.email)) || auth.token.email == 'thanhbds2011@gmail.com' || (root.child('phanQuyen').child(auth.uid).child('active').val() == true && root.child('phanQuyen').child(auth.uid).child('role').val() == 'admin'))",
+        ".validate": "!newData.exists() || (newData.hasChildren(['email','displayName','provider','status','requestedAt']) && newData.child('email').isString() && newData.child('email').val().length > 3 && newData.child('email').val().length <= 200 && newData.child('displayName').isString() && newData.child('displayName').val().length <= 150 && newData.child('provider').isString() && newData.child('provider').val().length <= 100 && newData.child('status').isString() && (newData.child('status').val() == 'pending' || newData.child('status').val() == 'approved' || newData.child('status').val() == 'rejected') && newData.child('requestedAt').isNumber() && (!newData.hasChild('reviewedAt') || newData.child('reviewedAt').isNumber()) && (!newData.hasChild('reviewedByUid') || newData.child('reviewedByUid').isString()) && (!newData.hasChild('reviewedByEmail') || newData.child('reviewedByEmail').isString()))"
+      }
+    },

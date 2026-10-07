@@ -1,0 +1,139 @@
+{
+  "version": "2026.10.07.1",
+  "tests": [
+    [
+      "JS module found",
+      "PASS",
+      ""
+    ],
+    [
+      "Frontend JS syntax",
+      "PASS",
+      ""
+    ],
+    [
+      "Service Worker syntax",
+      "PASS",
+      ""
+    ],
+    [
+      "Code.gs syntax",
+      "PASS",
+      ""
+    ],
+    [
+      "Runtime JSON structures",
+      "PASS",
+      ""
+    ],
+    [
+      "No duplicate static DOM ids",
+      "PASS",
+      "[]"
+    ],
+    [
+      "Version aligned",
+      "PASS",
+      ""
+    ],
+    [
+      "PUBLIC_SCHEMA_VERSION = 3",
+      "PASS",
+      ""
+    ],
+    [
+      "No undefined storageStats payload",
+      "PASS",
+      ""
+    ],
+    [
+      "Storage metadata strips areas/boxes",
+      "PASS",
+      ""
+    ],
+    [
+      "Book stats derive from storage statistics",
+      "PASS",
+      ""
+    ],
+    [
+      "Private fallback for incomplete storage meta",
+      "PASS",
+      ""
+    ],
+    [
+      "Dashboard waits for storage stats load",
+      "PASS",
+      ""
+    ],
+    [
+      "Transferred/other status refreshed",
+      "PASS",
+      ""
+    ],
+    [
+      "Inventory 0/0 message fixed",
+      "PASS",
+      ""
+    ],
+    [
+      "Startup after final production overrides",
+      "PASS",
+      "start=604233, override=598609"
+    ],
+    [
+      "Scoped storage CHUNG",
+      "PASS",
+      ""
+    ],
+    [
+      "Scoped storage TU_VONG",
+      "PASS",
+      ""
+    ],
+    [
+      "Lock retained",
+      "PASS",
+      ""
+    ],
+    [
+      "Cleanup queue retained",
+      "PASS",
+      ""
+    ],
+    [
+      "Managed delete action retained",
+      "PASS",
+      ""
+    ],
+    [
+      "Create delete request action retained",
+      "PASS",
+      ""
+    ],
+    [
+      "Rules handoff starts at root",
+      "PASS",
+      ""
+    ],
+    [
+      "Rules handoff contains current HSBA nodes",
+      "PASS",
+      ""
+    ],
+    [
+      "Rules handoff ends at HSBA boundary",
+      "PASS",
+      ""
+    ],
+    [
+      "Rules handoff does not include shared app namespaces",
+      "PASS",
+      ""
+    ]
+  ],
+  "summary": {
+    "pass": 26,
+    "fail": 0
+  }
+}
