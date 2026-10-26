@@ -9,9 +9,9 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="application-name" content="HSBA Trung tâm">
-  <meta name="version" content="2026.10.07.1">
+  <meta name="version" content="2026.10.26.1">
   <title>Hồ sơ bệnh án lưu trữ</title>
-  <link rel="manifest" href="./manifest.webmanifest?v=2026.10.07.1">
+  <link rel="manifest" href="./manifest.webmanifest?v=2026.10.26.1">
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -8554,7 +8554,7 @@ dialog,
 
       <div class="sidebar-footer">
         <span>HSBA Trung tâm</span>
-        <small>Phiên bản 2026.10.07.1</small>
+        <small>Phiên bản 2026.10.26.1</small>
       </div>
     </aside>
 
@@ -9251,7 +9251,7 @@ dialog,
 
   <script>
     (() => {
-      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.10.07.1';
+      const currentVersion = document.querySelector('meta[name="version"]')?.content || '2026.10.26.1';
       const banner = () => document.getElementById('appUpdateBanner');
       const updateText = () => document.getElementById('appUpdateText');
       let registration = null;
@@ -17288,6 +17288,8 @@ dialog,
           storageArea: area,
           patientId: id,
           bookKey: targetKey,
+          // YC-HSBA-001: luôn dùng khóa hiện tại, kể cả khi tái sử dụng chỉ mục kho đã có từ phiên cũ.
+          patientLockToken: lockToken,
           soHoSo,
           quyenSo,
           thungSo,
@@ -17805,7 +17807,7 @@ dialog,
     }
     }
   </script>
-  <div class="build-version" aria-hidden="true">2026.10.07.1</div>
+  <div class="build-version" aria-hidden="true">2026.10.26.1</div>
 
 </body>
 </html>
